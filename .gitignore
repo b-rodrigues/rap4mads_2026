@@ -4,3 +4,5 @@ result
 *.tex
 /.direnv/
 .aider*
+
+**/*.quarto_ipynb

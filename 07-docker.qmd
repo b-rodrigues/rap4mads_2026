@@ -1,0 +1,882 @@
+# Containerisation With Docker
+
+<div style="text-align:center;">
+```{r, echo = F}
+knitr::include_graphics("img/container.png")
+```
+</div>
+
+## Introduction
+
+Up until now, we've built reproducible environments with Nix, written testable
+code with FP principles, orchestrated pipelines with T, and made them robust
+with error handling and debugging. Now we turn to **distribution**: how do we
+share our work with others who may not have Nix installed?
+
+Nix gives us fine-grained control over every package and dependency in our
+project, ensuring bit-for-bit reproducibility. However, when it comes to
+distributing a *data product*, another technology, Docker, is incredibly
+popular.
+
+A common misconception is that Nix and Docker are alternatives, that you must 
+choose one or the other. This is wrong. They are conceptually different tools 
+that solve different problems. Nix is a **package manager and build system**: it 
+answers "what software do I need and how do I build it reproducibly?" Docker is 
+a **containerisation platform**: it answers "how do I package and run an 
+application in isolation?" Understanding this distinction is key to using them 
+together effectively.
+
+While Nix manages dependencies for an application that runs on a host operating 
+system, Docker takes a different approach: it packages an application *along 
+with* a lightweight operating system and all its dependencies into a single, 
+portable unit called a **container**. This container can then run on any machine 
+that has Docker installed, regardless of its underlying OS. Being familiar with 
+both tools makes you a more versatile data scientist: you can use Nix for 
+precise, reproducible development environments and Docker for distributing your 
+work to colleagues, servers, or CI pipelines that may not have Nix installed.
+
+
+### Spatial vs Temporal Reproducibility
+
+To understand when and why to use Docker, it helps to distinguish between two 
+types of reproducibility:
+
+- **Spatial reproducibility**: The ability to execute an analysis identically 
+  across different machines *right now*. Docker excels here: a container runs 
+  the same way on your laptop, a colleague's workstation, and a cloud server.
+
+- **Temporal reproducibility**: The ability to execute an analysis identically 
+  *over time*. Docker is weaker here. The imperative commands in a `Dockerfile` 
+  (like `apt-get update`) are non-deterministic. Rebuilding the same file at 
+  different times can yield different images, a temporal drift that is a 
+  well-documented weakness of container-based environments [@malka2024].
+
+This distinction is crucial. Docker's true reproducibility promise is that a 
+specific, pre-built image will always launch an identical container. It does 
+*not* promise that building the same `Dockerfile` twice will yield an identical 
+image.
+
+As empirical research has shown, achieving deterministic builds requires systems 
+designed for this purpose, like Nix's functional model, where identical inputs 
+always produce identical outputs. Studies rebuilding over 700,000 historical 
+Nix packages from snapshots spanning several years found bit-for-bit 
+reproducibility rates exceeding 90% [@malka2025].
+
+### The Best of Both Worlds
+
+This is why we combine Nix and Docker rather than choosing one or the other:
+
+- **Nix** provides strong temporal reproducibility: the guarantee that an 
+  environment built today will be identical when rebuilt years later.
+- **Docker** provides strong spatial reproducibility and universal 
+  distribution: the guarantee that a container runs the same everywhere Docker 
+  runs.
+
+The pattern we'll use is simple: use Nix *inside* a Docker container, so that 
+the container is both small and reproducible. Docker becomes a portable 
+runtime for a Nix-managed environment, excellent for deployment to systems 
+where Nix isn't installed. There are three ways to get Nix into the image:
+
+1. **Install Nix inside the container** from a minimal base image. You add a 
+   few lines to the Dockerfile that install Nix, and everything after that is 
+   installed with Nix.
+2. **Start from a base image that already has Nix.** You pull an existing 
+   image with Nix installed and use it as the foundation, skipping the 
+   installation step.
+3. **Build the whole image with Nix.** You write the image definition in Nix 
+   itself, and Nix produces the container image for you.
+
+This chapter covers all three, starting with the first two.
+
+### Interactive Development vs Distribution
+
+This approach also clarifies *when* to use each tool:
+
+- **Use Nix directly** for interactive development. It integrates seamlessly 
+  with your IDE and filesystem. No volume mounts, no port forwarding, no 
+  graphical application headaches.
+
+- **Use Docker** for distributing finished data products. Package your 
+  T pipeline into an image that anyone can run with a single command.
+
+If you've never heard of Docker before, this chapter will provide the basic 
+knowledge required to get started. Let's start by watching 
+[this very short video](https://www.youtube.com/watch?v=-X3AeROGmOw)^[https://www.youtube.com/watch?v=-X3AeROGmOw] that 
+introduces the core concepts.
+
+The [Rocker Project](https://rocker-project.org/)^[https://rocker-project.org/] provides a large collection 
+of ready-to-use Docker images for R users.
+
+## Docker Essentials
+
+### Installing Docker
+
+The first step is to install Docker. You'll find the instructions for Ubuntu 
+[here](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository)^[https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository], 
+for Windows [here](https://docs.docker.com/desktop/install/windows-install/)^[https://docs.docker.com/desktop/install/windows-install/] 
+(read the system requirements section as well!) and for macOS 
+[here](https://docs.docker.com/desktop/install/mac-install/)^[https://docs.docker.com/desktop/install/mac-install/] (make sure to 
+choose the right version for the architecture of your Mac, if you have an M1 
+Mac use *Mac with Apple silicon*).
+
+After installation, it might be a good idea to restart your computer, if the 
+installation wizard does not invite you to do so. To check whether Docker was 
+installed successfully, run the following command in a terminal:
+
+```bash
+docker run --rm hello-world
+```
+
+This should print the following message:
+
+```
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+```
+
+If you see this message, congratulations, you are ready to run Docker. If you 
+see an error message about permissions, this means that something went wrong. 
+If you're running Linux, make sure that your user is in the Docker group by 
+running:
+
+```bash
+groups $USER
+```
+
+You should see your username and a list of groups that your user belongs to. If 
+a group called `docker` is not listed, then you should add yourself to the group 
+by following 
+[these steps](https://docs.docker.com/engine/install/linux-postinstall/)^[https://docs.docker.com/engine/install/linux-postinstall/].
+
+### The Rocker Project and Image Registries
+
+When running a command like:
+
+```bash
+docker run --rm hello-world
+```
+
+what happens is that an image, in this case `hello-world`, gets pulled from a 
+so-called *registry*. A registry is a storage and distribution system for Docker 
+images. Think of it as a GitHub for Docker images, where you can push and pull 
+images, much like you would with code repositories. The default public registry 
+that Docker uses is called Docker Hub, but companies can also host their own 
+private registries to store proprietary images.
+
+Many open source projects build and distribute Docker images through Docker Hub, 
+for example the Rocker Project.
+
+The Rocker Project is instrumental for R users that want to use Docker. The 
+project provides a large list of images that are ready to run with a single 
+command. As an illustration, open a terminal and paste the following line:
+
+```bash
+docker run --rm -e PASSWORD=yourpassword -p 8787:8787 rocker/rstudio
+```
+
+Once this stops running, go to `http://localhost:8787/` and enter `rstudio` as 
+the username and `yourpassword` as the password. You should log in to a RStudio 
+instance: this is the web interface of RStudio that allows you to work with R 
+from a server. In this case, the *server* is the Docker container running the 
+image. Yes, you've just pulled a Docker image containing Ubuntu with a fully 
+working installation of RStudio web!
+
+Let's open a new script and run the following lines:
+
+```{r}
+#| eval: false
+data(mtcars)
+summary(mtcars)
+```
+
+You can now stop the container (by pressing `CTRL-C` in the terminal). Let's now 
+rerun the container... you should realise that your script is gone! This is the 
+first lesson: whatever you do inside a container will disappear once the 
+container is stopped. This also means that if you install the R packages that 
+you need while the container is running, you will need to reinstall them every 
+time.
+
+Thankfully, the Rocker Project provides a list of images with many packages 
+already available. For example to run R with the `{tidyverse}` collection of 
+packages already pre-installed, run:
+
+```bash
+docker run --rm -e PASSWORD=yourpassword -p 8787:8787 rocker/tidyverse
+```
+
+### Basic Docker Workflow
+
+You already know about running containers using `docker run`. With the commands 
+we ran before, your terminal will need to stay open, or else, the container will 
+stop. Starting now, we will run Docker commands in the background using the `-d` 
+flag (*d* as in *detach*):
+
+```bash
+docker run --rm -d -e PASSWORD=yourpassword -p 8787:8787 rocker/tidyverse
+```
+
+You can run several containers in the background simultaneously. List running 
+containers with `docker ps`:
+
+```bash
+docker ps
+CONTAINER ID   IMAGE              COMMAND   CREATED         STATUS         PORTS                    NAMES
+c956fbeeebcb   rocker/tidyverse   "/init"   3 minutes ago   Up 3 minutes   0.0.0.0:8787->8787/tcp   elastic_morse
+```
+
+Stop the container using its ID:
+
+```bash
+docker stop c956fbeeebcb
+```
+
+Let's discuss the other flags:
+
+- `--rm`: Removes the container once it's stopped
+- `-e`: Provides environment variables to the container (e.g., `PASSWORD`)
+- `-p`: Sets the port mapping (host:container)
+- `--name`: Gives the container a custom name
+
+Run a container with a name:
+
+```bash
+docker run -d --name my_r --rm -e PASSWORD=yourpassword -p 8787:8787 rocker/tidyverse
+```
+
+You can now interact with this container using its name:
+
+```bash
+docker exec -ti my_r bash
+```
+
+You are now inside a terminal session, inside the running container! This can be 
+useful for debugging purposes.
+
+Finally, let's solve the issue of our scripts disappearing. Create a folder 
+somewhere on your computer, then run:
+
+```bash
+docker run -d --name my_r --rm -e PASSWORD=yourpassword -p 8787:8787 \
+  -v /path/to/your/local/folder:/home/rstudio/scripts:rw rocker/tidyverse
+```
+
+You should now be able to save scripts inside the `scripts/` folder from RStudio 
+and they will appear in the folder you created on your host machine.
+
+## Making Our Own Images
+
+To create our own images, you can start from an image provided by an open source 
+project like Rocker, or you can start from the base Ubuntu image. Since we are 
+using Nix to set up the reproducible development environment, we can use 
+`ubuntu:latest`. Our development environment will always be exactly the same, 
+thanks to Nix.
+
+### A Minimal Dockerfile with Nix
+
+```dockerfile
+FROM ubuntu:latest
+
+RUN apt update -y
+RUN apt install curl -y
+
+# Install Nix via Determinate Systems installer
+RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
+  --extra-conf "sandbox = false" \
+  --init none \
+  --no-confirm
+
+# Add Nix to the path
+ENV PATH="${PATH}:/nix/var/nix/profiles/default/bin"
+ENV user=root
+
+# Configure rstats-on-nix cache
+RUN mkdir -p /root/.config/nix && \
+    echo "substituters = https://cache.nixos.org https://rstats-on-nix.cachix.org" > /root/.config/nix/nix.conf && \
+    echo "trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= rstats-on-nix.cachix.org-1:vdiiVgocg6WeJrODIqdprZRUrhi1JzhBnXv7aWI6+F0=" >> /root/.config/nix/nix.conf
+
+# Copy the T project's Nix files
+COPY flake.nix flake.lock tproject.toml .
+
+# Build the environment from the flake
+RUN nix build --accept-flake-config .
+
+# Enter the flake development shell when the container starts
+CMD ["nix", "develop", "--command", "bash"]
+```
+
+Every `Dockerfile` starts with a `FROM` statement specifying the base image. 
+Then, every command starts with `RUN`. We install and configure Nix, copy the 
+T project's Nix files, and build the environment from the flake. Finally, when 
+the container starts, `nix develop` drops you into the project's development 
+shell (the `CMD` statement). This is the flake-native command: unlike the 
+legacy `nix-shell`, which looks for a `shell.nix` or `default.nix` file, 
+`nix develop` uses your `flake.nix`, consistent with the 
+`nix build --accept-flake-config .` step above. Note that it expects an 
+interactive terminal, so run the container with `docker run -it`.
+
+### Splitting Into a Reusable Base Image
+
+This image actually does two things:
+
+- a first step which consists in setting up Nix inside Docker;
+- a second step which consists in setting up our project-specific Nix development
+  environment.
+
+Because the first step is generic, we can split this into two stages. First,
+create a new Dockerfile in a separate directory, for example `nix-base/`, with a
+new Git repository so that you can commit and push it. Later in this chapter we
+will publish this image, and in a continuous integration setup you could build
+and publish it automatically:
+
+```dockerfile
+# nix-base/Dockerfile
+FROM ubuntu:latest AS nix-base
+
+RUN apt update -y && apt install -y curl
+
+# Install Nix via Determinate Systems installer
+RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
+  --extra-conf "sandbox = false" \
+  --init none \
+  --no-confirm
+
+ENV PATH="/nix/var/nix/profiles/default/bin:${PATH}"
+ENV user=root
+
+# Configure Nix binary cache
+RUN mkdir -p /root/.config/nix && \
+    echo "substituters = https://cache.nixos.org https://rstats-on-nix.cachix.org" > /root/.config/nix/nix.conf && \
+    echo "trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= rstats-on-nix.cachix.org-1:vdiiVgocg6WeJrODIqdprZRUrhi1JzhBnXv7aWI6+F0=" >> /root/.config/nix/nix.conf
+```
+
+Build and tag this image:
+
+```bash
+docker build -t nix-base:latest .
+```
+
+Now, for any project, simply reuse it:
+
+```dockerfile
+FROM nix-base:latest
+
+COPY flake.nix flake.lock tproject.toml .
+
+RUN nix build --accept-flake-config .
+
+CMD ["nix", "develop", "--command", "bash"]
+```
+
+The issue with this approach is that you've created a dependency between the
+two Dockerfiles that you need to manage. I'd only recommend the second approach
+if you can push the first image to a registry, either a public one or a private
+one from your company. Later in this chapter we will publish the first image.
+
+In a T project, the environment is declared in `tproject.toml` rather than
+generated by a script. For this example:
+
+```toml
+[r-dependencies]
+packages = ["dplyr", "ggplot2"]
+
+[py-dependencies]
+version = "python313"
+packages = ["polars", "great-tables"]
+```
+
+Build and run:
+
+```bash
+docker build -t my-project .
+docker run -it --rm --name my-project-container my-project
+```
+
+This drops you in an interactive Nix shell running inside Docker!
+
+### Making T Available in the Image
+
+So far, our images contain Nix and the packages we asked Nix to install. If 
+your project uses T, you also need the `t` executable inside the container. T 
+is distributed exclusively through Nix and is never installed as a system 
+program, so the natural approach is to build it from the T flake and put `t` 
+on the `PATH`. Add a step to the Dockerfile:
+
+```dockerfile
+RUN nix build --accept-flake-config github:b-rodrigues/tlang \
+    && ln -s "$(readlink -f result)/bin/t" /usr/local/bin/t
+```
+
+`nix build` compiles (or fetches from the rstats-on-nix cache) the T package 
+and leaves a `result` symlink pointing at the built store path. The `ln` 
+command creates a permanent symlink from `/usr/local/bin/t` to the `t` 
+executable inside that store path. Because the symlink points at an absolute 
+path in the Nix store, it survives across Docker layers, and `t` keeps working 
+in the final image.
+
+The `t` executable is a wrapper that already points at the R, Python, and 
+Julia runtimes it needs. All of those runtimes live in the same Nix store, and 
+Nix downloaded them when it built T, so the symlinked `t` runs without any 
+extra setup.
+
+For a fully reproducible build, pin the exact version of T that your project 
+uses rather than the latest one on GitHub. A T project records its T version in 
+`flake.lock`, so build that specific version:
+
+```dockerfile
+RUN nix build --accept-flake-config github:b-rodrigues/tlang/v0.55.0 \
+    && ln -s "$(readlink -f result)/bin/t" /usr/local/bin/t
+```
+
+Either way, `t` is available in the container without ever being installed as 
+a system program.
+
+## Publishing Images on Docker Hub
+
+If you want to share Docker images through Docker Hub, you first need to create 
+a free account. A free account gives you unlimited public repositories.
+
+List all images on your computer:
+
+```bash
+docker images
+```
+
+Log in to Docker Hub:
+
+```bash
+docker login
+```
+
+Tag the image with your username:
+
+```bash
+docker tag IMAGE_ID your_username/nix-base:latest
+```
+
+Push the image:
+
+```bash
+docker push your_username/nix-base:latest
+```
+
+This image can now be used as a stable base for other projects:
+
+```dockerfile
+FROM your_username/nix-base:latest
+
+RUN mkdir ...
+```
+
+### Sharing Without Docker Hub
+
+If you can't upload to Docker Hub, you can save the image to a file:
+
+```bash
+docker save nix-base | gzip > nix-base.tgz
+```
+
+Load it on another machine:
+
+```bash
+gzip -d nix-base.tgz
+docker load < nix-base.tar
+```
+
+## What If You Don't Use Nix?
+
+Using Nix inside of Docker makes it very easy to set up an environment, but what 
+if you can't use Nix for some reason? In this case, you would need to use other 
+tools to install the right R or Python packages and it is likely going to be 
+more difficult. The main issue you will face is missing development libraries.
+
+For example, to install and use the R `{stringr}` package, you will need to 
+first install `libicu-dev`:
+
+```dockerfile
+FROM rocker/r-ver:4.5.1
+
+RUN apt-get update && apt-get install -y \
+    libglpk-dev \
+    libxml2-dev \
+    libcairo2-dev \
+    libgit2-dev \
+    libcurl4-openssl-dev \
+    # ... many more
+```
+
+Another issue is that building the image is not a reproducible process, only 
+running containers is. To mitigate this, use tagged images or better yet, a 
+digest:
+
+```dockerfile
+FROM rocker/r-ver@sha256:1dbe7a6718b7bd8630addc45a32731624fb7b7ffa08c0b5b91959b0dbf7ba88e
+```
+
+This will always pull exactly the same layers. However, at some point, that 
+version of Ubuntu will be outdated. Using Nix, you can stay on `ubuntu:latest`.
+
+## Building Docker Images Directly with Nix
+
+So far, we've used Nix *inside* Docker containers. But there's an even more 
+powerful approach: using Nix to build Docker images directly, bypassing 
+`Dockerfile`s entirely.
+
+Nix provides `dockerTools`, a set of functions that can create OCI-compliant 
+container images. Because these images are built through Nix's deterministic 
+build system, they have stronger reproducibility guarantees than images built 
+with `docker build`.
+
+### Why Skip the Dockerfile?
+
+A `Dockerfile` is fundamentally imperative: it's a script of commands executed 
+in order. Commands like `apt-get update` are non-deterministic by nature. Even 
+with careful pinning, you're fighting the tool's design.
+
+Nix's `dockerTools.buildImage` is declarative. You describe what should be in 
+the image, and Nix figures out how to build it reproducibly. The resulting 
+image is a pure function of its inputs.
+
+### A Basic Example
+
+Here's a Nix expression that builds a Docker image containing R and some 
+packages:
+
+```nix
+# docker-image.nix
+let
+  pkgs = import (fetchTarball
+    "https://github.com/rstats-on-nix/nixpkgs/archive/2025-10-14.tar.gz"
+  ) {};
+  
+  # Define the R environment
+  myR = pkgs.rWrapper.override {
+    packages = with pkgs.rPackages; [
+      dplyr
+      ggplot2
+      quarto
+    ];
+  };
+  
+in pkgs.dockerTools.buildImage {
+  name = "my-r-env";
+  tag = "latest";
+  
+  copyToRoot = pkgs.buildEnv {
+    name = "image-root";
+    paths = [ myR pkgs.quarto pkgs.coreutils pkgs.bash ];
+    pathsToLink = [ "/bin" ];
+  };
+  
+  config = {
+    Cmd = [ "${pkgs.bash}/bin/bash" ];
+    WorkingDir = "/work";
+  };
+}
+```
+
+Build and load it:
+
+```bash
+# Build the image (outputs a .tar.gz file)
+nix build -f docker-image.nix
+
+# Load into Docker
+docker load < result
+
+# Run it
+docker run -it --rm my-r-env:latest
+```
+
+### Using T with dockerTools
+
+The previous example manually defines the R environment in Nix. If you prefer to
+let T define your environment (as we've done throughout this book), you can build
+the Docker image from your T project's flake.
+
+First, make sure your `tproject.toml` declares the packages you need:
+
+```toml
+[r-dependencies]
+packages = ["dplyr", "ggplot2", "quarto"]
+```
+
+Then run `t update` to generate the `flake.nix` and `flake.lock` files. Now
+create a `docker-image.nix` that builds the image from the project's flake:
+
+```nix
+# docker-image.nix
+let
+  pkgs = import (fetchTarball
+    "https://github.com/rstats-on-nix/nixpkgs/archive/2025-10-14.tar.gz"
+  ) {};
+  
+  # The T project is a Nix flake. Load it and take the packages from its
+  # development shell as the image's build inputs.
+  project  = builtins.getFlake (toString ./flake.nix);
+  devShell = project.devShell;
+  
+in pkgs.dockerTools.buildImage {
+  name = "my-t-project";
+  tag = "latest";
+  
+  copyToRoot = pkgs.buildEnv {
+    name = "image-root";
+    paths = devShell.buildInputs ++ [ pkgs.coreutils pkgs.bash ];
+    pathsToLink = [ "/bin" ];
+  };
+  
+  config = {
+    Cmd = [ "${pkgs.bash}/bin/bash" ];
+    WorkingDir = "/work";
+  };
+}
+```
+
+This approach lets you keep your familiar T workflow for defining environments
+while gaining the reproducibility benefits of `dockerTools` for image creation.
+Any changes to your `tproject.toml` → `flake.nix` will automatically propagate
+to the Docker image on the next build.
+
+### Benefits Over Dockerfiles
+
+| Aspect | Dockerfile | Nix dockerTools |
+|--------|-----------|-----------------|
+| **Reproducibility** | Imperative, non-deterministic | Declarative, deterministic |
+| **Layer caching** | Based on command order | Based on content hashes |
+| **Image size** | Often includes unnecessary packages | Minimal: only what you specify |
+| **Composition** | Copy-paste between files | Reuse Nix expressions |
+
+### Layered Images for Efficiency
+
+For faster CI builds, you can create layered images where the base environment 
+is cached:
+
+```nix
+pkgs.dockerTools.buildLayeredImage {
+  name = "my-analysis";
+  tag = "latest";
+  
+  contents = [ myR pkgs.quarto ];
+  
+  config = {
+    Cmd = [ "${myR}/bin/R" "--vanilla" ];
+  };
+}
+```
+
+`buildLayeredImage` creates separate layers for each package, so unchanged 
+dependencies are cached between builds.
+
+### When to Use This Approach
+
+- **CI/CD pipelines**: When you need reproducible image builds as part of 
+  automated workflows
+- **Minimal images**: When image size matters and you want only what you need
+- **Complex environments**: When the environment is already defined in Nix and 
+  you want to deploy it as a container
+
+For simpler use cases, the "Nix inside Docker" approach from earlier sections 
+may be more accessible.
+
+## Dockerising a T Pipeline
+
+We can package our entire T project into a single Docker image. This image can 
+then be run by anyone with Docker installed, regardless of their host operating 
+system or whether they have Nix.
+
+Assume your project directory has:
+
+```
+.
+├── data/
+│   └── mtcars.csv
+├── src/
+│   ├── pipeline.t
+│   ├── functions.R
+│   └── functions.py
+├── tproject.toml
+├── flake.nix
+└── flake.lock
+```
+
+### Step 1: The Dockerfile
+
+```dockerfile
+FROM nix-base:latest
+# Or: FROM your-username/nix-base:latest
+
+WORKDIR /app
+
+# Copy all project files
+COPY . .
+
+# Build the pipeline during image build.
+# `nix develop` enters the project's devShell, which puts `t` on the PATH.
+RUN nix develop --accept-flake-config --command t run src/pipeline.t
+
+# Export the pipeline artifacts when the container runs
+CMD ["bash", "-c", "cp -r _pipeline /output"]
+```
+
+### Step 2: The Pipeline
+
+The pipeline lives in `src/pipeline.t`. It loads the data in T and produces the
+result as a node artifact:
+
+```t
+#| eval: false
+-- src/pipeline.t
+p = pipeline {
+  data = read_csv("data/mtcars.csv")
+
+  mtcars_head = rn(
+    command      = <{ head(data, 10) }>,
+    deserializer = ^ipc,
+    serializer   = ^json
+  )
+}
+
+build_pipeline(p, verbose = 1)
+```
+
+When T builds the pipeline, every node's artifact is written to the `_pipeline/`
+directory. The `mtcars_head` node's result is stored there as JSON, ready to be
+exported.
+
+### Step 3: Build and Run
+
+Build:
+
+```bash
+docker build -t my-reproducible-pipeline .
+```
+
+Run to get results:
+
+```bash
+mkdir -p ./output
+
+docker run --rm --name my_pipeline_run \
+  -v "$(pwd)/output":/output \
+  my-reproducible-pipeline
+```
+
+Check your local `output` directory. You'll find the pipeline's artifacts, 
+including the `mtcars_head` result, containing the exact, reproducible output 
+of your pipeline.
+
+You have successfully packaged a complex, polyglot pipeline into a simple, 
+portable Docker image. This workflow combines the best of both worlds: Nix's 
+power for creating reproducible builds and Docker's universal standard for 
+distributing and running applications.
+
+### Alternative: Using dockerTools for T
+
+You can also build your T pipeline image purely with Nix, avoiding Dockerfiles 
+entirely. This gives you fully deterministic image builds.
+
+Create a `docker-pipeline.nix`:
+
+```nix
+# docker-pipeline.nix
+let
+  pkgs = import (fetchTarball
+    "https://github.com/rstats-on-nix/nixpkgs/archive/2025-10-14.tar.gz"
+  ) {};
+  
+  # The T project is a Nix flake. Load its development environment.
+  project  = builtins.getFlake (toString ./flake.nix);
+  devShell = project.devShell;
+  
+  # Build the pipeline as a derivation
+  pipelineResult = pkgs.runCommand "pipeline-result" {
+    buildInputs = devShell.buildInputs;
+  } ''
+    mkdir -p $out
+    cd ${./. }
+    t run src/pipeline.t
+    # Copy results to output
+    cp -r _pipeline $out/
+  '';
+  
+in pkgs.dockerTools.buildImage {
+  name = "my-t-pipeline";
+  tag = "latest";
+  
+  copyToRoot = pkgs.buildEnv {
+    name = "image-root";
+    paths = [ 
+      devShell.buildInputs
+      pipelineResult 
+      pkgs.coreutils 
+      pkgs.bash 
+    ];
+    pathsToLink = [ "/bin" "/" ];
+  };
+  
+  config = {
+    Cmd = [ "${pkgs.bash}/bin/bash" "-c" "cp -r /pipeline-result/* /output/" ];
+    WorkingDir = "/work";
+  };
+}
+```
+
+Build and run:
+
+```bash
+nix build -f docker-pipeline.nix
+docker load < result
+docker run --rm -v "$(pwd)/output":/output my-t-pipeline:latest
+```
+
+This approach bakes the pipeline results directly into the image during the Nix 
+build phase. The resulting image is minimal and contains only the outputs, not 
+the full R/Python environment needed to produce them.
+
+## Summary
+
+Docker and Nix complement each other:
+
+- **Docker** provides a universal runtime and distribution mechanism
+- **Nix** provides bit-for-bit reproducible environment management
+- **Together** they enable truly reproducible, portable data products
+
+Key Docker concepts:
+
+- **Images** are templates; **containers** are running instances
+- Containers are ephemeral; use **volumes** for persistence
+- Use **registries** (Docker Hub) to share images
+- The **Rocker Project** provides ready-made R images
+
+For reproducibility:
+
+- Use `ubuntu:latest` + Nix rather than pinning specific OS versions
+- Build a reusable `nix-base` image to share across projects
+- Get Nix into the image by installing it in the Dockerfile, starting from a 
+  base image that already has Nix, or building the whole image with Nix
+- Build T from its flake and symlink `t` onto the `PATH`
+- Package T pipelines for distribution
+
+## Further Reading
+
+- [Running Your R Script in Docker](https://www.r-bloggers.com/2019/02/running-your-r-script-in-docker/)^[https://www.r-bloggers.com/2019/02/running-your-r-script-in-docker/]
+- [Docker & R Reproducibility](https://colinfay.me/docker-r-reproducibility/)^[https://colinfay.me/docker-r-reproducibility/]
+- [R Docker Tutorial](https://jsta.github.io/r-docker-tutorial/)^[https://jsta.github.io/r-docker-tutorial/]

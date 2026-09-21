@@ -1,28 +1,29 @@
 project:
   type: book
 
+filters:
+  - tlang
+
 book:
   title: "Building Reproducible Analytical Pipelines"
-  subtitle: "Master of Data Science, University of Luxembourg - 2025"
+  subtitle: "Master of Data Science, University of Luxembourg - 2026"
   author: "Bruno Rodrigues"
-  date: "2025-09-15"
+  date: "2026-09-15"
   search: true
-  repo-url: "https://github.com/b-rodrigues/rap4mads_2025"
+  repo-url: "https://github.com/b-rodrigues/rap4mads_2026"
   repo-actions: [edit]
   sharing: [twitter, facebook]
   downloads: [pdf, epub]
   chapters:
     - index.qmd
     - 02-intro-nix.qmd
-    - 03-git.qmd
+    - 03-t-pipelines.qmd
     - 04-functional-programming.qmd
-    - 05-unit-testing.qmd
+    - 05-testing-and-git.qmd
     - 06-packages.qmd
-    - 07-rixpress.qmd
-    - 08-docker.qmd
-    - 09-github_actions.qmd
-    - 10-what-else.qmd
-    - 11-conclusion.qmd
+    - 07-docker.qmd
+    - 08-github_actions.qmd
+    - 09-conclusion.qmd
   page-navigation: true
 
 bibliography: references.bib
@@ -34,7 +35,7 @@ format:
     lang:
       en-GB
     date:
-      "2025-09-15"
+      "2026-09-15"
     css:
       epub.css
   html:

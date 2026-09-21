@@ -1,8 +1,3 @@
----
-filters:
-  - webr
----
-
 # Introduction {.unnumbered}
 
 ```{r, include = FALSE}
@@ -10,134 +5,144 @@ knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
 ```
 
 <div style="text-align:center;">
-<img src="/img/cover.png" title = "Cover image created with Dall-e. The prompt was 'Roman engineer building a pipeline in the style of ancient roman art'. The result doesn't really show that, but I thought it looked nice." width="70%">
+<img src="img/cover.png" title = "Cover image created with Dall-e. The prompt was 'Roman engineer building a pipeline in the style of ancient roman art'." width="70%">
 </div>
 
-*This is the 2025 edition of the course. If you're looking for the 2024 edition,
-you can click [here](https://b-rodrigues.github.io/rap4mads_2024/)*
+*This is the 2026 edition of the course. If you're looking for earlier editions,
+you can find the 2024 and 2025 archives on GitHub.*
 
-What’s new:
+What’s new in 2026:
 
-- Focus on Nix as the canonical tool for reproducibility and build automation
-- Integration of LLMs as an additional tool in the reproducers toolbox.
+- **T at the center**: A modern, domain-specific language purpose-built for polyglot reproducible analytical pipelines (R, Python, and Julia).
+- **Pipelines as pure function composition**: Reframing pipelines through functional programming and Directed Acyclic Graphs (DAGs).
+- **Universal environment reproducibility**: Using Nix as the foundation for bit-for-bit identical, cross-language software closures.
+- **AI-first workflow**: Leveraging Large Language Models (LLMs) to construct and review reproducible pipelines and tests.
 
-*This course is based on my book titled [Building Reproducible Analytical Pipelines
-with R](https://raps-with-r.dev/). This course focuses only on certain aspects
-that are discussed in greater detail in the book.*
+*This course is based on my book [Reproducible Polyglot Data Science](https://github.com/b-rodrigues/reproducible-data-science).*
 
 ## Schedule
 
-- 2025/09/15 - 4 hours, Intro (1 hour) and Nix (3 hours)
-- 2025/09/22 - 4 hours, Git (4 hours)
-- 2025/10/06 - 4 hours, Functional programming (1 hour), Unit testing (3 hours)
-- 2025/10/13 - 4 hours, Packaging
-- 2025/10/15 - 4 hours, Pipelines using Nix and rixpress
-- 2025/10/20 - 4 hours, Docker
-- 2025/10/27 - 4 hours, GitHub Actions
+- **Session 1 (4 hours)**: Intro (Why T, the reproducibility spectrum) and Nix (environment reproducibility).
+- **Session 2 (4 hours)**: Building Pipelines with T (syntax, nodes, Arrow IPC serialization, DAG caching).
+- **Session 3 (4 hours)**: Pipelines as Function Composition (pure functions, immutability, state elimination).
+- **Session 4 (4 hours)**: Professional Workflows: Testing and Git (unit testing with `{testthat}` & `pytest`, interactive Git with `git add -p`, pipeline validation with `testcraft`).
+- **Session 5 (4 hours)**: Packaging Code in R and Python for T pipelines.
+- **Session 6 (4 hours)**: Containerisation with Docker (spatial vs. temporal reproducibility, packaging Nix & T).
+- **Session 7 (4 hours)**: Continuous Integration with GitHub Actions & Course Project Wrap-up.
 
 ## Reproducible analytical pipelines?
 
 This course is my take on setting up code that results in some *data product*.
-This code has to be reproducible, documented and production ready. Not my
-original idea, but introduced by the UK's [Analysis
-Function](https://analysisfunction.civilservice.gov.uk/support/reproducible-analytical-pipelines/).
+This code has to be reproducible, documented, and production-ready. The term was originally
+introduced by the UK's [Analysis Function](https://analysisfunction.civilservice.gov.uk/support/reproducible-analytical-pipelines/).
 
 The basic idea of a reproducible analytical pipeline (RAP) is to have code that
-always produces the same result when run, whatever this result might be. This is
-obviously crucial in research and science, but this is also the case in
-businesses that deal with data science/data-driven decision making etc.
+always produces the exact same result when run, whatever that result might be. This is
+crucial in research and science, but it is equally essential in industry and
+data-driven decision-making.
 
-A well documented RAP avoids a lot of headache and is usually re-usable for
-other projects as well.
+A well-documented RAP eliminates technical debt, prevents "it worked on my machine"
+disasters, and is readily reusable across future projects.
+
+## Why T? Focusing on what truly matters
+
+If you have ever tried building a data science pipeline that combines both Python and R,
+you know the pain:
+
+- In Python, you battle dependency hell across `pip`, `virtualenv`, `conda`, `poetry`, and `uv`, while wrestling with `PYTHONPATH` resolution and platform-specific wheels.
+- In R, you configure `{renv}`, ensure compiler toolchains exist to compile C/C++/Fortran packages, and manage package library paths.
+- To connect them, you end up writing fragile bash scripts or Makefiles, exporting ad-hoc CSV files that lose data types, and praying that everyone runs the scripts in the right order.
+
+**Students and practitioners end up wasting 80% of their time dealing with language-specific idiosyncrasies rather than learning reproducible architecture.**
+
+To break this cycle, this course puts **T** (`tlang`) at the center.
+
+```t
+#| eval: false
+p = pipeline {
+  -- 1. Load data
+  data = read_csv("datasets/country_level_data.csv")
+
+  -- 2. Clean and derive in Python
+  derived = pyn(
+    command = <{
+      derived = data.assign(
+        pct_change = data["average_price_m2_nominal_euros"].pct_change() * 100
+      )
+    }>,
+    deserializer = ^ipc,
+    serializer = ^ipc
+  )
+
+  -- 3. Visualise in R
+  plot = rn(
+    command = <{
+      library(ggplot2)
+      plot <- ggplot(derived, aes(x = year, y = pct_change)) +
+        geom_line() +
+        theme_minimal()
+    }>,
+    deserializer = ^ipc
+  )
+}
+
+build_pipeline(p)
+```
+
+### The Pedagogical Justification
+
+T is an experimental domain-specific language that I began designing in 2025. While it is experimental,
+placing it at the center of this course serves a vital pedagogical purpose:
+
+1. **Focus on Reproducibility, Not Language Quirks**: T isolates the essential principles of software reproducibility:
+   - **Pure Functions**: Each node is an isolated function with explicit inputs and a single output.
+   - **Directed Acyclic Graphs (DAGs)**: Execution order is derived mathematically from data dependencies, not the arbitrary layout of script files or notebook cells.
+   - **Hermetic Execution**: Execution takes place inside an isolated sandbox guaranteed by Nix.
+   - **Content-Addressed Caching**: Only nodes whose inputs or code have changed get rebuilt.
+   - **Zero-Glue Polyglot Data Exchange**: Cross-language data transfer uses standardized formats like Apache Arrow IPC (`^ipc`), passing DataFrames between Python, R, and Julia without custom serialization code.
+2. **Eliminating Fragile Glue**: You no longer need to write custom glue scripts, parse command-line arguments, or track intermediate file names.
+3. **Designed for the LLM Era**: T was created with a minimalist, constraint-based syntax that LLMs can generate and reason about with high precision. You can let an LLM help write the pipeline definitions, while you and the LLM focus on the R or Python data analysis code inside each node.
+
+By abstracting execution into T and environment management into Nix, we remove the accidental complexity
+of modern data science so you can master the fundamental concepts.
 
 ## Data products?
 
-In this course each of you will develop a *data product*. A data product is
-anything that requires data as an input. This can be a very simple report in PDF
-or Word format or a complex web app. This website is actually also a data
-product, which I made using the R programming language and Quarto. Dependencies
-are managed by the Nix package manager and the build runs on GitHub Actions, and
-the website you’re seeing his hosted on GitHub Pages. By the end of the course,
-you’ll have all the basic knowledge to achieve something similar.
+In this course, each of you will develop a *data product*. A data product is
+anything that requires data as an input and produces value: an analytical report,
+a reproducible paper, an interactive dashboard, or an API. 
 
-The focus on the course will not be about the end product itself, which you will
-have to choose for your project, but instead we will focus on how to set up a
-pipeline that results in these data products in a reproducible way.
+The focus of the course is not on the end product itself (which you can choose based on your interests),
+but on the **pipeline** that builds that product reliably, reproducibly, and non-interactively.
 
 ## Machine learning?
 
-No, being a master in machine learning is not enough to become a data scientist.
-Actually, the older I get, the more I think that machine learning is almost
-optional. What is not optional is knowing how:
+Being skilled in machine learning is not enough to become an effective data scientist.
+In fact, the model is often the easiest piece to replace. What is non-negotiable is knowing:
 
-- to write, test, and properly document code;
-- to acquire (reading in data can be tricky!) and clean data;
-- to work inside the Linux terminal/command line interface;
-- to use Git, Docker for Dev(Git)Ops;
-- the Internet works (what's a firewall? what's a reverse proxy? what's a domain name? etc,
-  etc...);
-
-But what about machine learning? Well, depending what you'll end up doing, you
-might indeed focus a lot on machine learning and/or statistical modeling. That
-being said, in practice, it is very often much more efficient to let some automl
-algorithm figure out the best hyperparameters of a XGBoost model and simply use
-that, at least as a starting point (but good luck improving upon automl...).
-What matters, is that the data you're feeding to your model is clean, that your
-analysis is sensible, and most importantly, that it could be understood by
-someone taking over (imagine you get sick) and rerun with minimal effort in the
-future. The model here should simply be a piece that could be replaced by
-another model without much impact. The model is rarely central... but of course
-there are exceptions to this, especially in research, but every other point I've
-made still stands. It's just that not only do you have to care about your model
-a lot, you also have to care about everything else.
-
-So in this course we're going to learn a bit of all of this. We're going to
-learn how to write reusable code, learn some basics of the Linux command line,
-Nix, Git and Docker.
+- How to write, test, and modularize code;
+- How to manage environments deterministically;
+- How to work within the command line and version control with Git;
+- How to construct automated DAG pipelines;
+- How to package code and deploy with Docker and Continuous Integration.
 
 ## What actually is reproducibility?
 
-A reproducible project means that this project can be rerun by anyone at 0 (or
-very minimal) cost. But there are different levels of reproducibility, and I
-will discuss this in the next section. Let's first discuss some requirements
-that a project must have to be considered a RAP.
+A project is reproducible if it can be rerun by anyone, anywhere, at any point in time,
+yielding the exact same results with minimal friction.
 
 ### The requirements of a RAP
 
-For something to be truly reproducible, it has to respect the following bullet
-points:
+For a project to qualify as a RAP, it must meet several strict criteria:
+- **Available, version-controlled source code** (tracked with Git and GitHub);
+- **Deterministic dependencies** (managed completely with Nix);
+- **Non-interactive execution** (run with a single command, without manual steps in GUIs or notebooks);
+- **Tested logic** (unit tests validating functions and pipeline data contracts);
+- **Open-source foundation** (reproducible operating system closures via Nix and Docker).
 
-- Source code must obviously be available and thoroughly tested and documented
-  (which is why we will be using Git and GitHub);
-- All the dependencies must be easy to find and install (we are going to deal
-  with this using Nix);
-- To be written with an open source programming language (nocode tools like
-  Excel are by default non-reproducible because they can't be used
-  non-interactively);
-- The project needs to be run on an open source operating system (thankfully, we
-  can deal with this without having to install and learn to use a new operating
-  system, thanks to Docker);
-- Data and the paper/report need obviously to be accessible as well, if not
-  publicly as is the case for research, then within your company.
+### The Reproducibility Spectrum
 
-Also, reproducibility is on a continuum, and depending on the constraints you
-face your project can be "not very reproducible" to "totally reproducible".
-Let's consider the following list of anything that can influence how
-reproducible your project truly is:
-
-- Version of the programming language used;
-- Versions of the packages/libraries of said programming language used;
-- Operating System, and its version;
-- Versions of the underlying system libraries (which often go hand in hand with
-  OS version, but not necessarily).
-- And even the hardware architecture that you run all that software stack on.
-
-So by "reproducibility is on a continuum", what I mean is that you could set up
-your project in a way that none, one, two, three, four or all of the preceeding
-items are taken into consideration when making your project reproducible.
-
-This is not a novel, or new idea. @peng2011 already discussed this concept
-but named it the *reproducibility spectrum*.
+Reproducibility is not binary; it exists along a continuum [@peng2011]:
 
 ::: {.content-hidden when-format="pdf"}
 <figure>
@@ -147,206 +152,73 @@ but named it the *reproducibility spectrum*.
 </figure>
 :::
 
+A project can control for:
+1. Code only;
+2. Code + language versions;
+3. Code + language + package libraries;
+4. Code + packages + system-level OS dependencies (Nix / Docker);
+5. Hardware architecture and bit-for-bit hermetic closures.
+
+In this course, we aim for the highest practical tier of this spectrum.
+
 ## Large Language Models
 
-LLMs have rapidly become an essential powertool in the data scientist’s toolbox.
-But as with any powertool, beginners risk cutting their fingers if they're not
-careful. So it is important to learn how to use them. This course will give you
-some pointers on how to integrate LLMs into your workflow. All of the exercises
-can and should be tackled using LLMs.
+LLMs have transformed how software is developed. In this course, we treat LLMs as power tools:
+they are highly encouraged for drafting functions, generating tests, and structuring pipelines.
+However, using an LLM requires you to become a rigorous code reviewer. You will learn how to use Git's
+interactive staging (`git add -p`) and automated test suites to verify that AI-generated code meets
+your exact expectations before committing it.
 
-## Why R? Why not [insert your favourite programming language]
+## Prerequisites
 
-R is a domain-specific language whose domain is statistics, data
-analysis/science and machine learning, and as such has many built-in facilities
-to make handling data very efficient.
-
-If you learn R you have access to almost 25'000 packages (as of June 2025,
-including both CRAN and Bioconductor packages) to:
-
-- clean data (see: `{dplyr}`, `{tidyr}`, `{data.table}`...);
-- work with medium and big data (see: `{arrow}`, `{sparklyr}`...);
-- visualize data (see: `{ggplot2}`, `{plotly}`, `{echarts4r}`...);
-- do literate programming (using Rmarkdown or Quarto, you can write books,
-  documents even create a website);
-- do functional programming (see: `{purrr}`...);
-- call other languages from R (see: `{reticulate}` to call Python from R);
-- do machine learning and AI (see: `{tidymodels}`, `{tensorflow}`, `{keras}`...)
-- create webapps (see: `{shiny}`...)
-- domain specific statistics/machine learning (see [CRAN Task
-  Views](https://cran.r-project.org/web/views/) for an exhaustive list);
-- and more
-
-It's not just about what the packages provide: installing R and its packages and
-dependencies is rarely frustrating, which is not the case with Python (Python 2
-vs Python 3, `pip` vs `conda`, `pyenv` vs `venv` vs `uv`, ..., dependency hell
-is a real place full of snakes)
-
-<div style="text-align:center;">
-```{r, echo = F}
-knitr::include_graphics("img/dependency_hell.png")
-```
-</div>
-
-The reason this is the case is that anyone can push anything on to Pypi, and no
-package gets checked against its dependencies or reverse dependencies. That is
-not the case for R, where published packages need to declare their dependencies
-and can’t break any of their reverse dependencies (when this happens, authors of
-reverse dependencies get two weeks to fix their packages or they get removed
-from CRAN).
-
-Furthermore, and this is surprising to many people, R offers a much better
-package developing experience than Python.
-
-That doesn’t mean that R does not have any issues. Quite the contrary, R
-sometimes behaves in seemingly truly bizarre ways (as an example, try running
-`nchar("1000000000")` and then `nchar(1000000000)` and try to make sense of it).
-To know more about such bizarre behaviour, I recommend you read *The R Inferno*
-(linked at the end of this chapter). So, yes, R is far from perfect, but it
-sucks less than the alternatives (again, in my absolutely objective opinion).
-
-```{webr-r}
-nchar("1000000000")
-```
-
-That being said, Python remains extremely popular, and it is likely that you
-will continue writing Python. In my opinion, the future of data science is going
-to be more and more polyglot. Data products are evermore complex, and require
-being built using many languages; so ideally we would like to find a way to use
-whatever tool is best fit for the job at hand. Sometimes it can be R, sometimes
-Python, sometimes shell scripts, or any other language. This is where Nix will
-help us.
-
-## Nix
-
-Nix is a package manager for Linux distributions, macOS and it even
-works on Windows if you enable WSL2. What's a package manager? If you're not a
-Linux user, you may not be aware. Let me explain it this way: in R, if you want
-to install a package to provide some functionality not included with a vanilla
-installation of R, you'd run this:
-
-```
-install.packages("dplyr")
-```
-
-It turns out that Linux distributions, like Ubuntu for example, work in a
-similar way, but for software that you'd usually install using an installer (at
-least on Windows). For example you could install Firefox on Ubuntu using:
-
-```
-sudo apt-get install firefox
-```
-
-(there's also graphical interfaces that make this process "more user-friendly").
-In Linux jargon, `packages` are simply what we call software (or I guess it's
-all "apps" these days). These packages get downloaded from so-called
-repositories (think of CRAN, the repository of R packages, or Pypi, in the case
-of Python) but for any type of software that you might need to make your
-computer work: web browsers, office suites, multimedia software and so on.
-
-So Nix is just another package manager that you can use to install software.
-
-But what interests us is not using Nix to install Firefox, but instead to
-install R, Python and the R and Python packages that we require for our
-analysis. But why use Nix instead of the usual ways to install software on our
-operating systems?
-
-The first thing that you should know is that Nix's repository, `nixpkgs`, is
-huge. Humongously huge. As I'm writing these lines, [there's more than 120'000
-pieces of software available](https://search.nixos.org/packages), and the
-*entirety of CRAN and Bioconductor* is also available through `nixpkgs`. So
-instead of installing R as you usually do and then use `install.packages()` to
-install packages, you could use Nix to handle everything. But still, why use Nix
-at all?
-
-Nix has an interesting feature: using Nix, it is possible to install software in
-(relatively) isolated environments. So using Nix, you can install as many
-versions of R and R packages that you need. Suppose that you start working on a
-new project. As you start the project, with Nix, you would install a
-project-specific version of R and R packages that you would only use for that
-particular project. If you switch projects, you'd switch versions of R and R
-packages.
-
-## Pre-requisites
-
-I will assume basic programming knowledge, and not much more. Ideally you'll be
-following this course from a Linux machine, but if you're macOS, that's fine as
-well. On Windows, you will have to [set up WSL2 to follow
-along](https://learn.microsoft.com/en-us/windows/wsl/install).
+- Basic programming familiarity with R or Python (loops, functions, data structures).
+- Familiarity with the command line interface (CLI).
+- Linux or macOS operating system (Windows users **must** use WSL2).
 
 ## Grading
 
-The way grading works in this course is as follows: during lecture hours you
-will follow along. At home, you'll be working on setting up your own pipeline.
-For this, choose a dataset that ideally would need some cleaning and/or tweaking
-to be usable. If time allows, I'll leave some time during lecture hours for you
-to work on it and ask me and your colleagues for help. At the end of the
-semester, I will need to download your code and get it running. The less effort
-this takes me, the better your score. Here is a tentative breakdown:
+Grading is based on your final course project. During lecture hours you will learn each concept through
+live demonstrations and hands-on exercises. At home, you will develop your own pipeline around a dataset of your choice.
 
-- Code is on github.com and the repository is documented with a Readme.md file: 5 points;
-- Data and functions to run pipeline are documented and tested: 5 points;
-- Every software dependency is easily installed: 5 points;
-- Pipeline can be executed in one command: 5 points.
+At the end of the semester, your repository will be evaluated on how easily and reproducibly it builds:
 
-The way to fail this class is to write an undocumented script that only runs on
-your machine and expect me to debug it to get it to run, there is no excuse
-for this, especially in the age of LLMs.
+- **Repository and Documentation (5 points)**: Hosted on GitHub with a clear, comprehensive `README.md`.
+- **Logic, Packaging, and Tests (5 points)**: Code is modularized into clean functions or packages, and accompanied by automated unit tests.
+- **Deterministic Environment (5 points)**: All dependencies (R, Python, packages, system libraries) are declared and pinned via Nix.
+- **Pipeline Execution (5 points)**: The entire pipeline runs end-to-end via a single command (`build_pipeline` in T) producing the final output without manual intervention.
 
-At the end of each chapter, there are exercises that should help you solidify
-your knowledge. These are not graded, and there purely for you to learn more.
+## Jargon
 
-## Jargon  
+### T
+- **T (`tlang`)**: A domain-specific language for defining reproducible analytical pipelines across R, Python, and Julia.
+- **Node**: A single computation step in a pipeline. Nodes act as pure functions: they take explicit inputs and produce a single serialized artifact.
+- **`rn()` / `pyn()` / `jln()`**: T node constructors for R, Python, and Julia runtimes.
+- **Serializer / Deserializer**: The mechanism T uses to write and read node outputs (e.g., `^ipc` for Apache Arrow, `^csv`, `^parquet`, `^rds`).
+- **Pipeline (`pipeline { ... }`)**: A declarative block that defines the DAG of nodes and their data dependencies.
+- **`build_pipeline()`**: The function that compiles the DAG, checks the cache, and executes stale nodes in dependency order.
+- **`read_node()`**: A function used to inspect the cached output of a specific node interactively.
 
-There’s some jargon that is helpful to know when working with R, Python, or Nix.  
-Here’s a non-exhaustive list to get you started:  
+### Nix
+- **Nixpkgs**: The central repository of over 120,000 packages used by Nix.
+- **Derivation**: A low-level, cryptographic build instruction in Nix.
+- **Nix Store (`/nix/store`)**: The read-only directory where all isolated packages and build artifacts reside.
+- **Hermetic Sandbox**: An isolated build environment with no network access or hidden system dependencies.
+- **Binary Cache**: Pre-built packages identified by cryptographic hash (e.g. Cachix or `cache.nixos.org`), avoiding redundant local compilation.
 
-### R  
-- **CRAN**: the Comprehensive R Archive Network. This is a curated online repository of packages and R installers. When you type `install.packages("package_name")` in an R console, the package gets downloaded from there;  
-- **Library**: the collection of R packages installed on your machine;  
-- **R console**: the program where the R interpreter runs;  
-- **Posit/RStudio**: Posit (named RStudio in the past) are the makers of the RStudio IDE and of the *tidyverse* collection of packages;  
-- **tidyverse**: a collection of packages created by Posit that offer a common language and syntax to perform any task required for data science — from reading in data, to cleaning data, up to machine learning and visualisation;  
-- **base R**: refers to a vanilla installation (and vanilla capabilities) of R. Often used to contrast a *tidyverse* specific approach to a problem (for example, using base R’s `lapply()` in contrast to the *tidyverse* `purrr::map()`);  
-- **`package::function()`**: functions can be accessed in several ways in R, either by loading an entire package at the start of a script with `library(dplyr)` or by using `dplyr::select()`;  
-- **Function factory (sometimes adverb)**: a function that returns a function;  
-- **Variable**: the variable of a function (as in `x` in `f(x)`) or the variable from statistical modeling (synonym of feature);  
-- **`<-` vs `=`**: in practice, you can use `<-` and `=` interchangeably. I prefer `<-`, but feel free to use `=` if you wish.  
+### R & Python
+- **CRAN / PyPI**: The respective package registries for R and Python.
+- **Arrow IPC (`^ipc`)**: An in-memory columnar data format that allows zero-overhead data transfer between R and Python.
+- **`testthat` / `pytest`**: Standard testing frameworks for R and Python code.
 
-### Python  
-- **PyPI**: the Python Package Index. Similar to CRAN for R, it is the default online repository of Python packages, used when you run `pip install package_name`;  
-- **Virtual environment (venv)**: an isolated environment containing its own Python interpreter and packages, useful for keeping dependencies separate between projects;  
-- **Conda**: an alternative package and environment manager to `pip`/`venv`, popular in data science;  
-- **Jupyter notebook**: an interactive environment for running Python code in cells, mixing code, plots, and prose;  
-- **PEP**: Python Enhancement Proposal. Design documents that describe new features or conventions (for example, PEP 8 is the style guide for Python code);  
-- **Decorator**: a function that takes another function and extends or modifies its behavior (for example, `@staticmethod`);  
-- **List comprehension**: a compact syntax for creating lists, such as `[x * x for x in range(10)]`;  
-- **`__init__.py`**: a special file that marks a directory as a Python package;  
-- **`__main__`**: the entry point of a Python program (`if __name__ == "__main__":`).  
+## Further Reading
 
-### Nix  
-- **Nixpkgs**: the main collection of Nix packages. Most software you install via Nix comes from here (CRAN and Bioconductor are mirrored, but for Python, only individual packages get packaged for Nix);  
-- **Derivation**: the low-level build instruction in Nix. Every package in Nix is ultimately a derivation;  
-- **Store**: the `/nix/store/` directory, where all Nix-built packages and their dependencies live, each in its own hash-prefixed path;  
-- **Expression**: Nix code describing how to build something (usually written in `.nix` files);  
-- **Flake**: a standardized way to package and distribute Nix code with reproducible inputs and outputs. We will not study flakes in this course, as they are still marked as *experimental*;  
-- **Shell**: a reproducible development environment created by Nix;  
-- **GC (garbage collection)**: Nix can remove unused packages from the store;  
-- **Overlay**: a mechanism to extend or override packages in Nixpkgs. This out of the scope of this course;  
-- **Hydra**: the continuous integration service often used with Nix to build packages at scale;  
-- **Pinning**: fixing your Nixpkgs (or other inputs) to a specific commit to ensure reproducibility.  
-
-## Further reading
-
-- [An Introduction to R (from the R team themselves)](https://cran.r-project.org/doc/manuals/r-release/R-intro.html)
-- [What is CRAN?](https://cran.r-project.org/doc/FAQ/R-FAQ.html#What-is-CRAN_003f)
-- [The R Inferno](https://www.burns-stat.com/pages/Tutor/R_inferno.pdf)
+- [Reproducible Polyglot Data Science](https://github.com/b-rodrigues/reproducible-data-science)
+- [T Language Repository](https://github.com/b-rodrigues/tlang)
 - [Building Reproducible Analytical Pipelines with R](https://raps-with-r.dev/)
-- [Reproducible Analytical Pipelines (RAP)](https://analysisfunction.civilservice.gov.uk/support/reproducible-analytical-pipelines/)
 - [How Nix Works](https://nixos.org/guides/how-nix-works/)
 
 ## License
 
 This course is licensed under the [WTFPL](http://www.wtfpl.net/txt/copying/).
 
-<a href="http://www.wtfpl.net/"><img src="img/wtfpl-badge-4.png" width="80" height="15" alt="WTFPL"/> </a>
+<a href="http://www.wtfpl.net/"><img src="img/wtfpl-badge-4.png" width="80" height="15" alt="WTFPL"/></a>

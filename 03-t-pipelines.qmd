@@ -1,0 +1,207 @@
+# Building Pipelines with T
+
+<div style="text-align:center;">
+```{r, echo = F}
+knitr::include_graphics("img/pipeline.png")
+```
+</div>
+
+## Learning Outcomes
+
+By the end of this chapter, you will:
+
+- Understand the difference between environment reproducibility and computational reproducibility.
+- Understand the core concepts of T: pipelines, nodes, runtimes, and serialization contracts.
+- Write multi-language pipelines combining Python and R using `pyn()` and `rn()`.
+- Pass structured data across languages seamlessly with Apache Arrow IPC (`^ipc`).
+- Understand how T discovers data dependencies and uses content-addressed caching to skip redundant computations.
+
+## Introduction: Beyond Environment Reproducibility
+
+In the previous chapter, we explored Nix and learned how to create bit-for-bit reproducible development environments. But here is a critical reality:
+
+> **Reproducing the environment is necessary, but it is not sufficient.**
+
+Imagine a colleague sends you a GitHub repository. Thanks to Nix, you drop into the exact software environment in seconds. You have R 4.4.1, Python 3.13, and all libraries installed. But when you open the repository, you find:
+
+```
+01_clean.R
+02_process.py
+analysis_v2.R
+test_model.py
+run_everything.sh
+clean_data_final.csv
+```
+
+Which script runs first? Which outputs feed into which inputs? Did the author run `02_process.py` before `analysis_v2.R`, or did they manually run snippets in an interactive session? Is `clean_data_final.csv` up to date, or was it produced three months ago from an older version of `01_clean.R`?
+
+Reproducing the environment only solves the first half of the problem. To achieve **computational reproducibility**, the workflow itself must be formally declared in a machine-readable graph.
+
+This is where **T** (`tlang`) comes in.
+
+## A First Look at a T Pipeline
+
+Before diving into formal grammar, let us examine an end-to-end polyglot pipeline in T:
+
+```t
+#| eval: false
+p = pipeline {
+  -- 1. Ingest raw CSV data
+  data = read_csv("datasets/housing_data.csv")
+
+  -- 2. Python node: Feature engineering
+  cleaned_py = pyn(
+    command = <{
+import pandas as pd
+
+# Filter positive prices and calculate price per square meter
+cleaned_py = data[data["price"] > 0].copy()
+cleaned_py["price_sqm"] = cleaned_py["price"] / cleaned_py["surface"]
+    }>,
+    deserializer = ^ipc,
+    serializer = ^ipc
+  )
+
+  -- 3. R node: Statistical analysis and visualization
+  plot_r = rn(
+    command = <{
+library(ggplot2)
+library(dplyr)
+
+plot_r <- ggplot(cleaned_py, aes(x = surface, y = price)) +
+  geom_point(alpha = 0.5, color = "steelblue") +
+  geom_smooth(method = "lm", color = "darkred") +
+  theme_minimal() +
+  labs(
+    title = "Housing Prices in Luxembourg",
+    x = "Surface (m²)",
+    y = "Price (€)"
+  )
+    }>,
+    deserializer = ^ipc
+  )
+}
+
+build_pipeline(p)
+```
+
+Notice what just happened:
+1. `data` loads raw data.
+2. `cleaned_py` runs in Python using pandas. It receives `data` as an Apache Arrow table via `deserializer = ^ipc`, computes new columns, and serializes its output with `serializer = ^ipc`.
+3. `plot_r` runs in R using `{ggplot2}`. It receives `cleaned_py` directly from Python without you writing a single line of CSV export/import glue code!
+4. `build_pipeline(p)` builds every node in dependency order and caches the results.
+
+## Anatomy of a T Pipeline
+
+Let us break down the core components of T.
+
+### 1. The `pipeline { ... }` Block
+
+A pipeline is defined using a declarative block:
+
+```t
+#| eval: false
+p = pipeline {
+  node_a = ...
+  node_b = ...
+}
+```
+
+The code inside the braces is purely declarative: it defines a Directed Acyclic Graph (DAG). Nothing runs when you assign `p`. The pipeline is a first-class object that you can inspect, pass to functions, or compile.
+
+### 2. Nodes: Pure Computations
+
+Each named entry in a pipeline is a **node**. A node represents a single unit of computation that produces a single artifact. T provides runtime-specific constructors:
+
+- `pyn(...)`: Declares a Python node.
+- `rn(...)`: Declares an R node.
+- `jln(...)`: Declares a Julia node.
+- `cmd(...)`: Declares an external shell/command-line execution.
+- `node(...)`: Generic node constructor where you explicitly pass `runtime = R`, `runtime = Python`, etc.
+
+The code to execute is passed in the `command` argument using `<{ ... }>` delimiters. T does not interpret this code; it sends it to the language runtime to execute inside a hermetic Nix sandbox.
+
+### 3. Automatic Dependency Resolution
+
+Notice that in our example, we never explicitly told `plot_r` that it depends on `cleaned_py`.
+
+T automatically scans the code inside `<{ ... }>` for references to upstream node names. Because the R code references `cleaned_py`, T draws a directed edge:
+
+$$\text{data} \longrightarrow \text{cleaned\_py} \longrightarrow \text{plot\_r}$$
+
+Because dependencies are inferred from names, **the order in which you write nodes inside `pipeline { ... }` does not matter**. T topological-sorts the graph and executes nodes in their true mathematical dependency order.
+
+### 4. Zero-Glue Serialization with Apache Arrow (`^ipc`)
+
+Passing data between different languages has historically been one of the biggest headaches in data science. Exporting intermediate CSVs causes problems:
+- Numbers lose precision.
+- Timestamps and dates lose timezones.
+- Categories and factors become raw strings.
+- Disk I/O is slow for large datasets.
+
+T solves this with typed serialization symbols:
+
+- `^ipc`: Apache Arrow IPC (Inter-Process Communication). This is an in-memory, binary columnar format shared by R, Python, and Julia. When Python writes `^ipc` and R reads `^ipc`, the data is transferred with exact type preservation and zero friction.
+- `^csv`: Standard comma-separated values.
+- `^parquet`: Columnar compressed storage (ideal for larger datasets).
+- `^rds`: Native R object serialization.
+- `^pickle`: Native Python object serialization.
+
+### 5. Executing and Inspecting Pipelines
+
+To execute a pipeline, call `build_pipeline(p)`:
+
+```t
+#| eval: false
+build_pipeline(p)
+```
+
+T inspects each node in the DAG:
+1. Has this node ever been built?
+2. Have any of its upstream inputs changed?
+3. Has the code inside its `command` block changed?
+
+If the answer to all three is "no", T retrieves the existing artifact from cache in microseconds. If any input has changed, only that node and its downstream dependents are rebuilt.
+
+To inspect the result of any node interactively, use `read_node()`:
+
+```t
+#| eval: false
+result = read_node(p, "cleaned_py")
+```
+
+## Using External Scripts and Functions
+
+While embedding short snippets inside `<{ ... }>` is convenient for small steps, realistic projects organize logic into external source files. T makes this straightforward:
+
+```t
+#| eval: false
+p = pipeline {
+  coords = rn(
+    command = <{
+      coords <- clean_coordinates(raw_data)
+    }>,
+    functions = ["src/cleaning.R"],
+    deserializer = ^ipc,
+    serializer = ^ipc
+  )
+}
+```
+
+The `functions` argument automatically sources `src/cleaning.R` into the R session before running the node's command. Similarly, Python nodes can import modules placed in `src/`.
+
+If your node needs external files (such as raw images, reference tables, or configuration YAMLs), specify them with `include`:
+
+```t
+#| eval: false
+model = pyn(
+  command = <{
+    # Train model using config
+  }>,
+  include = ["config/model_params.yaml"]
+)
+```
+
+## Summary
+
+T shifts your workflow from writing imperative, error-prone scripts to declaring a deterministic DAG of computations. In the next chapter, we will examine the theoretical foundation that makes this work: why treating pipeline nodes as **pure functions** unlocks effortless caching and rock-solid reproducibility.

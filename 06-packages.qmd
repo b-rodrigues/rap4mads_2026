@@ -529,7 +529,39 @@ Treating your data analysis project like a small, internal software
 package, complete with functions and tests, is a powerful mindset that will
 elevate the quality and reliability of your work.
 
-Here are two new exercises to add to the end of the chapter.
+## Integrating Custom Packages into T Pipelines
+
+Once your custom functions are packaged (either as an R package or a Python wheel installed into your Nix environment), using them in your pipeline is exceptionally clean. Instead of sourcing loose script files with `functions = ["src/utils.R"]`, your nodes can simply import your library:
+
+```t
+#| eval: false
+p = pipeline {
+  -- R node using packaged library
+  cleaned_r = rn(
+    command = <{
+      library(cleanR)
+      cleaned_r <- clean_names(raw_data)
+    }>,
+    deserializer = ^ipc,
+    serializer = ^ipc
+  )
+
+  -- Python node using packaged library
+  stats_py = pyn(
+    command = <{
+      from statstools.calculations import descriptive_stats
+      stats_py = descriptive_stats(cleaned_r["price"].tolist())
+    }>,
+    deserializer = ^ipc,
+    serializer = ^json
+  )
+}
+```
+
+This enforces the ultimate separation of concerns:
+- **Your packages**: Encapsulate domain logic, data cleaning, and statistical models—with their own unit tests and versioning.
+- **Nix**: Hermetically builds and provides your packages alongside language runtimes.
+- **T**: Declares the DAG, orchestrates execution, handles serialization, and caches intermediate artifacts.
 
 ## Hands-on Exercises
 
