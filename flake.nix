@@ -31,7 +31,26 @@
           });
         });
 
-        tlang-pkg = tlang.packages.${system}.default;
+        tlang-pkg = tlang.packages.${system}.default.overrideAttrs (old:
+          let
+            jpmmls = builtins.filter (p: (p.pname or "") == "jpmml-statsmodels") old.buildInputs;
+            oldJpmml = if jpmmls != [] then builtins.head jpmmls else null;
+          in {
+            buildInputs = map (pkg:
+              if (pkg.pname or "") == "jpmml-statsmodels"
+              then pkgs.jpmml-statsmodels
+              else pkg
+            ) old.buildInputs;
+            installPhase =
+              if oldJpmml != null then
+                builtins.replaceStrings
+                  [ oldJpmml.outPath ]
+                  [ "${pkgs.jpmml-statsmodels}" ]
+                  (builtins.unsafeDiscardStringContext old.installPhase)
+              else
+                old.installPhase;
+          }
+        );
 
         rpkgs = builtins.attrValues {
           inherit (pkgs.rPackages)
