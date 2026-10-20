@@ -23,7 +23,13 @@
   outputs = { self, nixpkgs, tlang, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = nixpkgs.legacyPackages.${system}.extend (final: prev: {
+          jpmml-statsmodels = prev.jpmml-statsmodels.overrideAttrs (oldAttrs: {
+            fetchedMavenDeps = oldAttrs.fetchedMavenDeps.overrideAttrs (_: {
+              outputHash = "sha256-p3JFcsZsN/0ZNoOnC0fMrKnKNY0iCJpFlrrgDy4EtLs=";
+            });
+          });
+        });
 
         tlang-pkg = tlang.packages.${system}.default;
 
