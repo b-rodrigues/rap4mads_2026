@@ -2,9 +2,9 @@
   description = "Reproducible Data Science with Nix and T";
 
   inputs = {
-    nixpkgs.url = "github:rstats-on-nix/nixpkgs/2026-08-02";
+    nixpkgs.url = "github:rstats-on-nix/nixpkgs/2026-09-23";
     tlang = {
-      url = "github:b-rodrigues/tlang";
+      url = "github:b-rodrigues/tlang/v0.56.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
