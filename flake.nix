@@ -55,7 +55,7 @@
             ;
         };
 
-        jlconf = pkgs.julia_110.withPackages [
+        jlconf = pkgs.julia_110-bin.withPackages [
           "Arrow"
           "DataFrames"
           "LinearAlgebra"
