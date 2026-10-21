@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Bruno Rodrigues">
+<meta name="dcterms.date" content="2026-09-15">
+
+<title>Building Reproducible Analytical Pipelines</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./02-intro-nix.html" rel="next">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-4ea8a7ff39d3c06091ea16f678b8f723.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-80343c0573b88c37def2d279c0c0fab5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-4ea8a7ff39d3c06091ea16f678b8f723.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link rel="shortcut icon" href="img/favicon.ico">
+
+
+<link rel="stylesheet" href="epub.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Building Reproducible Analytical Pipelines</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/b-rodrigues/rap4mads_2026" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="./Building-Reproducible-Analytical-Pipelines.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="./Building-Reproducible-Analytical-Pipelines.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-1" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-1">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+              <i class="bi bi-facebook pe-1"></i>
+            Facebook
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-intro-nix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Reproducible Environments with Nix</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-t-pipelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Building Pipelines with T</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-functional-programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Pipelines as Function Composition</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-testing-and-git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Professional Workflows: Testing and Git</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">A Short Intro to Packaging Your Code in R and Python</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-docker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Containerisation With Docker</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-github_actions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Continuous Integration with GitHub Actions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-conclusion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Conclusion: Adopting Reproducibility in the Real World</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#schedule" id="toc-schedule" class="nav-link" data-scroll-target="#schedule">Schedule</a></li>
+  <li><a href="#reproducible-analytical-pipelines" id="toc-reproducible-analytical-pipelines" class="nav-link" data-scroll-target="#reproducible-analytical-pipelines">Reproducible analytical pipelines?</a></li>
+  <li><a href="#why-t-focusing-on-what-truly-matters" id="toc-why-t-focusing-on-what-truly-matters" class="nav-link" data-scroll-target="#why-t-focusing-on-what-truly-matters">Why T? Focusing on what truly matters</a>
+  <ul class="collapse">
+  <li><a href="#the-pedagogical-justification" id="toc-the-pedagogical-justification" class="nav-link" data-scroll-target="#the-pedagogical-justification">The Pedagogical Justification</a></li>
+  </ul></li>
+  <li><a href="#data-products" id="toc-data-products" class="nav-link" data-scroll-target="#data-products">Data products?</a></li>
+  <li><a href="#machine-learning" id="toc-machine-learning" class="nav-link" data-scroll-target="#machine-learning">Machine learning?</a></li>
+  <li><a href="#what-actually-is-reproducibility" id="toc-what-actually-is-reproducibility" class="nav-link" data-scroll-target="#what-actually-is-reproducibility">What actually is reproducibility?</a>
+  <ul class="collapse">
+  <li><a href="#the-requirements-of-a-rap" id="toc-the-requirements-of-a-rap" class="nav-link" data-scroll-target="#the-requirements-of-a-rap">The requirements of a RAP</a></li>
+  <li><a href="#the-reproducibility-spectrum" id="toc-the-reproducibility-spectrum" class="nav-link" data-scroll-target="#the-reproducibility-spectrum">The Reproducibility Spectrum</a></li>
+  </ul></li>
+  <li><a href="#large-language-models" id="toc-large-language-models" class="nav-link" data-scroll-target="#large-language-models">Large Language Models</a></li>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
+  <li><a href="#grading" id="toc-grading" class="nav-link" data-scroll-target="#grading">Grading</a></li>
+  <li><a href="#jargon" id="toc-jargon" class="nav-link" data-scroll-target="#jargon">Jargon</a>
+  <ul class="collapse">
+  <li><a href="#t" id="toc-t" class="nav-link" data-scroll-target="#t">T</a></li>
+  <li><a href="#nix" id="toc-nix" class="nav-link" data-scroll-target="#nix">Nix</a></li>
+  <li><a href="#r-python" id="toc-r-python" class="nav-link" data-scroll-target="#r-python">R &amp; Python</a></li>
+  </ul></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further Reading</a></li>
+  <li><a href="#license" id="toc-license" class="nav-link" data-scroll-target="#license">License</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/b-rodrigues/rap4mads_2026/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Building Reproducible Analytical Pipelines</h1>
+<p class="subtitle lead">Master of Data Science, University of Luxembourg - 2026</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Bruno Rodrigues </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 15, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1 unnumbered">
+<h1 class="unnumbered">Introduction</h1>
+<div style="text-align:center;">
+<p><img src="img/cover.png" title="Cover image created with Dall-e. The prompt was 'Roman engineer building a pipeline in the style of ancient roman art'." width="70%"></p>
+</div>
+<p><em>This is the 2026 edition of the course. If you’re looking for earlier editions, you can find the 2024 and 2025 archives on GitHub.</em></p>
+<p>What’s new in 2026:</p>
+<ul>
+<li><strong>T at the center</strong>: A modern, domain-specific language purpose-built for polyglot reproducible analytical pipelines (R, Python, and Julia).</li>
+<li><strong>Pipelines as pure function composition</strong>: Reframing pipelines through functional programming and Directed Acyclic Graphs (DAGs).</li>
+<li><strong>Universal environment reproducibility</strong>: Using Nix as the foundation for bit-for-bit identical, cross-language software closures.</li>
+<li><strong>AI-first workflow</strong>: Leveraging Large Language Models (LLMs) to construct and review reproducible pipelines and tests.</li>
+</ul>
+<p><em>This course is based on my book <a href="https://github.com/b-rodrigues/reproducible-data-science">Reproducible Polyglot Data Science</a>.</em></p>
+<section id="schedule" class="level2">
+<h2 class="anchored" data-anchor-id="schedule">Schedule</h2>
+<ul>
+<li><strong>Session 1 (4 hours)</strong>: Intro (Why T, the reproducibility spectrum) and Nix (environment reproducibility).</li>
+<li><strong>Session 2 (4 hours)</strong>: Building Pipelines with T (syntax, nodes, Arrow IPC serialization, DAG caching).</li>
+<li><strong>Session 3 (4 hours)</strong>: Pipelines as Function Composition (pure functions, immutability, state elimination).</li>
+<li><strong>Session 4 (4 hours)</strong>: Professional Workflows: Testing and Git (unit testing with <code>{testthat}</code> &amp; <code>pytest</code>, interactive Git with <code>git add -p</code>, pipeline validation with <code>testcraft</code>).</li>
+<li><strong>Session 5 (4 hours)</strong>: Packaging Code in R and Python for T pipelines.</li>
+<li><strong>Session 6 (4 hours)</strong>: Containerisation with Docker (spatial vs.&nbsp;temporal reproducibility, packaging Nix &amp; T).</li>
+<li><strong>Session 7 (4 hours)</strong>: Continuous Integration with GitHub Actions &amp; Course Project Wrap-up.</li>
+</ul>
+</section>
+<section id="reproducible-analytical-pipelines" class="level2">
+<h2 class="anchored" data-anchor-id="reproducible-analytical-pipelines">Reproducible analytical pipelines?</h2>
+<p>This course is my take on setting up code that results in some <em>data product</em>. This code has to be reproducible, documented, and production-ready. The term was originally introduced by the UK’s <a href="https://analysisfunction.civilservice.gov.uk/support/reproducible-analytical-pipelines/">Analysis Function</a>.</p>
+<p>The basic idea of a reproducible analytical pipeline (RAP) is to have code that always produces the exact same result when run, whatever that result might be. This is crucial in research and science, but it is equally essential in industry and data-driven decision-making.</p>
+<p>A well-documented RAP eliminates technical debt, prevents “it worked on my machine” disasters, and is readily reusable across future projects.</p>
+</section>
+<section id="why-t-focusing-on-what-truly-matters" class="level2">
+<h2 class="anchored" data-anchor-id="why-t-focusing-on-what-truly-matters">Why T? Focusing on what truly matters</h2>
+<p>If you have ever tried building a data science pipeline that combines both Python and R, you know the pain:</p>
+<ul>
+<li>In Python, you battle dependency hell across <code>pip</code>, <code>virtualenv</code>, <code>conda</code>, <code>poetry</code>, and <code>uv</code>, while wrestling with <code>PYTHONPATH</code> resolution and platform-specific wheels.</li>
+<li>In R, you configure <code>{renv}</code>, ensure compiler toolchains exist to compile C/C++/Fortran packages, and manage package library paths.</li>
+<li>To connect them, you end up writing fragile bash scripts or Makefiles, exporting ad-hoc CSV files that lose data types, and praying that everyone runs the scripts in the right order.</li>
+</ul>
+<p><strong>Students and practitioners end up wasting 80% of their time dealing with language-specific idiosyncrasies rather than learning reproducible architecture.</strong></p>
+<p>To break this cycle, this course puts <strong>T</strong> (<code>tlang</code>) at the center.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>p <span class="sc">=</span> <span class="cf">pipeline</span> {
+  <span class="co">-- 1. Load data</span>
+  data <span class="sc">=</span> <span class="fu">read_csv</span>(<span class="st">"datasets/country_level_data.csv"</span>)
+
+  <span class="co">-- 2. Clean and derive in Python</span>
+  derived <span class="sc">=</span> <span class="fu">pyn</span>(
+    command <span class="sc">=</span> <span class="sc">&lt;</span>{
+      derived <span class="sc">=</span> data.assign(
+        pct_change <span class="sc">=</span> data[<span class="st">"average_price_m2_nominal_euros"</span>].pct_change() <span class="sc">*</span> <span class="dv">100</span>
+      )
+    }<span class="sc">&gt;</span>,
+    deserializer <span class="sc">=</span> ^ipc,
+    serializer <span class="sc">=</span> ^ipc
+  )
+
+  <span class="co">-- 3. Visualise in R</span>
+  plot <span class="sc">=</span> <span class="fu">rn</span>(
+    command <span class="sc">=</span> <span class="sc">&lt;</span>{
+      <span class="fu">library</span>(ggplot2)
+      plot <span class="sc">&lt;</span><span class="sc">-</span> <span class="fu">ggplot</span>(derived, <span class="fu">aes</span>(x <span class="sc">=</span> year, y <span class="sc">=</span> pct_change)) <span class="sc">+</span>
+        <span class="fu">geom_line</span>() <span class="sc">+</span>
+        <span class="fu">theme_minimal</span>()
+    }<span class="sc">&gt;</span>,
+    deserializer <span class="sc">=</span> ^ipc
+  )
+}
+
+<span class="fu">build_pipeline</span>(p)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="the-pedagogical-justification" class="level3">
+<h3 class="anchored" data-anchor-id="the-pedagogical-justification">The Pedagogical Justification</h3>
+<p>T is an experimental domain-specific language that I began designing in 2025. While it is experimental, placing it at the center of this course serves a vital pedagogical purpose:</p>
+<ol type="1">
+<li><strong>Focus on Reproducibility, Not Language Quirks</strong>: T isolates the essential principles of software reproducibility:
+<ul>
+<li><strong>Pure Functions</strong>: Each node is an isolated function with explicit inputs and a single output.</li>
+<li><strong>Directed Acyclic Graphs (DAGs)</strong>: Execution order is derived mathematically from data dependencies, not the arbitrary layout of script files or notebook cells.</li>
+<li><strong>Hermetic Execution</strong>: Execution takes place inside an isolated sandbox guaranteed by Nix.</li>
+<li><strong>Content-Addressed Caching</strong>: Only nodes whose inputs or code have changed get rebuilt.</li>
+<li><strong>Zero-Glue Polyglot Data Exchange</strong>: Cross-language data transfer uses standardized formats like Apache Arrow IPC (<code>^ipc</code>), passing DataFrames between Python, R, and Julia without custom serialization code.</li>
+</ul></li>
+<li><strong>Eliminating Fragile Glue</strong>: You no longer need to write custom glue scripts, parse command-line arguments, or track intermediate file names.</li>
+<li><strong>Designed for the LLM Era</strong>: T was created with a minimalist, constraint-based syntax that LLMs can generate and reason about with high precision. You can let an LLM help write the pipeline definitions, while you and the LLM focus on the R or Python data analysis code inside each node.</li>
+</ol>
+<p>By abstracting execution into T and environment management into Nix, we remove the accidental complexity of modern data science so you can master the fundamental concepts.</p>
+</section>
+</section>
+<section id="data-products" class="level2">
+<h2 class="anchored" data-anchor-id="data-products">Data products?</h2>
+<p>In this course, each of you will develop a <em>data product</em>. A data product is anything that requires data as an input and produces value: an analytical report, a reproducible paper, an interactive dashboard, or an API.</p>
+<p>The focus of the course is not on the end product itself (which you can choose based on your interests), but on the <strong>pipeline</strong> that builds that product reliably, reproducibly, and non-interactively.</p>
+</section>
+<section id="machine-learning" class="level2">
+<h2 class="anchored" data-anchor-id="machine-learning">Machine learning?</h2>
+<p>Being skilled in machine learning is not enough to become an effective data scientist. In fact, the model is often the easiest piece to replace. What is non-negotiable is knowing:</p>
+<ul>
+<li>How to write, test, and modularize code;</li>
+<li>How to manage environments deterministically;</li>
+<li>How to work within the command line and version control with Git;</li>
+<li>How to construct automated DAG pipelines;</li>
+<li>How to package code and deploy with Docker and Continuous Integration.</li>
+</ul>
+</section>
+<section id="what-actually-is-reproducibility" class="level2">
+<h2 class="anchored" data-anchor-id="what-actually-is-reproducibility">What actually is reproducibility?</h2>
+<p>A project is reproducible if it can be rerun by anyone, anywhere, at any point in time, yielding the exact same results with minimal friction.</p>
+<section id="the-requirements-of-a-rap" class="level3">
+<h3 class="anchored" data-anchor-id="the-requirements-of-a-rap">The requirements of a RAP</h3>
+<p>For a project to qualify as a RAP, it must meet several strict criteria: - <strong>Available, version-controlled source code</strong> (tracked with Git and GitHub); - <strong>Deterministic dependencies</strong> (managed completely with Nix); - <strong>Non-interactive execution</strong> (run with a single command, without manual steps in GUIs or notebooks); - <strong>Tested logic</strong> (unit tests validating functions and pipeline data contracts); - <strong>Open-source foundation</strong> (reproducible operating system closures via Nix and Docker).</p>
+</section>
+<section id="the-reproducibility-spectrum" class="level3">
+<h3 class="anchored" data-anchor-id="the-reproducibility-spectrum">The Reproducibility Spectrum</h3>
+<p>Reproducibility is not binary; it exists along a continuum <span class="citation" data-cites="peng2011">(<a href="#ref-peng2011" role="doc-biblioref">Peng 2011</a>)</span>:</p>
+<figure class="figure">
+<img src="img/repro_spectrum.png" alt="The reproducibility spectrum from Peng's 2011 paper." class="figure-img">
+<figcaption>
+The reproducibility spectrum from Peng’s 2011 paper.
+</figcaption>
+</figure>
+<p>A project can control for: 1. Code only; 2. Code + language versions; 3. Code + language + package libraries; 4. Code + packages + system-level OS dependencies (Nix / Docker); 5. Hardware architecture and bit-for-bit hermetic closures.</p>
+<p>In this course, we aim for the highest practical tier of this spectrum.</p>
+</section>
+</section>
+<section id="large-language-models" class="level2">
+<h2 class="anchored" data-anchor-id="large-language-models">Large Language Models</h2>
+<p>LLMs have transformed how software is developed. In this course, we treat LLMs as power tools: they are highly encouraged for drafting functions, generating tests, and structuring pipelines. However, using an LLM requires you to become a rigorous code reviewer. You will learn how to use Git’s interactive staging (<code>git add -p</code>) and automated test suites to verify that AI-generated code meets your exact expectations before committing it.</p>
+</section>
+<section id="prerequisites" class="level2">
+<h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Basic programming familiarity with R or Python (loops, functions, data structures).</li>
+<li>Familiarity with the command line interface (CLI).</li>
+<li>Linux or macOS operating system (Windows users <strong>must</strong> use WSL2).</li>
+</ul>
+</section>
+<section id="grading" class="level2">
+<h2 class="anchored" data-anchor-id="grading">Grading</h2>
+<p>Grading is based on your final course project. During lecture hours you will learn each concept through live demonstrations and hands-on exercises. At home, you will develop your own pipeline around a dataset of your choice.</p>
+<p>At the end of the semester, your repository will be evaluated on how easily and reproducibly it builds:</p>
+<ul>
+<li><strong>Repository and Documentation (5 points)</strong>: Hosted on GitHub with a clear, comprehensive <code>README.md</code>.</li>
+<li><strong>Logic, Packaging, and Tests (5 points)</strong>: Code is modularized into clean functions or packages, and accompanied by automated unit tests.</li>
+<li><strong>Deterministic Environment (5 points)</strong>: All dependencies (R, Python, packages, system libraries) are declared and pinned via Nix.</li>
+<li><strong>Pipeline Execution (5 points)</strong>: The entire pipeline runs end-to-end via a single command (<code>build_pipeline</code> in T) producing the final output without manual intervention.</li>
+</ul>
+</section>
+<section id="jargon" class="level2">
+<h2 class="anchored" data-anchor-id="jargon">Jargon</h2>
+<section id="t" class="level3">
+<h3 class="anchored" data-anchor-id="t">T</h3>
+<ul>
+<li><strong>T (<code>tlang</code>)</strong>: A domain-specific language for defining reproducible analytical pipelines across R, Python, and Julia.</li>
+<li><strong>Node</strong>: A single computation step in a pipeline. Nodes act as pure functions: they take explicit inputs and produce a single serialized artifact.</li>
+<li><strong><code>rn()</code> / <code>pyn()</code> / <code>jln()</code></strong>: T node constructors for R, Python, and Julia runtimes.</li>
+<li><strong>Serializer / Deserializer</strong>: The mechanism T uses to write and read node outputs (e.g., <code>^ipc</code> for Apache Arrow, <code>^csv</code>, <code>^parquet</code>, <code>^rds</code>).</li>
+<li><strong>Pipeline (<code>pipeline { ... }</code>)</strong>: A declarative block that defines the DAG of nodes and their data dependencies.</li>
+<li><strong><code>build_pipeline()</code></strong>: The function that compiles the DAG, checks the cache, and executes stale nodes in dependency order.</li>
+<li><strong><code>read_node()</code></strong>: A function used to inspect the cached output of a specific node interactively.</li>
+</ul>
+</section>
+<section id="nix" class="level3">
+<h3 class="anchored" data-anchor-id="nix">Nix</h3>
+<ul>
+<li><strong>Nixpkgs</strong>: The central repository of over 120,000 packages used by Nix.</li>
+<li><strong>Derivation</strong>: A low-level, cryptographic build instruction in Nix.</li>
+<li><strong>Nix Store (<code>/nix/store</code>)</strong>: The read-only directory where all isolated packages and build artifacts reside.</li>
+<li><strong>Hermetic Sandbox</strong>: An isolated build environment with no network access or hidden system dependencies.</li>
+<li><strong>Binary Cache</strong>: Pre-built packages identified by cryptographic hash (e.g.&nbsp;Cachix or <code>cache.nixos.org</code>), avoiding redundant local compilation.</li>
+</ul>
+</section>
+<section id="r-python" class="level3">
+<h3 class="anchored" data-anchor-id="r-python">R &amp; Python</h3>
+<ul>
+<li><strong>CRAN / PyPI</strong>: The respective package registries for R and Python.</li>
+<li><strong>Arrow IPC (<code>^ipc</code>)</strong>: An in-memory columnar data format that allows zero-overhead data transfer between R and Python.</li>
+<li><strong><code>testthat</code> / <code>pytest</code></strong>: Standard testing frameworks for R and Python code.</li>
+</ul>
+</section>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further Reading</h2>
+<ul>
+<li><a href="https://github.com/b-rodrigues/reproducible-data-science">Reproducible Polyglot Data Science</a></li>
+<li><a href="https://github.com/b-rodrigues/tlang">T Language Repository</a></li>
+<li><a href="https://raps-with-r.dev/">Building Reproducible Analytical Pipelines with R</a></li>
+<li><a href="https://nixos.org/guides/how-nix-works/">How Nix Works</a></li>
+</ul>
+</section>
+<section id="license" class="level2">
+<h2 class="anchored" data-anchor-id="license">License</h2>
+<p>This course is licensed under the <a href="http://www.wtfpl.net/txt/copying/">WTFPL</a>.</p>
+<p><a href="http://www.wtfpl.net/"><img src="img/wtfpl-badge-4.png" width="80" height="15" alt="WTFPL"></a></p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-peng2011" class="csl-entry" role="listitem">
+Peng, Roger D. 2011. <span>“Reproducible Research in Computational Science.”</span> <em>Science</em> 334 (6060): 1226–27.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./02-intro-nix.html" class="pagination-link" aria-label="Reproducible Environments with Nix">
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Reproducible Environments with Nix</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/b-rodrigues/rap4mads_2026/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
