@@ -23,7 +23,13 @@
   outputs = { self, nixpkgs, tlang, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = nixpkgs.legacyPackages.${system}.extend (final: prev: {
+          python313Packages = prev.python313Packages.overrideScope (pyFinal: pyPrev: {
+            pyarrow = pyPrev.pyarrow.overridePythonAttrs (_: {
+              doCheck = false;
+            });
+          });
+        });
 
         tlang-pkg = tlang.packages.${system}.default;
 
