@@ -22,13 +22,14 @@ What’s new in 2026:
 
 ## Schedule
 
-- **Session 1 (4 hours)**: Intro (Why T, the reproducibility spectrum) and Nix (environment reproducibility).
-- **Session 2 (4 hours)**: Building Pipelines with T (syntax, nodes, Arrow IPC serialization, DAG caching).
-- **Session 3 (4 hours)**: Pipelines as Function Composition (pure functions, immutability, state elimination).
-- **Session 4 (4 hours)**: Professional Workflows: Testing and Git (unit testing with `{testthat}` & `pytest`, interactive Git with `git add -p`, pipeline validation with `testcraft`).
-- **Session 5 (4 hours)**: Packaging Code in R and Python for T pipelines.
-- **Session 6 (4 hours)**: Containerisation with Docker (spatial vs. temporal reproducibility, packaging Nix & T).
-- **Session 7 (4 hours)**: Continuous Integration with GitHub Actions & Course Project Wrap-up.
+- **2026-10-30 (1.5 hours)**: Intro (Why T, the reproducibility spectrum) and Nix (environment reproducibility).
+- **2026-11-11 (14:00 - 17:15, MSA 2.400)**: Building Pipelines with T (syntax, nodes, Arrow IPC serialization, DAG caching).
+- **2026-11-19 (14:00 - 17:15, MSA 4.050)**: Pipelines as Function Composition (pure functions, immutability, state elimination).
+- **2026-11-20 (10:15 - 11:45)**: Pipelines as Function Composition (pure functions, immutability, state elimination).
+- **2026-11-27 (14:00 - 17:15, MSA 3.190)**: Professional Workflows: Testing and Git (unit testing with `{testthat}` & `pytest`, interactive Git with `git add -p`, pipeline validation with `testcraft`).
+- **2026-12-03 (14:00 - 17:15, MNO 1.030)**: Packaging Code in R and Python for T pipelines.
+- **2026-12-10 (14:00 - 17:15, MSA 3.120)**: Containerisation with Docker (spatial vs. temporal reproducibility, packaging Nix & T).
+- **2026-12-16 (12:45 - 15:45, MSA 3.100)**: Continuous Integration with GitHub Actions & Course Project Wrap-up.
 
 ## Reproducible analytical pipelines?
 
