@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./06-packages.html" rel="next">
+<link href="./06-ai-harness.html" rel="next">
 <link href="./04-functional-programming.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4ea8a7ff39d3c06091ea16f678b8f723.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-80343c0573b88c37def2d279c0c0fab5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-4ea8a7ff39d3c06091ea16f678b8f723.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-1bd9875f45430e94795e5aaf1dcccbe5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -116,6 +116,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 <link rel="shortcut icon" href="img/favicon.ico">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="epub.css">
 </head>
@@ -386,26 +415,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06-packages.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">A Short Intro to Packaging Your Code in R and Python</span></span></a>
+  <a href="./06-ai-harness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The AI Harness: AGENTS.md, Code Inspection, and Verification</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-docker.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Containerisation With Docker</span></span></a>
+  <a href="./07-packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">A Short Intro to Packaging Your Code in R and Python</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08-github_actions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Continuous Integration with GitHub Actions</span></span></a>
+  <a href="./08-docker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Containerisation With Docker</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-conclusion.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Conclusion: Adopting Reproducibility in the Real World</span></span></a>
+  <a href="./09-github_actions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Continuous Integration with GitHub Actions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-conclusion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Conclusion: Adopting Reproducibility in the Real World</span></span></a>
   </div>
 </li>
     </ul>
@@ -675,7 +710,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>“A COMPUTER CAN NEVER BE HELD ACCOUNTABLE, THEREFORE A COMPUTER MUST NEVER MAKE A MANAGEMENT DECISION” - IBM Training Manual, 1979.</p>
 <p>This principle is, in my opinion, even more important for tests than for production code. Even before LLMs, we relied on code we didn’t write ourselves. At my first job, my boss insisted that I avoid external packages entirely and rewrite everything from scratch. I ignored her and continued using the packages I trusted. At some point, you have to trust strangers. That was true then, and it is true now, except that “strangers” now includes LLMs and developers who themselves rely heavily on LLMs.</p>
 <p>But here is the key difference: tests are small. Unlike a sprawling codebase, a unit test is short enough to read and understand completely. When you review an LLM-generated test, you can verify that the expected output is correct and that the test covers the right cases. This makes tests uniquely suited to the “trust but verify” workflow that AI-assisted development demands.</p>
-<p>In the next chapter, we will start building deeper T pipelines, putting our tested functions and scripts to work in real polyglot analyses.</p>
+</section>
+<section id="the-test-oracle-problem-establishing-ground-truth-for-ai" class="level4" data-number="4.2.4.2">
+<h4 data-number="4.2.4.2" class="anchored" data-anchor-id="the-test-oracle-problem-establishing-ground-truth-for-ai"><span class="header-section-number">4.2.4.2</span> The Test Oracle Problem: Establishing Ground Truth for AI</h4>
+<p>When you prompt an AI assistant to write both your analytical code and its corresponding unit tests, you run headfirst into a subtle and dangerous trap: <strong>the test oracle problem</strong>.</p>
+<p>In software engineering, a <em>test oracle</em> is the mechanism that determines whether a program’s output is correct. If you ask an LLM to implement a complex statistical calculation (such as computing weighted quantiles or calculating a Gini coefficient) and then ask the same LLM to write the unit test, the model will happily write an assertion that verifies its own implementation—even if its underlying math is subtly wrong, biased, or missing an edge case. The test passes, giving you a false sense of security.</p>
+<p>For AI-assisted data science to be safe and efficient, <strong>the human must provide or verify the oracle</strong>. You do not need to write every line of code, but you must prepare the ground truth before trusting the model’s implementation.</p>
+<p>In practice, there are three powerful types of oracles you should prepare:</p>
+<ol type="1">
+<li><p><strong>Golden Datasets (Snapshot Testing):</strong> A golden dataset is a small, hand-crafted, or authoritatively verified table of inputs and expected outputs. You can compute the expected values by hand for a three-row table, extract them from a trusted textbook, or export them from an established legacy system. When the LLM generates a vectorized pipeline node in Python or R, your test asserts that it produces bit-for-bit or numerically identical results to the golden snapshot.</p></li>
+<li><p><strong>Reference Implementations (Dual-Running):</strong> Suppose you want an LLM to write a high-performance, parallelized data cleaning routine, or port an algorithm across languages (for example, from R to Python or Julia). Rather than verifying the new implementation by eye, you use the existing, trusted code as the oracle. You run both implementations on the same sample inputs and assert that their outputs match:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_optimized_against_reference():</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    sample_input <span class="op">=</span> generate_sample_data()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Reference oracle: trusted, simple, but perhaps slow</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    expected <span class="op">=</span> reference_cleaner(sample_input)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># AI-generated candidate: fast, complex, or cross-language</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    actual <span class="op">=</span> fast_ai_cleaner(sample_input)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    pd.testing.assert_frame_equal(actual, expected)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>Property-Based Oracles and Invariants:</strong> Sometimes you cannot predict the exact output for every arbitrary input, but you know the mathematical laws that <em>must</em> hold true. In property-based testing, you assert these invariants:</p>
+<ul>
+<li><em>Conservation laws:</em> Total revenue across subgroups must equal total unfiltered revenue.</li>
+<li><em>Bounded ranges:</em> Probabilities must always fall in <span class="math inline">\([0, 1]\)</span>; normalized Z-scores must have a sample mean of 0 and standard deviation of 1.</li>
+<li><em>Idempotence:</em> Running the cleaner twice on the same data must produce the exact same output as running it once (<code>clean(clean(x)) == clean(x)</code>).</li>
+<li><em>Set preservation:</em> Sorting or deriving fields must never silently drop unique row IDs or invent new records.</li>
+</ul></li>
+</ol>
+<p>By preparing oracles upfront, you create an objective verification harness. The LLM can draft, refactor, and optimize code freely, and you have an automated, mathematically grounded referee to verify that the results are genuinely correct.</p>
 </section>
 </section>
 </section>
@@ -697,19 +757,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The first way to solve this issue is to use feature flags.</p>
 <p>A feature flag is just a simple variable (like a <code>TRUE</code>/<code>FALSE</code> switch) that lets you turn a new, unfinished part of the code on or off. This allows you to merge the code into <code>main</code> while keeping it “off” until it’s ready.</p>
 <p>Imagine you are adding a new, complex plot to <code>analysis.R</code>, but it will take a few days to get right.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># At the top of your analysis.R script</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Configuration ---</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>use_new_scatterplot <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># Set to FALSE while in development</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ... lots of existing, working code ...</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- New Feature Code ---</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (use_new_scatterplot) {</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># All your new, unfinished, possibly-buggy plotting code goes here.</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># It won't run as long as the flag is FALSE.</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(scatterplot3d)</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scatterplot3d</span>(mtcars<span class="sc">$</span>mpg, mtcars<span class="sc">$</span>hp, mtcars<span class="sc">$</span>wt)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># At the top of your analysis.R script</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Configuration ---</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>use_new_scatterplot <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># Set to FALSE while in development</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ... lots of existing, working code ...</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- New Feature Code ---</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (use_new_scatterplot) {</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># All your new, unfinished, possibly-buggy plotting code goes here.</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># It won't run as long as the flag is FALSE.</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(scatterplot3d)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scatterplot3d</span>(mtcars<span class="sc">$</span>mpg, mtcars<span class="sc">$</span>hp, mtcars<span class="sc">$</span>wt)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>With this <code>if</code> block, you can safely merge your changes into <code>main</code>. The new code is there, but it won’t execute and won’t break the existing analysis. Other developers can pull your changes and won’t even notice. Once you’ve finished the feature in subsequent small commits, the final change is just to flip the switch: <code>use_new_scatterplot &lt;- TRUE</code>.</p>
 </section>
 </section>
@@ -721,7 +781,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Rebase (Recommended): temporarily lifts your commits, pulls your colleague’s changes, and then replays your commits on top.</li>
 </ol>
 <p>In data science projects, where identifying when a plot or number changed is critical, a linear history is valuable. I strongly recommend configuring Git to use rebase by default:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> pull.rebase true</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> pull.rebase true</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Now, when you <code>git pull</code>, your local changes will stay at the “tip” of the history, keeping the log clean.</p>
 </section>
 <section id="working-with-llms-and-git-managing-ai-generated-changes" class="level3" data-number="4.3.3">
@@ -731,14 +791,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 data-number="4.3.3.1" class="anchored" data-anchor-id="interactive-staging-accepting-changes-chunk-by-chunk"><span class="header-section-number">4.3.3.1</span> Interactive Staging: Accepting changes chunk by chunk</h4>
 <p>Git’s interactive staging feature (<code>git add -p</code>) is perfect for reviewing LLM changes. Instead of blindly adding all changes with <code>git add .</code>, <code>git add -p</code> lets you review each “hunk” (chunk of changes) individually.</p>
 <p>Suppose an LLM refactored your Python script. You run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-p</span> analysis.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-p</span> analysis.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Git will show you a chunk of changes and prompt you:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@@</span> <span class="at">-1,2</span> +1,4 @@</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a> <span class="co"># Load required libraries</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a> <span class="ex">import</span> pandas as pd</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">+import</span> matplotlib.pyplot as plt</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">+import</span> seaborn as sns</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Stage</span> this hunk <span class="pp">[</span><span class="ss">y,n,q,a,d,s,e,?</span><span class="pp">]?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@@</span> <span class="at">-1,2</span> +1,4 @@</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a> <span class="co"># Load required libraries</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a> <span class="ex">import</span> pandas as pd</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ex">+import</span> matplotlib.pyplot as plt</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">+import</span> seaborn as sns</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Stage</span> this hunk <span class="pp">[</span><span class="ss">y,n,q,a,d,s,e,?</span><span class="pp">]?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>You can reply:</p>
 <ul>
 <li><code>y</code>: Yes, stage this (I approve).</li>
@@ -769,33 +829,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="the-t-test-command" class="level3" data-number="4.4.1">
 <h3 data-number="4.4.1" class="anchored" data-anchor-id="the-t-test-command"><span class="header-section-number">4.4.1</span> The <code>t test</code> Command</h3>
 <p>When you initialise a T project with <code>t init</code>, the project gets a <code>tests/</code> directory alongside <code>src/</code>. Any <code>.t</code> file in <code>tests/</code> whose name starts with <code>test-</code> is automatically discovered and run by:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This is the T equivalent of <code>pytest</code> or <code>testthat::test_dir()</code>. Each test file is a T script that builds a pipeline (or reads from an already-built one), makes assertions using <code>expect_*</code> functions, and fails loudly if any assertion does not hold.</p>
 </section>
 <section id="agent--and-ci-friendly-output" class="level3" data-number="4.4.2">
 <h3 data-number="4.4.2" class="anchored" data-anchor-id="agent--and-ci-friendly-output"><span class="header-section-number">4.4.2</span> Agent- and CI-friendly output</h3>
 <p>The <code>t test</code> command can emit machine-readable results, which is exactly what an AI agent or a CI script needs to decide what to do next without parsing human-friendly text. Pass <code>--json</code> for a structured summary of the whole run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--json</span> tests/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"schema_version"</span><span class="fu">:</span> <span class="st">"1"</span><span class="fu">,</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"passed"</span><span class="fu">,</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"total"</span><span class="fu">:</span> <span class="dv">15</span><span class="fu">,</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"passed"</span><span class="fu">:</span> <span class="dv">14</span><span class="fu">,</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"failed"</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"duration_ms"</span><span class="fu">:</span> <span class="dv">2340</span><span class="fu">,</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"results"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">"file"</span><span class="fu">:</span> <span class="st">"tests/test_arithmetic.t"</span><span class="fu">,</span> <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"passed"</span><span class="fu">,</span> <span class="dt">"duration_ms"</span><span class="fu">:</span> <span class="dv">120</span><span class="fu">,</span> <span class="dt">"error"</span><span class="fu">:</span> <span class="kw">null</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">"file"</span><span class="fu">:</span> <span class="st">"tests/test_strings.t"</span><span class="fu">,</span> <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"failed"</span><span class="fu">,</span> <span class="dt">"duration_ms"</span><span class="fu">:</span> <span class="dv">85</span><span class="fu">,</span> <span class="dt">"error"</span><span class="fu">:</span> <span class="st">"Assertion failed at line 42: expected </span><span class="ch">\"</span><span class="st">hello</span><span class="ch">\"</span><span class="st"> but got </span><span class="ch">\"</span><span class="st">world</span><span class="ch">\"</span><span class="st">"</span> <span class="fu">}</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The agent loop is then straightforward: run <code>t test --json</code>, read the top-level <code>status</code>, and only if it is <code>"failed"</code>, read the <code>error</code> field of each failing result to decide the fix. For CI, <code>--format junit</code> emits JUnit XML that runners and dashboards understand:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--format</span> junit tests/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--json</span> tests/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"schema_version"</span><span class="fu">:</span> <span class="st">"1"</span><span class="fu">,</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"passed"</span><span class="fu">,</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"total"</span><span class="fu">:</span> <span class="dv">15</span><span class="fu">,</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"passed"</span><span class="fu">:</span> <span class="dv">14</span><span class="fu">,</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"failed"</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"duration_ms"</span><span class="fu">:</span> <span class="dv">2340</span><span class="fu">,</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"results"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">"file"</span><span class="fu">:</span> <span class="st">"tests/test_arithmetic.t"</span><span class="fu">,</span> <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"passed"</span><span class="fu">,</span> <span class="dt">"duration_ms"</span><span class="fu">:</span> <span class="dv">120</span><span class="fu">,</span> <span class="dt">"error"</span><span class="fu">:</span> <span class="kw">null</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">"file"</span><span class="fu">:</span> <span class="st">"tests/test_strings.t"</span><span class="fu">,</span> <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"failed"</span><span class="fu">,</span> <span class="dt">"duration_ms"</span><span class="fu">:</span> <span class="dv">85</span><span class="fu">,</span> <span class="dt">"error"</span><span class="fu">:</span> <span class="st">"Assertion failed at line 42: expected </span><span class="ch">\"</span><span class="st">hello</span><span class="ch">\"</span><span class="st"> but got </span><span class="ch">\"</span><span class="st">world</span><span class="ch">\"</span><span class="st">"</span> <span class="fu">}</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The agent loop is then straightforward: run <code>t test --json</code>, read the top-level <code>status</code>, and only if it is <code>"failed"</code>, read the <code>error</code> field of each failing result to decide the fix.</p>
+<p>Notice why the <strong>oracles</strong> we discussed in Part 1 are indispensable here. An autonomous agent cannot navigate by vibes; it needs unambiguous, objective exit criteria. If the tests in your <code>tests/</code> directory are vague or self-referential, an agent might “fix” a broken test simply by modifying the assertion to match its own buggy output, or by writing a trivial stub that returns a hardcoded value. When your test suite is anchored by strict oracles—golden datasets, invariant checks, and reference implementations—the agent has an uncompromising benchmark. It can propose an edit, execute <code>t test --json</code>, inspect the precise structural or numerical discrepancy, and iterate autonomously until the oracle is satisfied.</p>
+<p>For CI, <code>--format junit</code> emits JUnit XML that runners and dashboards understand:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--format</span> junit tests/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>You can also filter what runs:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--only</span> <span class="st">"stats"</span>     <span class="co"># run only tests matching "stats"</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--not</span> <span class="st">"slow"</span>       <span class="co"># skip tests matching "slow"</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--failfast</span>         <span class="co"># stop on the first failure</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--list</span>             <span class="co"># list tests without running them</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--timeout</span> 30       <span class="co"># mark tests slower than 30s as failed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--only</span> <span class="st">"stats"</span>     <span class="co"># run only tests matching "stats"</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--not</span> <span class="st">"slow"</span>       <span class="co"># skip tests matching "slow"</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--failfast</span>         <span class="co"># stop on the first failure</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--list</span>             <span class="co"># list tests without running them</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> test <span class="at">--timeout</span> 30       <span class="co"># mark tests slower than 30s as failed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>To exclude whole files or directories automatically, add a <code>tests/.tignore</code>:</p>
 <pre><code># tests/.tignore
 slow_integration.t
@@ -1040,6 +1102,7 @@ combined <span class="sc">=</span> <span class="fu">chain</span>(fixture, <span 
 <li><strong>Git workflows</strong> (Trunk-Based Development, rebasing, interactive staging) keep collaboration clean and protect you from AI-generated regressions.</li>
 <li><strong>Testcraft</strong> (<code>t test</code>, <code>expect_*</code>) tests T pipelines at two levels: node outputs (does the data look right after a build?) and pipeline structure (does the DAG have the right shape, runtimes, and serializers?).</li>
 </ol>
+<p>With these testing layers, Git hygiene, and test oracles in place, we now have the foundation to build an <strong>AI Harness</strong>. In the next chapter, we will see how to combine these verification tools with <code>AGENTS.md</code> and code-inspection literacy to safely delegate coding tasks to autonomous AI agents.</p>
 
 
 </section>
@@ -1465,8 +1528,8 @@ combined <span class="sc">=</span> <span class="fu">chain</span>(fixture, <span 
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./06-packages.html" class="pagination-link" aria-label="A Short Intro to Packaging Your Code in R and Python">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">A Short Intro to Packaging Your Code in R and Python</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./06-ai-harness.html" class="pagination-link" aria-label="The AI Harness: AGENTS.md, Code Inspection, and Verification">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The AI Harness: AGENTS.md, Code Inspection, and Verification</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>6&nbsp; Containerisation With Docker – Building Reproducible Analytical Pipelines</title>
+<title>7&nbsp; Containerisation With Docker – Building Reproducible Analytical Pipelines</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -91,8 +91,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./08-github_actions.html" rel="next">
-<link href="./06-packages.html" rel="prev">
+<link href="./09-github_actions.html" rel="next">
+<link href="./07-packages.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -104,9 +104,9 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4ea8a7ff39d3c06091ea16f678b8f723.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-80343c0573b88c37def2d279c0c0fab5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-4ea8a7ff39d3c06091ea16f678b8f723.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-1bd9875f45430e94795e5aaf1dcccbe5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -311,7 +311,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07-docker.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Containerisation With Docker</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08-docker.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Containerisation With Docker</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -406,26 +406,32 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06-packages.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">A Short Intro to Packaging Your Code in R and Python</span></span></a>
+  <a href="./06-ai-harness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">The AI Harness: AGENTS.md, Code Inspection, and Verification</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-docker.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Containerisation With Docker</span></span></a>
+  <a href="./07-packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">A Short Intro to Packaging Your Code in R and Python</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08-github_actions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Continuous Integration with GitHub Actions</span></span></a>
+  <a href="./08-docker.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Containerisation With Docker</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-conclusion.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Conclusion: Adopting Reproducibility in the Real World</span></span></a>
+  <a href="./09-github_actions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Continuous Integration with GitHub Actions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-conclusion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Conclusion: Adopting Reproducibility in the Real World</span></span></a>
   </div>
 </li>
     </ul>
@@ -438,49 +444,49 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">6.1</span> Introduction</a>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">7.1</span> Introduction</a>
   <ul class="collapse">
-  <li><a href="#spatial-vs-temporal-reproducibility" id="toc-spatial-vs-temporal-reproducibility" class="nav-link" data-scroll-target="#spatial-vs-temporal-reproducibility"><span class="header-section-number">6.1.1</span> Spatial vs Temporal Reproducibility</a></li>
-  <li><a href="#the-best-of-both-worlds" id="toc-the-best-of-both-worlds" class="nav-link" data-scroll-target="#the-best-of-both-worlds"><span class="header-section-number">6.1.2</span> The Best of Both Worlds</a></li>
-  <li><a href="#interactive-development-vs-distribution" id="toc-interactive-development-vs-distribution" class="nav-link" data-scroll-target="#interactive-development-vs-distribution"><span class="header-section-number">6.1.3</span> Interactive Development vs Distribution</a></li>
+  <li><a href="#spatial-vs-temporal-reproducibility" id="toc-spatial-vs-temporal-reproducibility" class="nav-link" data-scroll-target="#spatial-vs-temporal-reproducibility"><span class="header-section-number">7.1.1</span> Spatial vs Temporal Reproducibility</a></li>
+  <li><a href="#the-best-of-both-worlds" id="toc-the-best-of-both-worlds" class="nav-link" data-scroll-target="#the-best-of-both-worlds"><span class="header-section-number">7.1.2</span> The Best of Both Worlds</a></li>
+  <li><a href="#interactive-development-vs-distribution" id="toc-interactive-development-vs-distribution" class="nav-link" data-scroll-target="#interactive-development-vs-distribution"><span class="header-section-number">7.1.3</span> Interactive Development vs Distribution</a></li>
   </ul></li>
-  <li><a href="#docker-essentials" id="toc-docker-essentials" class="nav-link" data-scroll-target="#docker-essentials"><span class="header-section-number">6.2</span> Docker Essentials</a>
+  <li><a href="#docker-essentials" id="toc-docker-essentials" class="nav-link" data-scroll-target="#docker-essentials"><span class="header-section-number">7.2</span> Docker Essentials</a>
   <ul class="collapse">
-  <li><a href="#installing-docker" id="toc-installing-docker" class="nav-link" data-scroll-target="#installing-docker"><span class="header-section-number">6.2.1</span> Installing Docker</a></li>
-  <li><a href="#the-rocker-project-and-image-registries" id="toc-the-rocker-project-and-image-registries" class="nav-link" data-scroll-target="#the-rocker-project-and-image-registries"><span class="header-section-number">6.2.2</span> The Rocker Project and Image Registries</a></li>
-  <li><a href="#basic-docker-workflow" id="toc-basic-docker-workflow" class="nav-link" data-scroll-target="#basic-docker-workflow"><span class="header-section-number">6.2.3</span> Basic Docker Workflow</a></li>
+  <li><a href="#installing-docker" id="toc-installing-docker" class="nav-link" data-scroll-target="#installing-docker"><span class="header-section-number">7.2.1</span> Installing Docker</a></li>
+  <li><a href="#the-rocker-project-and-image-registries" id="toc-the-rocker-project-and-image-registries" class="nav-link" data-scroll-target="#the-rocker-project-and-image-registries"><span class="header-section-number">7.2.2</span> The Rocker Project and Image Registries</a></li>
+  <li><a href="#basic-docker-workflow" id="toc-basic-docker-workflow" class="nav-link" data-scroll-target="#basic-docker-workflow"><span class="header-section-number">7.2.3</span> Basic Docker Workflow</a></li>
   </ul></li>
-  <li><a href="#making-our-own-images" id="toc-making-our-own-images" class="nav-link" data-scroll-target="#making-our-own-images"><span class="header-section-number">6.3</span> Making Our Own Images</a>
+  <li><a href="#making-our-own-images" id="toc-making-our-own-images" class="nav-link" data-scroll-target="#making-our-own-images"><span class="header-section-number">7.3</span> Making Our Own Images</a>
   <ul class="collapse">
-  <li><a href="#a-minimal-dockerfile-with-nix" id="toc-a-minimal-dockerfile-with-nix" class="nav-link" data-scroll-target="#a-minimal-dockerfile-with-nix"><span class="header-section-number">6.3.1</span> A Minimal Dockerfile with Nix</a></li>
-  <li><a href="#splitting-into-a-reusable-base-image" id="toc-splitting-into-a-reusable-base-image" class="nav-link" data-scroll-target="#splitting-into-a-reusable-base-image"><span class="header-section-number">6.3.2</span> Splitting Into a Reusable Base Image</a></li>
-  <li><a href="#making-t-available-in-the-image" id="toc-making-t-available-in-the-image" class="nav-link" data-scroll-target="#making-t-available-in-the-image"><span class="header-section-number">6.3.3</span> Making T Available in the Image</a></li>
+  <li><a href="#a-minimal-dockerfile-with-nix" id="toc-a-minimal-dockerfile-with-nix" class="nav-link" data-scroll-target="#a-minimal-dockerfile-with-nix"><span class="header-section-number">7.3.1</span> A Minimal Dockerfile with Nix</a></li>
+  <li><a href="#splitting-into-a-reusable-base-image" id="toc-splitting-into-a-reusable-base-image" class="nav-link" data-scroll-target="#splitting-into-a-reusable-base-image"><span class="header-section-number">7.3.2</span> Splitting Into a Reusable Base Image</a></li>
+  <li><a href="#making-t-available-in-the-image" id="toc-making-t-available-in-the-image" class="nav-link" data-scroll-target="#making-t-available-in-the-image"><span class="header-section-number">7.3.3</span> Making T Available in the Image</a></li>
   </ul></li>
-  <li><a href="#publishing-images-on-docker-hub" id="toc-publishing-images-on-docker-hub" class="nav-link" data-scroll-target="#publishing-images-on-docker-hub"><span class="header-section-number">6.4</span> Publishing Images on Docker Hub</a>
+  <li><a href="#publishing-images-on-docker-hub" id="toc-publishing-images-on-docker-hub" class="nav-link" data-scroll-target="#publishing-images-on-docker-hub"><span class="header-section-number">7.4</span> Publishing Images on Docker Hub</a>
   <ul class="collapse">
-  <li><a href="#sharing-without-docker-hub" id="toc-sharing-without-docker-hub" class="nav-link" data-scroll-target="#sharing-without-docker-hub"><span class="header-section-number">6.4.1</span> Sharing Without Docker Hub</a></li>
+  <li><a href="#sharing-without-docker-hub" id="toc-sharing-without-docker-hub" class="nav-link" data-scroll-target="#sharing-without-docker-hub"><span class="header-section-number">7.4.1</span> Sharing Without Docker Hub</a></li>
   </ul></li>
-  <li><a href="#what-if-you-dont-use-nix" id="toc-what-if-you-dont-use-nix" class="nav-link" data-scroll-target="#what-if-you-dont-use-nix"><span class="header-section-number">6.5</span> What If You Don’t Use Nix?</a></li>
-  <li><a href="#building-docker-images-directly-with-nix" id="toc-building-docker-images-directly-with-nix" class="nav-link" data-scroll-target="#building-docker-images-directly-with-nix"><span class="header-section-number">6.6</span> Building Docker Images Directly with Nix</a>
+  <li><a href="#what-if-you-dont-use-nix" id="toc-what-if-you-dont-use-nix" class="nav-link" data-scroll-target="#what-if-you-dont-use-nix"><span class="header-section-number">7.5</span> What If You Don’t Use Nix?</a></li>
+  <li><a href="#building-docker-images-directly-with-nix" id="toc-building-docker-images-directly-with-nix" class="nav-link" data-scroll-target="#building-docker-images-directly-with-nix"><span class="header-section-number">7.6</span> Building Docker Images Directly with Nix</a>
   <ul class="collapse">
-  <li><a href="#why-skip-the-dockerfile" id="toc-why-skip-the-dockerfile" class="nav-link" data-scroll-target="#why-skip-the-dockerfile"><span class="header-section-number">6.6.1</span> Why Skip the Dockerfile?</a></li>
-  <li><a href="#a-basic-example" id="toc-a-basic-example" class="nav-link" data-scroll-target="#a-basic-example"><span class="header-section-number">6.6.2</span> A Basic Example</a></li>
-  <li><a href="#using-t-with-dockertools" id="toc-using-t-with-dockertools" class="nav-link" data-scroll-target="#using-t-with-dockertools"><span class="header-section-number">6.6.3</span> Using T with dockerTools</a></li>
-  <li><a href="#benefits-over-dockerfiles" id="toc-benefits-over-dockerfiles" class="nav-link" data-scroll-target="#benefits-over-dockerfiles"><span class="header-section-number">6.6.4</span> Benefits Over Dockerfiles</a></li>
-  <li><a href="#layered-images-for-efficiency" id="toc-layered-images-for-efficiency" class="nav-link" data-scroll-target="#layered-images-for-efficiency"><span class="header-section-number">6.6.5</span> Layered Images for Efficiency</a></li>
-  <li><a href="#when-to-use-this-approach" id="toc-when-to-use-this-approach" class="nav-link" data-scroll-target="#when-to-use-this-approach"><span class="header-section-number">6.6.6</span> When to Use This Approach</a></li>
+  <li><a href="#why-skip-the-dockerfile" id="toc-why-skip-the-dockerfile" class="nav-link" data-scroll-target="#why-skip-the-dockerfile"><span class="header-section-number">7.6.1</span> Why Skip the Dockerfile?</a></li>
+  <li><a href="#a-basic-example" id="toc-a-basic-example" class="nav-link" data-scroll-target="#a-basic-example"><span class="header-section-number">7.6.2</span> A Basic Example</a></li>
+  <li><a href="#using-t-with-dockertools" id="toc-using-t-with-dockertools" class="nav-link" data-scroll-target="#using-t-with-dockertools"><span class="header-section-number">7.6.3</span> Using T with dockerTools</a></li>
+  <li><a href="#benefits-over-dockerfiles" id="toc-benefits-over-dockerfiles" class="nav-link" data-scroll-target="#benefits-over-dockerfiles"><span class="header-section-number">7.6.4</span> Benefits Over Dockerfiles</a></li>
+  <li><a href="#layered-images-for-efficiency" id="toc-layered-images-for-efficiency" class="nav-link" data-scroll-target="#layered-images-for-efficiency"><span class="header-section-number">7.6.5</span> Layered Images for Efficiency</a></li>
+  <li><a href="#when-to-use-this-approach" id="toc-when-to-use-this-approach" class="nav-link" data-scroll-target="#when-to-use-this-approach"><span class="header-section-number">7.6.6</span> When to Use This Approach</a></li>
   </ul></li>
-  <li><a href="#dockerising-a-t-pipeline" id="toc-dockerising-a-t-pipeline" class="nav-link" data-scroll-target="#dockerising-a-t-pipeline"><span class="header-section-number">6.7</span> Dockerising a T Pipeline</a>
+  <li><a href="#dockerising-a-t-pipeline" id="toc-dockerising-a-t-pipeline" class="nav-link" data-scroll-target="#dockerising-a-t-pipeline"><span class="header-section-number">7.7</span> Dockerising a T Pipeline</a>
   <ul class="collapse">
-  <li><a href="#step-1-the-dockerfile" id="toc-step-1-the-dockerfile" class="nav-link" data-scroll-target="#step-1-the-dockerfile"><span class="header-section-number">6.7.1</span> Step 1: The Dockerfile</a></li>
-  <li><a href="#step-2-the-pipeline" id="toc-step-2-the-pipeline" class="nav-link" data-scroll-target="#step-2-the-pipeline"><span class="header-section-number">6.7.2</span> Step 2: The Pipeline</a></li>
-  <li><a href="#step-3-build-and-run" id="toc-step-3-build-and-run" class="nav-link" data-scroll-target="#step-3-build-and-run"><span class="header-section-number">6.7.3</span> Step 3: Build and Run</a></li>
-  <li><a href="#alternative-using-dockertools-for-t" id="toc-alternative-using-dockertools-for-t" class="nav-link" data-scroll-target="#alternative-using-dockertools-for-t"><span class="header-section-number">6.7.4</span> Alternative: Using dockerTools for T</a></li>
+  <li><a href="#step-1-the-dockerfile" id="toc-step-1-the-dockerfile" class="nav-link" data-scroll-target="#step-1-the-dockerfile"><span class="header-section-number">7.7.1</span> Step 1: The Dockerfile</a></li>
+  <li><a href="#step-2-the-pipeline" id="toc-step-2-the-pipeline" class="nav-link" data-scroll-target="#step-2-the-pipeline"><span class="header-section-number">7.7.2</span> Step 2: The Pipeline</a></li>
+  <li><a href="#step-3-build-and-run" id="toc-step-3-build-and-run" class="nav-link" data-scroll-target="#step-3-build-and-run"><span class="header-section-number">7.7.3</span> Step 3: Build and Run</a></li>
+  <li><a href="#alternative-using-dockertools-for-t" id="toc-alternative-using-dockertools-for-t" class="nav-link" data-scroll-target="#alternative-using-dockertools-for-t"><span class="header-section-number">7.7.4</span> Alternative: Using dockerTools for T</a></li>
   </ul></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">6.8</span> Summary</a></li>
-  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">6.9</span> Further Reading</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">7.8</span> Summary</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">7.9</span> Further Reading</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/b-rodrigues/rap4mads_2026/edit/main/07-docker.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/b-rodrigues/rap4mads_2026/edit/main/08-docker.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -488,7 +494,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Containerisation With Docker</span></h1>
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Containerisation With Docker</span></h1>
 </div>
 
 
@@ -516,14 +522,14 @@ div.csl-indent {
 </div>
 </div>
 </div>
-<section id="introduction" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">6.1</span> Introduction</h2>
+<section id="introduction" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">7.1</span> Introduction</h2>
 <p>Up until now, we’ve built reproducible environments with Nix, written testable code with FP principles, orchestrated pipelines with T, and made them robust with error handling and debugging. Now we turn to <strong>distribution</strong>: how do we share our work with others who may not have Nix installed?</p>
 <p>Nix gives us fine-grained control over every package and dependency in our project, ensuring bit-for-bit reproducibility. However, when it comes to distributing a <em>data product</em>, another technology, Docker, is incredibly popular.</p>
 <p>A common misconception is that Nix and Docker are alternatives, that you must choose one or the other. This is wrong. They are conceptually different tools that solve different problems. Nix is a <strong>package manager and build system</strong>: it answers “what software do I need and how do I build it reproducibly?” Docker is a <strong>containerisation platform</strong>: it answers “how do I package and run an application in isolation?” Understanding this distinction is key to using them together effectively.</p>
 <p>While Nix manages dependencies for an application that runs on a host operating system, Docker takes a different approach: it packages an application <em>along with</em> a lightweight operating system and all its dependencies into a single, portable unit called a <strong>container</strong>. This container can then run on any machine that has Docker installed, regardless of its underlying OS. Being familiar with both tools makes you a more versatile data scientist: you can use Nix for precise, reproducible development environments and Docker for distributing your work to colleagues, servers, or CI pipelines that may not have Nix installed.</p>
-<section id="spatial-vs-temporal-reproducibility" class="level3" data-number="6.1.1">
-<h3 data-number="6.1.1" class="anchored" data-anchor-id="spatial-vs-temporal-reproducibility"><span class="header-section-number">6.1.1</span> Spatial vs Temporal Reproducibility</h3>
+<section id="spatial-vs-temporal-reproducibility" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="spatial-vs-temporal-reproducibility"><span class="header-section-number">7.1.1</span> Spatial vs Temporal Reproducibility</h3>
 <p>To understand when and why to use Docker, it helps to distinguish between two types of reproducibility:</p>
 <ul>
 <li><p><strong>Spatial reproducibility</strong>: The ability to execute an analysis identically across different machines <em>right now</em>. Docker excels here: a container runs the same way on your laptop, a colleague’s workstation, and a cloud server.</p></li>
@@ -532,8 +538,8 @@ div.csl-indent {
 <p>This distinction is crucial. Docker’s true reproducibility promise is that a specific, pre-built image will always launch an identical container. It does <em>not</em> promise that building the same <code>Dockerfile</code> twice will yield an identical image.</p>
 <p>As empirical research has shown, achieving deterministic builds requires systems designed for this purpose, like Nix’s functional model, where identical inputs always produce identical outputs. Studies rebuilding over 700,000 historical Nix packages from snapshots spanning several years found bit-for-bit reproducibility rates exceeding 90% <span class="citation" data-cites="malka2025">(<a href="#ref-malka2025" role="doc-biblioref">Malka, Zacchiroli, and Zimmermann 2025</a>)</span>.</p>
 </section>
-<section id="the-best-of-both-worlds" class="level3" data-number="6.1.2">
-<h3 data-number="6.1.2" class="anchored" data-anchor-id="the-best-of-both-worlds"><span class="header-section-number">6.1.2</span> The Best of Both Worlds</h3>
+<section id="the-best-of-both-worlds" class="level3" data-number="7.1.2">
+<h3 data-number="7.1.2" class="anchored" data-anchor-id="the-best-of-both-worlds"><span class="header-section-number">7.1.2</span> The Best of Both Worlds</h3>
 <p>This is why we combine Nix and Docker rather than choosing one or the other:</p>
 <ul>
 <li><strong>Nix</strong> provides strong temporal reproducibility: the guarantee that an environment built today will be identical when rebuilt years later.</li>
@@ -547,8 +553,8 @@ div.csl-indent {
 </ol>
 <p>This chapter covers all three, starting with the first two.</p>
 </section>
-<section id="interactive-development-vs-distribution" class="level3" data-number="6.1.3">
-<h3 data-number="6.1.3" class="anchored" data-anchor-id="interactive-development-vs-distribution"><span class="header-section-number">6.1.3</span> Interactive Development vs Distribution</h3>
+<section id="interactive-development-vs-distribution" class="level3" data-number="7.1.3">
+<h3 data-number="7.1.3" class="anchored" data-anchor-id="interactive-development-vs-distribution"><span class="header-section-number">7.1.3</span> Interactive Development vs Distribution</h3>
 <p>This approach also clarifies <em>when</em> to use each tool:</p>
 <ul>
 <li><p><strong>Use Nix directly</strong> for interactive development. It integrates seamlessly with your IDE and filesystem. No volume mounts, no port forwarding, no graphical application headaches.</p></li>
@@ -558,10 +564,10 @@ div.csl-indent {
 <p>The <a href="https://rocker-project.org/">Rocker Project</a><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> provides a large collection of ready-to-use Docker images for R users.</p>
 </section>
 </section>
-<section id="docker-essentials" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="docker-essentials"><span class="header-section-number">6.2</span> Docker Essentials</h2>
-<section id="installing-docker" class="level3" data-number="6.2.1">
-<h3 data-number="6.2.1" class="anchored" data-anchor-id="installing-docker"><span class="header-section-number">6.2.1</span> Installing Docker</h3>
+<section id="docker-essentials" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="docker-essentials"><span class="header-section-number">7.2</span> Docker Essentials</h2>
+<section id="installing-docker" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="installing-docker"><span class="header-section-number">7.2.1</span> Installing Docker</h3>
 <p>The first step is to install Docker. You’ll find the instructions for Ubuntu <a href="https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository">here</a><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>, for Windows <a href="https://docs.docker.com/desktop/install/windows-install/">here</a><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> (read the system requirements section as well!) and for macOS <a href="https://docs.docker.com/desktop/install/mac-install/">here</a><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> (make sure to choose the right version for the architecture of your Mac, if you have an M1 Mac use <em>Mac with Apple silicon</em>).</p>
 <p>After installation, it might be a good idea to restart your computer, if the installation wizard does not invite you to do so. To check whether Docker was installed successfully, run the following command in a terminal:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> hello-world</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -590,8 +596,8 @@ For more examples and ideas, visit:
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">groups</span> <span class="va">$USER</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>You should see your username and a list of groups that your user belongs to. If a group called <code>docker</code> is not listed, then you should add yourself to the group by following <a href="https://docs.docker.com/engine/install/linux-postinstall/">these steps</a><a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</p>
 </section>
-<section id="the-rocker-project-and-image-registries" class="level3" data-number="6.2.2">
-<h3 data-number="6.2.2" class="anchored" data-anchor-id="the-rocker-project-and-image-registries"><span class="header-section-number">6.2.2</span> The Rocker Project and Image Registries</h3>
+<section id="the-rocker-project-and-image-registries" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="the-rocker-project-and-image-registries"><span class="header-section-number">7.2.2</span> The Rocker Project and Image Registries</h3>
 <p>When running a command like:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> hello-world</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>what happens is that an image, in this case <code>hello-world</code>, gets pulled from a so-called <em>registry</em>. A registry is a storage and distribution system for Docker images. Think of it as a GitHub for Docker images, where you can push and pull images, much like you would with code repositories. The default public registry that Docker uses is called Docker Hub, but companies can also host their own private registries to store proprietary images.</p>
@@ -608,8 +614,8 @@ For more examples and ideas, visit:
 <p>Thankfully, the Rocker Project provides a list of images with many packages already available. For example to run R with the <code>{tidyverse}</code> collection of packages already pre-installed, run:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-e</span> PASSWORD=yourpassword <span class="at">-p</span> 8787:8787 rocker/tidyverse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="basic-docker-workflow" class="level3" data-number="6.2.3">
-<h3 data-number="6.2.3" class="anchored" data-anchor-id="basic-docker-workflow"><span class="header-section-number">6.2.3</span> Basic Docker Workflow</h3>
+<section id="basic-docker-workflow" class="level3" data-number="7.2.3">
+<h3 data-number="7.2.3" class="anchored" data-anchor-id="basic-docker-workflow"><span class="header-section-number">7.2.3</span> Basic Docker Workflow</h3>
 <p>You already know about running containers using <code>docker run</code>. With the commands we ran before, your terminal will need to stay open, or else, the container will stop. Starting now, we will run Docker commands in the background using the <code>-d</code> flag (<em>d</em> as in <em>detach</em>):</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-d</span> <span class="at">-e</span> PASSWORD=yourpassword <span class="at">-p</span> 8787:8787 rocker/tidyverse</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>You can run several containers in the background simultaneously. List running containers with <code>docker ps</code>:</p>
@@ -636,11 +642,11 @@ For more examples and ideas, visit:
 <p>You should now be able to save scripts inside the <code>scripts/</code> folder from RStudio and they will appear in the folder you created on your host machine.</p>
 </section>
 </section>
-<section id="making-our-own-images" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="making-our-own-images"><span class="header-section-number">6.3</span> Making Our Own Images</h2>
+<section id="making-our-own-images" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="making-our-own-images"><span class="header-section-number">7.3</span> Making Our Own Images</h2>
 <p>To create our own images, you can start from an image provided by an open source project like Rocker, or you can start from the base Ubuntu image. Since we are using Nix to set up the reproducible development environment, we can use <code>ubuntu:latest</code>. Our development environment will always be exactly the same, thanks to Nix.</p>
-<section id="a-minimal-dockerfile-with-nix" class="level3" data-number="6.3.1">
-<h3 data-number="6.3.1" class="anchored" data-anchor-id="a-minimal-dockerfile-with-nix"><span class="header-section-number">6.3.1</span> A Minimal Dockerfile with Nix</h3>
+<section id="a-minimal-dockerfile-with-nix" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="a-minimal-dockerfile-with-nix"><span class="header-section-number">7.3.1</span> A Minimal Dockerfile with Nix</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> ubuntu:latest</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">apt</span> update <span class="at">-y</span></span>
@@ -671,8 +677,8 @@ For more examples and ideas, visit:
 <span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="kw">CMD</span> [<span class="st">"nix"</span>, <span class="st">"develop"</span>, <span class="st">"--command"</span>, <span class="st">"bash"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Every <code>Dockerfile</code> starts with a <code>FROM</code> statement specifying the base image. Then, every command starts with <code>RUN</code>. We install and configure Nix, copy the T project’s Nix files, and build the environment from the flake. Finally, when the container starts, <code>nix develop</code> drops you into the project’s development shell (the <code>CMD</code> statement). This is the flake-native command: unlike the legacy <code>nix-shell</code>, which looks for a <code>shell.nix</code> or <code>default.nix</code> file, <code>nix develop</code> uses your <code>flake.nix</code>, consistent with the <code>nix build --accept-flake-config .</code> step above. Note that it expects an interactive terminal, so run the container with <code>docker run -it</code>.</p>
 </section>
-<section id="splitting-into-a-reusable-base-image" class="level3" data-number="6.3.2">
-<h3 data-number="6.3.2" class="anchored" data-anchor-id="splitting-into-a-reusable-base-image"><span class="header-section-number">6.3.2</span> Splitting Into a Reusable Base Image</h3>
+<section id="splitting-into-a-reusable-base-image" class="level3" data-number="7.3.2">
+<h3 data-number="7.3.2" class="anchored" data-anchor-id="splitting-into-a-reusable-base-image"><span class="header-section-number">7.3.2</span> Splitting Into a Reusable Base Image</h3>
 <p>This image actually does two things:</p>
 <ul>
 <li>a first step which consists in setting up Nix inside Docker;</li>
@@ -720,8 +726,8 @@ For more examples and ideas, visit:
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-it</span> <span class="at">--rm</span> <span class="at">--name</span> my-project-container my-project</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This drops you in an interactive Nix shell running inside Docker!</p>
 </section>
-<section id="making-t-available-in-the-image" class="level3" data-number="6.3.3">
-<h3 data-number="6.3.3" class="anchored" data-anchor-id="making-t-available-in-the-image"><span class="header-section-number">6.3.3</span> Making T Available in the Image</h3>
+<section id="making-t-available-in-the-image" class="level3" data-number="7.3.3">
+<h3 data-number="7.3.3" class="anchored" data-anchor-id="making-t-available-in-the-image"><span class="header-section-number">7.3.3</span> Making T Available in the Image</h3>
 <p>So far, our images contain Nix and the packages we asked Nix to install. If your project uses T, you also need the <code>t</code> executable inside the container. T is distributed exclusively through Nix and is never installed as a system program, so the natural approach is to build it from the T flake and put <code>t</code> on the <code>PATH</code>. Add a step to the Dockerfile:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">nix</span> build <span class="at">--accept-flake-config</span> github:b-rodrigues/tlang <span class="dt">\</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&amp;&amp;</span> <span class="fu">ln</span> <span class="at">-s</span> <span class="st">"</span><span class="va">$(</span><span class="fu">readlink</span> <span class="at">-f</span> result<span class="va">)</span><span class="st">/bin/t"</span> /usr/local/bin/t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -733,8 +739,8 @@ For more examples and ideas, visit:
 <p>Either way, <code>t</code> is available in the container without ever being installed as a system program.</p>
 </section>
 </section>
-<section id="publishing-images-on-docker-hub" class="level2" data-number="6.4">
-<h2 data-number="6.4" class="anchored" data-anchor-id="publishing-images-on-docker-hub"><span class="header-section-number">6.4</span> Publishing Images on Docker Hub</h2>
+<section id="publishing-images-on-docker-hub" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="publishing-images-on-docker-hub"><span class="header-section-number">7.4</span> Publishing Images on Docker Hub</h2>
 <p>If you want to share Docker images through Docker Hub, you first need to create a free account. A free account gives you unlimited public repositories.</p>
 <p>List all images on your computer:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> images</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -748,8 +754,8 @@ For more examples and ideas, visit:
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> your_username/nix-base:latest</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="fu">mkdir</span> ...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<section id="sharing-without-docker-hub" class="level3" data-number="6.4.1">
-<h3 data-number="6.4.1" class="anchored" data-anchor-id="sharing-without-docker-hub"><span class="header-section-number">6.4.1</span> Sharing Without Docker Hub</h3>
+<section id="sharing-without-docker-hub" class="level3" data-number="7.4.1">
+<h3 data-number="7.4.1" class="anchored" data-anchor-id="sharing-without-docker-hub"><span class="header-section-number">7.4.1</span> Sharing Without Docker Hub</h3>
 <p>If you can’t upload to Docker Hub, you can save the image to a file:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> save nix-base <span class="kw">|</span> <span class="fu">gzip</span> <span class="op">&gt;</span> nix-base.tgz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Load it on another machine:</p>
@@ -757,8 +763,8 @@ For more examples and ideas, visit:
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> load <span class="op">&lt;</span> nix-base.tar</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
-<section id="what-if-you-dont-use-nix" class="level2" data-number="6.5">
-<h2 data-number="6.5" class="anchored" data-anchor-id="what-if-you-dont-use-nix"><span class="header-section-number">6.5</span> What If You Don’t Use Nix?</h2>
+<section id="what-if-you-dont-use-nix" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="what-if-you-dont-use-nix"><span class="header-section-number">7.5</span> What If You Don’t Use Nix?</h2>
 <p>Using Nix inside of Docker makes it very easy to set up an environment, but what if you can’t use Nix for some reason? In this case, you would need to use other tools to install the right R or Python packages and it is likely going to be more difficult. The main issue you will face is missing development libraries.</p>
 <p>For example, to install and use the R <code>{stringr}</code> package, you will need to first install <code>libicu-dev</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> rocker/r-ver:4.5.1</span>
@@ -774,17 +780,17 @@ For more examples and ideas, visit:
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> rocker/r-ver@sha256:1dbe7a6718b7bd8630addc45a32731624fb7b7ffa08c0b5b91959b0dbf7ba88e</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This will always pull exactly the same layers. However, at some point, that version of Ubuntu will be outdated. Using Nix, you can stay on <code>ubuntu:latest</code>.</p>
 </section>
-<section id="building-docker-images-directly-with-nix" class="level2" data-number="6.6">
-<h2 data-number="6.6" class="anchored" data-anchor-id="building-docker-images-directly-with-nix"><span class="header-section-number">6.6</span> Building Docker Images Directly with Nix</h2>
+<section id="building-docker-images-directly-with-nix" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="building-docker-images-directly-with-nix"><span class="header-section-number">7.6</span> Building Docker Images Directly with Nix</h2>
 <p>So far, we’ve used Nix <em>inside</em> Docker containers. But there’s an even more powerful approach: using Nix to build Docker images directly, bypassing <code>Dockerfile</code>s entirely.</p>
 <p>Nix provides <code>dockerTools</code>, a set of functions that can create OCI-compliant container images. Because these images are built through Nix’s deterministic build system, they have stronger reproducibility guarantees than images built with <code>docker build</code>.</p>
-<section id="why-skip-the-dockerfile" class="level3" data-number="6.6.1">
-<h3 data-number="6.6.1" class="anchored" data-anchor-id="why-skip-the-dockerfile"><span class="header-section-number">6.6.1</span> Why Skip the Dockerfile?</h3>
+<section id="why-skip-the-dockerfile" class="level3" data-number="7.6.1">
+<h3 data-number="7.6.1" class="anchored" data-anchor-id="why-skip-the-dockerfile"><span class="header-section-number">7.6.1</span> Why Skip the Dockerfile?</h3>
 <p>A <code>Dockerfile</code> is fundamentally imperative: it’s a script of commands executed in order. Commands like <code>apt-get update</code> are non-deterministic by nature. Even with careful pinning, you’re fighting the tool’s design.</p>
 <p>Nix’s <code>dockerTools.buildImage</code> is declarative. You describe what should be in the image, and Nix figures out how to build it reproducibly. The resulting image is a pure function of its inputs.</p>
 </section>
-<section id="a-basic-example" class="level3" data-number="6.6.2">
-<h3 data-number="6.6.2" class="anchored" data-anchor-id="a-basic-example"><span class="header-section-number">6.6.2</span> A Basic Example</h3>
+<section id="a-basic-example" class="level3" data-number="7.6.2">
+<h3 data-number="7.6.2" class="anchored" data-anchor-id="a-basic-example"><span class="header-section-number">7.6.2</span> A Basic Example</h3>
 <p>Here’s a Nix expression that builds a Docker image containing R and some packages:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode nix code-with-copy"><code class="sourceCode nix"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># docker-image.nix</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span></span>
@@ -826,8 +832,8 @@ For more examples and ideas, visit:
 <span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Run it</span></span>
 <span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-it</span> <span class="at">--rm</span> my-r-env:latest</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="using-t-with-dockertools" class="level3" data-number="6.6.3">
-<h3 data-number="6.6.3" class="anchored" data-anchor-id="using-t-with-dockertools"><span class="header-section-number">6.6.3</span> Using T with dockerTools</h3>
+<section id="using-t-with-dockertools" class="level3" data-number="7.6.3">
+<h3 data-number="7.6.3" class="anchored" data-anchor-id="using-t-with-dockertools"><span class="header-section-number">7.6.3</span> Using T with dockerTools</h3>
 <p>The previous example manually defines the R environment in Nix. If you prefer to let T define your environment (as we’ve done throughout this book), you can build the Docker image from your T project’s flake.</p>
 <p>First, make sure your <code>tproject.toml</code> declares the packages you need:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[r-dependencies]</span></span>
@@ -861,8 +867,8 @@ For more examples and ideas, visit:
 <span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This approach lets you keep your familiar T workflow for defining environments while gaining the reproducibility benefits of <code>dockerTools</code> for image creation. Any changes to your <code>tproject.toml</code> → <code>flake.nix</code> will automatically propagate to the Docker image on the next build.</p>
 </section>
-<section id="benefits-over-dockerfiles" class="level3" data-number="6.6.4">
-<h3 data-number="6.6.4" class="anchored" data-anchor-id="benefits-over-dockerfiles"><span class="header-section-number">6.6.4</span> Benefits Over Dockerfiles</h3>
+<section id="benefits-over-dockerfiles" class="level3" data-number="7.6.4">
+<h3 data-number="7.6.4" class="anchored" data-anchor-id="benefits-over-dockerfiles"><span class="header-section-number">7.6.4</span> Benefits Over Dockerfiles</h3>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 22%">
@@ -900,8 +906,8 @@ For more examples and ideas, visit:
 </tbody>
 </table>
 </section>
-<section id="layered-images-for-efficiency" class="level3" data-number="6.6.5">
-<h3 data-number="6.6.5" class="anchored" data-anchor-id="layered-images-for-efficiency"><span class="header-section-number">6.6.5</span> Layered Images for Efficiency</h3>
+<section id="layered-images-for-efficiency" class="level3" data-number="7.6.5">
+<h3 data-number="7.6.5" class="anchored" data-anchor-id="layered-images-for-efficiency"><span class="header-section-number">7.6.5</span> Layered Images for Efficiency</h3>
 <p>For faster CI builds, you can create layered images where the base environment is cached:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode nix code-with-copy"><code class="sourceCode nix"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>pkgs<span class="op">.</span>dockerTools<span class="op">.</span>buildLayeredImage <span class="op">{</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="va">name</span> <span class="op">=</span> <span class="st">"my-analysis"</span><span class="op">;</span></span>
@@ -915,8 +921,8 @@ For more examples and ideas, visit:
 <span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>buildLayeredImage</code> creates separate layers for each package, so unchanged dependencies are cached between builds.</p>
 </section>
-<section id="when-to-use-this-approach" class="level3" data-number="6.6.6">
-<h3 data-number="6.6.6" class="anchored" data-anchor-id="when-to-use-this-approach"><span class="header-section-number">6.6.6</span> When to Use This Approach</h3>
+<section id="when-to-use-this-approach" class="level3" data-number="7.6.6">
+<h3 data-number="7.6.6" class="anchored" data-anchor-id="when-to-use-this-approach"><span class="header-section-number">7.6.6</span> When to Use This Approach</h3>
 <ul>
 <li><strong>CI/CD pipelines</strong>: When you need reproducible image builds as part of automated workflows</li>
 <li><strong>Minimal images</strong>: When image size matters and you want only what you need</li>
@@ -925,8 +931,8 @@ For more examples and ideas, visit:
 <p>For simpler use cases, the “Nix inside Docker” approach from earlier sections may be more accessible.</p>
 </section>
 </section>
-<section id="dockerising-a-t-pipeline" class="level2" data-number="6.7">
-<h2 data-number="6.7" class="anchored" data-anchor-id="dockerising-a-t-pipeline"><span class="header-section-number">6.7</span> Dockerising a T Pipeline</h2>
+<section id="dockerising-a-t-pipeline" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="dockerising-a-t-pipeline"><span class="header-section-number">7.7</span> Dockerising a T Pipeline</h2>
 <p>We can package our entire T project into a single Docker image. This image can then be run by anyone with Docker installed, regardless of their host operating system or whether they have Nix.</p>
 <p>Assume your project directory has:</p>
 <pre><code>.
@@ -939,8 +945,8 @@ For more examples and ideas, visit:
 ├── tproject.toml
 ├── flake.nix
 └── flake.lock</code></pre>
-<section id="step-1-the-dockerfile" class="level3" data-number="6.7.1">
-<h3 data-number="6.7.1" class="anchored" data-anchor-id="step-1-the-dockerfile"><span class="header-section-number">6.7.1</span> Step 1: The Dockerfile</h3>
+<section id="step-1-the-dockerfile" class="level3" data-number="7.7.1">
+<h3 data-number="7.7.1" class="anchored" data-anchor-id="step-1-the-dockerfile"><span class="header-section-number">7.7.1</span> Step 1: The Dockerfile</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> nix-base:latest</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Or: FROM your-username/nix-base:latest</span></span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -956,8 +962,8 @@ For more examples and ideas, visit:
 <span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Export the pipeline artifacts when the container runs</span></span>
 <span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a><span class="kw">CMD</span> [<span class="st">"bash"</span>, <span class="st">"-c"</span>, <span class="st">"cp -r _pipeline /output"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="step-2-the-pipeline" class="level3" data-number="6.7.2">
-<h3 data-number="6.7.2" class="anchored" data-anchor-id="step-2-the-pipeline"><span class="header-section-number">6.7.2</span> Step 2: The Pipeline</h3>
+<section id="step-2-the-pipeline" class="level3" data-number="7.7.2">
+<h3 data-number="7.7.2" class="anchored" data-anchor-id="step-2-the-pipeline"><span class="header-section-number">7.7.2</span> Step 2: The Pipeline</h3>
 <p>The pipeline lives in <code>src/pipeline.t</code>. It loads the data in T and produces the result as a node artifact:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code><span class="co">-- src/pipeline.t</span>
 p <span class="sc">=</span> <span class="cf">pipeline</span> {
@@ -973,8 +979,8 @@ p <span class="sc">=</span> <span class="cf">pipeline</span> {
 <span class="fu">build_pipeline</span>(p, verbose <span class="sc">=</span> <span class="dv">1</span>)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>When T builds the pipeline, every node’s artifact is written to the <code>_pipeline/</code> directory. The <code>mtcars_head</code> node’s result is stored there as JSON, ready to be exported.</p>
 </section>
-<section id="step-3-build-and-run" class="level3" data-number="6.7.3">
-<h3 data-number="6.7.3" class="anchored" data-anchor-id="step-3-build-and-run"><span class="header-section-number">6.7.3</span> Step 3: Build and Run</h3>
+<section id="step-3-build-and-run" class="level3" data-number="7.7.3">
+<h3 data-number="7.7.3" class="anchored" data-anchor-id="step-3-build-and-run"><span class="header-section-number">7.7.3</span> Step 3: Build and Run</h3>
 <p>Build:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> my-reproducible-pipeline .</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Run to get results:</p>
@@ -986,8 +992,8 @@ p <span class="sc">=</span> <span class="cf">pipeline</span> {
 <p>Check your local <code>output</code> directory. You’ll find the pipeline’s artifacts, including the <code>mtcars_head</code> result, containing the exact, reproducible output of your pipeline.</p>
 <p>You have successfully packaged a complex, polyglot pipeline into a simple, portable Docker image. This workflow combines the best of both worlds: Nix’s power for creating reproducible builds and Docker’s universal standard for distributing and running applications.</p>
 </section>
-<section id="alternative-using-dockertools-for-t" class="level3" data-number="6.7.4">
-<h3 data-number="6.7.4" class="anchored" data-anchor-id="alternative-using-dockertools-for-t"><span class="header-section-number">6.7.4</span> Alternative: Using dockerTools for T</h3>
+<section id="alternative-using-dockertools-for-t" class="level3" data-number="7.7.4">
+<h3 data-number="7.7.4" class="anchored" data-anchor-id="alternative-using-dockertools-for-t"><span class="header-section-number">7.7.4</span> Alternative: Using dockerTools for T</h3>
 <p>You can also build your T pipeline image purely with Nix, avoiding Dockerfiles entirely. This gives you fully deterministic image builds.</p>
 <p>Create a <code>docker-pipeline.nix</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode nix code-with-copy"><code class="sourceCode nix"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># docker-pipeline.nix</span></span>
@@ -1038,8 +1044,8 @@ p <span class="sc">=</span> <span class="cf">pipeline</span> {
 <p>This approach bakes the pipeline results directly into the image during the Nix build phase. The resulting image is minimal and contains only the outputs, not the full R/Python environment needed to produce them.</p>
 </section>
 </section>
-<section id="summary" class="level2" data-number="6.8">
-<h2 data-number="6.8" class="anchored" data-anchor-id="summary"><span class="header-section-number">6.8</span> Summary</h2>
+<section id="summary" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="summary"><span class="header-section-number">7.8</span> Summary</h2>
 <p>Docker and Nix complement each other:</p>
 <ul>
 <li><strong>Docker</strong> provides a universal runtime and distribution mechanism</li>
@@ -1062,8 +1068,8 @@ p <span class="sc">=</span> <span class="cf">pipeline</span> {
 <li>Package T pipelines for distribution</li>
 </ul>
 </section>
-<section id="further-reading" class="level2" data-number="6.9">
-<h2 data-number="6.9" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">6.9</span> Further Reading</h2>
+<section id="further-reading" class="level2" data-number="7.9">
+<h2 data-number="7.9" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">7.9</span> Further Reading</h2>
 <ul>
 <li><a href="https://www.r-bloggers.com/2019/02/running-your-r-script-in-docker/">Running Your R Script in Docker</a><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></li>
 <li><a href="https://colinfay.me/docker-r-reproducibility/">Docker &amp; R Reproducibility</a><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></li>
@@ -1511,13 +1517,13 @@ Malka, Julien, Stefano Zacchiroli, and Théo Zimmermann. 2024. <span>“Reproduc
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./06-packages.html" class="pagination-link" aria-label="A Short Intro to Packaging Your Code in R and Python">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">A Short Intro to Packaging Your Code in R and Python</span></span>
+      <a href="./07-packages.html" class="pagination-link" aria-label="A Short Intro to Packaging Your Code in R and Python">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">A Short Intro to Packaging Your Code in R and Python</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./08-github_actions.html" class="pagination-link" aria-label="Continuous Integration with GitHub Actions">
-        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Continuous Integration with GitHub Actions</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./09-github_actions.html" class="pagination-link" aria-label="Continuous Integration with GitHub Actions">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Continuous Integration with GitHub Actions</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1526,4 +1532,4 @@ Malka, Julien, Stefano Zacchiroli, and Théo Zimmermann. 2024. <span>“Reproduc
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/b-rodrigues/rap4mads_2026/edit/main/07-docker.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/b-rodrigues/rap4mads_2026/edit/main/08-docker.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
