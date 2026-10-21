@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:rstats-on-nix/nixpkgs/2026-09-23";
     tlang = {
-      url = "github:b-rodrigues/tlang/v0.56.0";
+      url = "github:b-rodrigues/tlang/v0.56.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
@@ -23,34 +23,9 @@
   outputs = { self, nixpkgs, tlang, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system}.extend (final: prev: {
-          jpmml-statsmodels = prev.jpmml-statsmodels.overrideAttrs (oldAttrs: {
-            fetchedMavenDeps = oldAttrs.fetchedMavenDeps.overrideAttrs (_: {
-              outputHash = "sha256-p3JFcsZsN/0ZNoOnC0fMrKnKNY0iCJpFlrrgDy4EtLs=";
-            });
-          });
-        });
+        pkgs = nixpkgs.legacyPackages.${system};
 
-        tlang-pkg = tlang.packages.${system}.default.overrideAttrs (old:
-          let
-            jpmmls = builtins.filter (p: (p.pname or "") == "jpmml-statsmodels") old.buildInputs;
-            oldJpmml = if jpmmls != [] then builtins.head jpmmls else null;
-          in {
-            buildInputs = map (pkg:
-              if (pkg.pname or "") == "jpmml-statsmodels"
-              then pkgs.jpmml-statsmodels
-              else pkg
-            ) old.buildInputs;
-            installPhase =
-              if oldJpmml != null then
-                builtins.replaceStrings
-                  [ oldJpmml.outPath ]
-                  [ "${pkgs.jpmml-statsmodels}" ]
-                  (builtins.unsafeDiscardStringContext old.installPhase)
-              else
-                old.installPhase;
-          }
-        );
+        tlang-pkg = tlang.packages.${system}.default;
 
         rpkgs = builtins.attrValues {
           inherit (pkgs.rPackages)

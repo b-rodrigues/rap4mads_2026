@@ -6,3 +6,4 @@ result
 .aider*
 
 **/*.quarto_ipynb
+/site_libs/
