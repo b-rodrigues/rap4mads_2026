@@ -319,8 +319,67 @@ LLM-generated test, you can verify that the expected output is correct and that
 the test covers the right cases. This makes tests uniquely suited to the "trust
 but verify" workflow that AI-assisted development demands.
 
-In the next chapter, we will start building deeper T pipelines, putting our
-tested functions and scripts to work in real polyglot analyses.
+#### The Test Oracle Problem: Establishing Ground Truth for AI
+
+When you prompt an AI assistant to write both your analytical code and its
+corresponding unit tests, you run headfirst into a subtle and dangerous trap:
+**the test oracle problem**.
+
+In software engineering, a *test oracle* is the mechanism that determines
+whether a program's output is correct. If you ask an LLM to implement a complex
+statistical calculation (such as computing weighted quantiles or calculating a
+Gini coefficient) and then ask the same LLM to write the unit test, the model
+will happily write an assertion that verifies its own implementation—even if its
+underlying math is subtly wrong, biased, or missing an edge case. The test passes,
+giving you a false sense of security.
+
+For AI-assisted data science to be safe and efficient, **the human must provide
+or verify the oracle**. You do not need to write every line of code, but you must
+prepare the ground truth before trusting the model's implementation.
+
+In practice, there are three powerful types of oracles you should prepare:
+
+1.  **Golden Datasets (Snapshot Testing):**
+    A golden dataset is a small, hand-crafted, or authoritatively verified table
+    of inputs and expected outputs. You can compute the expected values by hand
+    for a three-row table, extract them from a trusted textbook, or export them
+    from an established legacy system. When the LLM generates a vectorized
+    pipeline node in Python or R, your test asserts that it produces bit-for-bit
+    or numerically identical results to the golden snapshot.
+
+2.  **Reference Implementations (Dual-Running):**
+    Suppose you want an LLM to write a high-performance, parallelized data
+    cleaning routine, or port an algorithm across languages (for example, from R
+    to Python or Julia). Rather than verifying the new implementation by eye, you
+    use the existing, trusted code as the oracle. You run both implementations on
+    the same sample inputs and assert that their outputs match:
+    
+    ```python
+    def test_optimized_against_reference():
+        sample_input = generate_sample_data()
+        # Reference oracle: trusted, simple, but perhaps slow
+        expected = reference_cleaner(sample_input)
+        # AI-generated candidate: fast, complex, or cross-language
+        actual = fast_ai_cleaner(sample_input)
+        pd.testing.assert_frame_equal(actual, expected)
+    ```
+
+3.  **Property-Based Oracles and Invariants:**
+    Sometimes you cannot predict the exact output for every arbitrary input, but
+    you know the mathematical laws that *must* hold true. In property-based
+    testing, you assert these invariants:
+    *   *Conservation laws:* Total revenue across subgroups must equal total
+        unfiltered revenue.
+    *   *Bounded ranges:* Probabilities must always fall in $[0, 1]$; normalized
+        Z-scores must have a sample mean of 0 and standard deviation of 1.
+    *   *Idempotence:* Running the cleaner twice on the same data must produce
+        the exact same output as running it once (`clean(clean(x)) == clean(x)`).
+    *   *Set preservation:* Sorting or deriving fields must never silently drop
+        unique row IDs or invent new records.
+
+By preparing oracles upfront, you create an objective verification harness. The
+LLM can draft, refactor, and optimize code freely, and you have an automated,
+mathematically grounded referee to verify that the results are genuinely correct.
 
 
 ## Part 2: Advanced Version Control
@@ -514,8 +573,20 @@ t test --json tests/
 
 The agent loop is then straightforward: run `t test --json`, read the top-level
 `status`, and only if it is `"failed"`, read the `error` field of each failing
-result to decide the fix. For CI, `--format junit` emits JUnit XML that runners
-and dashboards understand:
+result to decide the fix.
+
+Notice why the **oracles** we discussed in Part 1 are indispensable here. An
+autonomous agent cannot navigate by vibes; it needs unambiguous, objective exit
+criteria. If the tests in your `tests/` directory are vague or self-referential,
+an agent might "fix" a broken test simply by modifying the assertion to match its
+own buggy output, or by writing a trivial stub that returns a hardcoded value.
+When your test suite is anchored by strict oracles—golden datasets, invariant
+checks, and reference implementations—the agent has an uncompromising benchmark.
+It can propose an edit, execute `t test --json`, inspect the precise structural
+or numerical discrepancy, and iterate autonomously until the oracle is
+satisfied.
+
+For CI, `--format junit` emits JUnit XML that runners and dashboards understand:
 
 ```bash
 t test --format junit tests/

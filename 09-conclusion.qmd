@@ -202,6 +202,30 @@ nodes, or writing the hard function yourself. You are not offloading your
 thinking to the model; you are clearing the path so that when it does think, it
 thinks about the right things.
 
+This concept of "clearing the path" is the foundation of modern **AI harness
+engineering**. For an AI assistant or autonomous agent to be genuinely
+efficient, you cannot simply drop it into an empty directory with an open-ended
+prompt. You must provide a structured harness built upon three essential pillars:
+
+1.  **Context:** The `AGENTS.md` file, schema definitions, and language
+    references that explain the domain, conventions, and what "done" looks like.
+2.  **Deterministic Constraints:** The hermetic Nix environment and isolated,
+    pure T nodes that prevent the model from drifting into dependency hell or
+    mutating global state.
+3.  **Test Oracles and Evaluation Benchmarks:** The golden datasets, reference
+    implementations, and invariant assertions that serve as objective arbiters of
+    correctness.
+
+Preparing these oracles upfront is arguably the highest-leverage work a data
+scientist can do. If you invest twenty minutes to prepare a small, verified
+golden dataset and write a handful of property-based tests, you can unleash an
+AI agent to draft the pipeline nodes, optimize data wrangling, or port algorithms
+across languages. The agent executes against the oracle, receives
+machine-readable diagnostics via `t test --json`, and self-corrects until it
+passes. You never have to wonder whether the AI hallucinated a subtle statistical
+error or corrupted an edge case: the oracle guarantees the result, allowing the
+agent to work at full throttle with complete safety.
+
 The human's job, then, shifts from writing every line to reviewing and
 directing. The bottleneck is no longer "I need to learn everything"; it is "I
 need to understand enough to verify the output." That is a much smaller ask,
