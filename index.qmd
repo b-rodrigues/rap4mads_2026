@@ -25,8 +25,8 @@ What’s new in 2026:
 - **2026-10-30 (1.5 hours)**: Intro (Why T, the reproducibility spectrum) and Nix (environment reproducibility).
 - **2026-11-11 (14:00 - 17:15, MSA 2.400)**: Building Pipelines with T (syntax, nodes, Arrow IPC serialization, DAG caching).
 - **2026-11-19 (14:00 - 17:15, MSA 4.050)**: Pipelines as Function Composition (pure functions, immutability, state elimination).
-- **2026-11-20 (10:15 - 11:45)**: Pipelines as Function Composition (pure functions, immutability, state elimination).
-- **2026-11-27 (14:00 - 17:15, MSA 3.190)**: Professional Workflows: Testing and Git (unit testing with `{testthat}` & `pytest`, test oracles and golden datasets, interactive Git with `git add -p`, pipeline validation with `testcraft`).
+- **2026-11-20 (10:15 - 11:45)**: Professional Workflows I: Testing and Test Oracles (unit testing with `{testthat}` & `pytest`, golden datasets, pipeline assertions with `testcraft`).
+- **2026-11-27 (14:00 - 17:15, MSA 3.190)**: Professional Workflows II: The AI Harness & Collaborative Git (code inspection literacy for LLM traps, authoring `AGENTS.md`, closed-loop agent execution with `t test --json`, interactive Git with `git add -p`).
 - **2026-12-03 (14:00 - 17:15, MNO 1.030)**: Packaging Code in R and Python for T pipelines.
 - **2026-12-10 (14:00 - 17:15, MSA 3.120)**: Containerisation with Docker (spatial vs. temporal reproducibility, packaging Nix & T).
 - **2026-12-16 (12:45 - 15:45, MSA 3.100)**: Continuous Integration with GitHub Actions & Course Project Wrap-up.

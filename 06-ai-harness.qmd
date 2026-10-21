@@ -1,0 +1,521 @@
+# The AI Harness: AGENTS.md, Code Inspection, and Verification
+
+<div style="text-align:center;">
+```{r, echo = F}
+knitr::include_graphics("img/stairs.png")
+```
+</div>
+
+## Learning Outcomes
+
+By the end of this chapter, you will:
+
+- Understand the fundamental shift from **code author** to **code reviewer and harness architect** in AI-assisted data science.
+- Master the **six core programming language traps** that Large Language Models (LLMs) consistently introduce in Python and R, and learn how to identify them by reading code.
+- Understand what an `AGENTS.md` file is, why it is essential, and how it translates human code-review criteria into machine-enforceable negative constraints.
+- Structure a production-grade `AGENTS.md` file covering environment contracts, language guardrails, data boundaries, and verification protocols.
+- Combine `AGENTS.md`, Nix, and `t test --json` into a closed, autonomous self-healing agent loop anchored by strict test oracles.
+
+---
+
+## Introduction: The Inverted Pyramid of Programming
+
+For decades, learning computer programming followed a predictable progression: you memorized syntax, studied standard library functions, learned algorithms and data structures, and spent hundreds of hours practicing the mechanics of typing code into an editor.
+
+The advent of modern code-generation models has completely inverted this pyramid.
+
+Today, generating fifty lines of syntactically valid R or Python code takes three seconds. An LLM can write boilerplate data cleaning scripts, draft visualization code, or outline complex pipelines almost instantaneously. Because the barrier to *producing* code has dropped to zero, typing speed and syntax memorization are no longer the primary bottlenecks of software development.
+
+Instead, the bottleneck has shifted entirely to **inspection, verification, and harness engineering**.
+
+```
+    TRADITIONAL WORKFLOW                 AI-ASSISTED WORKFLOW
+    ┌──────────────────────┐             ┌──────────────────────┐
+    │  Writing & Typing    │ (80%)       │ Specification &      │ (30%)
+    │                      │             │ Harness Design       │
+    ├──────────────────────┤             ├──────────────────────┤
+    │  Review & Debugging  │ (15%)       │ AI Generation        │ ( 5%)
+    ├──────────────────────┤             ├──────────────────────┤
+    │  Harness & Ops       │ ( 5%)       │ Inspection &         │ (65%)
+    └──────────────────────┘             │ Verification         │
+                                         └──────────────────────┘
+```
+
+An LLM is a probabilistic token predictor. It does not understand domain logic, sample variance, memory allocators, or causal inference. It produces code that *looks* like the millions of scripts in its training corpus. In data science, code that "looks plausible" is exceptionally dangerous: it will run without raising an error, create a chart, output a table, and silently compute the wrong numbers.
+
+If you cannot read code critically, an AI assistant does not make you ten times faster—it makes you produce ten times more bugs per hour.
+
+To harness AI safely and efficiently, you need two complementary skills:
+
+1. **Inspection Literacy (The Human Reviewer):** Knowing the specific language semantic traps that models consistently fall into, so you can spot them immediately when inspecting a diff.
+2. **Harness Engineering (The AI Architect):** Constructing the external environment (`AGENTS.md`, Nix, pure T nodes, and test oracles) that constrains the model and forces it to verify its own work.
+
+---
+
+## Part 1: Spotting AI Mistakes: The Six Language Semantic Traps
+
+When an LLM produces buggy analytical code, it rarely fails because it forgot how to write an `if` statement or an arithmetic expression. It fails because of subtle, implicit language mechanics.
+
+Here are the six classic language traps that LLMs fall into across Python and R, why they happen, and how to spot them by reading code.
+
+### Trap 1: Reference Semantics and In-Place Mutation
+
+One of the most frequent bugs in AI-generated Python code is unintended in-place mutation.
+
+In Python, variables are names bound to objects in memory. When you pass a DataFrame, list, or dictionary into a function, Python passes the *object reference*. If the function modifies that object, the changes leak back into the calling environment.
+
+#### What the LLM writes:
+
+```python
+def remove_outliers(df, column, threshold=3.0):
+    # The LLM attempts to clean the data
+    z_scores = (df[column] - df[column].mean()) / df[column].std()
+    # BUG: inplace=True modifies the caller's DataFrame in memory!
+    df.drop(df[z_scores.abs() > threshold].index, inplace=True)
+    return df
+```
+
+#### Why it fails:
+
+If you pass your pipeline's primary dataset into `remove_outliers(raw_data, "price")`, `raw_data` is permanently mutated in the caller's scope. Any other node or downstream analysis expecting the un-dropped data will silently receive the filtered version. In a DAG pipeline or an interactive session, this destroys the mathematical property of **pure functions** and breaks caching.
+
+A related Python bug that LLMs generate constantly is the **mutable default argument**:
+
+```python
+# BUG: The list `columns_to_log` is created ONCE when the function is defined.
+# Subsequent calls share the exact same list in memory!
+def record_metrics(metric_name, value, history=[]):
+    history.append((metric_name, value))
+    return history
+```
+
+#### How to spot it:
+
+- Look for `inplace=True` in pandas methods (`.drop()`, `.fillna()`, `.reset_index()`). In modern, reproducible pipelines, `inplace=True` should be considered an anti-pattern.
+- Look for direct attribute mutation: `df["new_col"] = ...` on an input argument rather than `df.assign(new_col=...)` or creating an explicit copy (`df = df.copy()`).
+- In function definitions, check default arguments: defaults must be immutable (`None`, integers, strings, tuples), never `[]` or `{}`.
+
+::: {.callout-note}
+## R and Copy-on-Modify
+Standard R data frames use **copy-on-modify** semantics, which protects you from this specific bug in base R and `{tidyverse}`. However, if an LLM uses R environments, `data.table` (which uses `:=` for in-place modification), or `R6` reference classes, the exact same in-place mutation trap applies.
+:::
+
+---
+
+### Trap 2: The "Notebook Hangover": Global Scope Capture
+
+LLMs are trained on hundreds of thousands of Jupyter notebooks and exploratory scripts. In a notebook, developers frequently define variables in global scope (`df = pd.read_csv(...)`) and then write small helper functions that casually refer to those global names instead of passing them as arguments.
+
+#### What the LLM writes:
+
+```python
+raw_sales = pd.read_csv("sales.csv")
+
+def calculate_regional_share(region_name):
+    # BUG: `raw_sales` is NOT passed into the function!
+    # It captures `raw_sales` from the global namespace.
+    regional_total = raw_sales[raw_sales["region"] == region_name]["amount"].sum()
+    grand_total = raw_sales["amount"].sum()
+    return regional_total / grand_total
+```
+
+#### Why it fails:
+
+This function works perfectly when you run it interactively in the notebook where `raw_sales` happens to exist. But the moment you move this function into a modular package (`src/utils.py`), a T pipeline node (`pyn()`), or an isolated unit test, it crashes with `NameError: name 'raw_sales' is not defined`. Even worse: if an outer variable with that name *does* exist in another script, the function runs, but reads the wrong data!
+
+A subtle variant of this trap is **closure late-binding**:
+
+```python
+# The LLM tries to generate a list of multiplier functions
+multipliers = [lambda x: x * i for i in range(4)]
+
+# You expect multipliers[2](10) to be 20.
+# BUG: In Python, closures bind the variable name `i`, not its value at creation.
+# All functions evaluate `i` when called (when i is 3)!
+print([m(10) for m in multipliers])
+# Output: [30, 30, 30, 30] (NOT [0, 10, 20, 30]!)
+```
+
+#### How to spot it:
+
+- Scrutinize the function body: does every variable name originate from an argument, an imported module, or a local assignment inside the function?
+- If you see a variable that is neither a parameter nor locally defined, the LLM has captured outer scope.
+
+---
+
+### Trap 3: Silent Type Coercion, Truthiness, and Falsy Edge Cases
+
+Python and R handle type coercion and boolean evaluation ("truthiness") very differently, and LLMs constantly blend the rules of both.
+
+#### What the LLM writes in Python:
+
+```python
+def filter_active_customers(df):
+    # BUG: In pandas, evaluating a Series or DataFrame as a boolean raises:
+    # "ValueError: The truth value of a Series is ambiguous."
+    if df["status"]:
+        return df[df["status"] == "active"]
+    return df
+```
+
+Or when checking for empty collections:
+
+```python
+def process_weights(weights):
+    # The LLM intends to check if weights is None or empty.
+    # BUG: If weights is a numpy array of numbers, `if not weights:` raises
+    # "ValueError: The truth value of an array with more than one element is ambiguous."
+    # If weights is a float 0.0, `not weights` evaluates to True!
+    if not weights:
+        weights = default_weights()
+```
+
+#### What the LLM writes in R:
+
+```r
+# Vector recycling trap
+calculate_adjusted_scores <- function(scores, adjustments) {
+  # If length(scores) is 10 and length(adjustments) is 3,
+  # R silently recycles `adjustments` over `scores`!
+  scores + adjustments
+}
+```
+
+In R, if `adjustments` is shorter than `scores`, R repeats elements of `adjustments` to match the length of `scores`. Unless the lengths are not multiples of each other, this happens with zero warnings. The model assumes vectorized broadcasting behaves like NumPy, but R's recycling rule silently computes nonsensical calculations.
+
+Another classic R trap is confusing `NULL`, `NA`, and empty vectors:
+
+```r
+x <- NULL
+length(x) == 0    # TRUE
+is.na(x)          # logical(0) -> will cause `if (is.na(x))` to crash with "argument is of length zero"!
+```
+
+#### How to spot it:
+
+- In Python: Look for `if df:` or `if series:`. Insist on explicit checks: `if df.empty:` or `if len(df) == 0:`. Check `if x is None:` instead of `if not x:`.
+- In R: Check vector arithmetic between two vectors of uncertain lengths. Insist on `stopifnot(length(scores) == length(adjustments))` or explicit column operations inside `{dplyr}` / `colcraft`.
+
+---
+
+### Trap 4: Floating-Point Comparisons & Numerical Tolerance
+
+Computers represent real numbers using binary floating-point representation (IEEE 754). Many decimal fractions (like $0.1$ or $0.2$) cannot be represented with finite binary precision, leading to minute rounding discrepancies.
+
+#### What the LLM writes:
+
+```python
+def test_budget_allocation():
+    allocations = calculate_allocations(budget=1000.0)
+    # BUG: Floating point arithmetic: 0.1 + 0.2 = 0.30000000000000004
+    # This assertion will fail intermittently depending on CPU architecture!
+    assert allocations["marketing"] + allocations["rd"] + allocations["sales"] == 1000.0
+```
+
+```r
+# R equivalent
+if (sum(proportions) == 1.0) {
+  # BUG: Might evaluate to FALSE even when the math is correct!
+  proceed_with_analysis()
+}
+```
+
+#### Why it fails:
+
+Direct equality comparisons (`==`) on floating-point results are brittle. A calculation that succeeds on an Apple Silicon laptop may fail on an x86 Linux GitHub Actions runner by $10^{-16}$.
+
+#### How to spot it:
+
+- Search for `==` or `!=` applied to continuous numerical columns or float calculations.
+- Replace them with tolerance-based comparisons:
+  - In Python: `math.isclose(a, b, rel_tol=1e-9)` or `np.isclose(a, b)`.
+  - In R: `isTRUE(all.equal(a, b))` or `expect_equal(a, b)`.
+  - In T testcraft: `expect_equal(a, b)`.
+
+---
+
+### Trap 5: The "Helpful" LLM Syndrome: Silent Error Swallowing
+
+LLMs are tuned to be helpful and avoid crashes. When an LLM encounters potential failure points (like missing files, invalid JSON, or parse errors), its instinct is often to catch the exception and return a default value or `None`.
+
+#### What the LLM writes:
+
+```python
+def extract_transaction_amount(record):
+    try:
+        amount = float(record["transaction"]["amount"])
+        currency = record["transaction"]["currency"]
+        return convert_to_eur(amount, currency)
+    except Exception:
+        # BUG: Swallows KeyErrors, TypeErrors, ZeroDivisionError,
+        # and network failures, returning None!
+        return None
+```
+
+#### Why it fails:
+
+In a reproducible analytical pipeline, **silent failures are fatal**. If the data provider changes the key name from `"amount"` to `"total_amount"`, this function will not throw an error. Instead, it will silently return `None` for every single row.
+
+Downstream nodes will proceed to calculate summary statistics, compute averages over non-null values, and produce an empty or distorted report. The pipeline finishes with exit code 0, reporting a clean build when the entire analysis was actually wiped out.
+
+#### How to spot it:
+
+- Look for `except Exception:` or bare `except:`.
+- Look for `tryCatch(..., error = function(e) NULL)` in R.
+- Defensive rule: Exceptions should only catch specific, anticipated errors (like `FileNotFoundError`), and unexpected errors must **fail loudly and immediately**.
+
+---
+
+### Trap 6: API Hallucination and Deprecation Drift
+
+Because LLMs are trained on historical internet data, their training corpora include documentation and tutorials spanning decades. Consequently, models frequently mix old, deprecated APIs with modern code, or synthesize methods that "feel" like they should exist.
+
+#### What the LLM writes:
+
+```python
+# In modern pandas (2.0+), .append() was removed!
+# The LLM still writes it because it saw it thousands of times in 2018 tutorials.
+summary_df = summary_df.append(new_row, ignore_index=True)
+```
+
+```python
+# API hallucination: invent plausible-sounding parameters
+df = pd.read_csv("large_data.csv", optimize_memory=True, fast_mode=True)
+```
+
+#### How to spot it:
+
+- Check parameters against official documentation if a method signature looks unfamiliar.
+- Rely on your Nix environment: if an LLM hallucinated an old pandas 1.x method, running `t test` or `nix develop` will immediately expose the `AttributeError`.
+
+---
+
+## Part 2: Building the Harness: The Role and Structure of `AGENTS.md`
+
+Now that you know the six traps to look for, consider the human cost of catching them.
+
+If every time an AI generates a node or test you have to manually remind it not to use `inplace=True`, not to swallow exceptions, and to use tolerance for float checks, you are wasting cognitive energy on repetitive corrections.
+
+This is where **`AGENTS.md`** enters.
+
+### What is `AGENTS.md`?
+
+`AGENTS.md` is an open standard and convention for repository-level agent guidance. Modern AI developer tools—including Cursor, Claude Code, GitHub Copilot, and T's built-in agents—automatically search for and ingest `AGENTS.md` in the project root before formulating answers or generating code.
+
+It is **system prompt engineering persisted as code**. Instead of giving instructions in an ephemeral chat window that vanishes when you close your browser, `AGENTS.md` lives in your Git repository, version-controlled alongside your code.
+
+```
+┌────────────────────────────────────────────────────────┐
+│                   THE AI HARNESS                       │
+│                                                        │
+│  1. CONTEXT: AGENTS.md & T-LANGUAGE-REFERENCE.md       │
+│     (Domain rules, schemas, negative constraints)      │
+│                                                        │
+│  2. CONSTRAINTS: Nix & Pure T DAG Nodes               │
+│     (Isolated sandboxes, immutable Arrow IPC)          │
+│                                                        │
+│  3. ORACLES: Golden Datasets & Testcraft               │
+│     (Objective mathematical ground truth)              │
+└────────────────────────────────────────────────────────┘
+```
+
+### The Strategy: Translating Inspection Traps into Negative Constraints
+
+The secret to writing an effective `AGENTS.md` is to avoid vague advice like *"Write clean, readable code"*. Models already know how to write clean-looking code; what they need are **explicit negative constraints** that prohibit their habitual failure modes.
+
+Every language trap we covered in Part 1 can be translated into an unambiguous rule:
+
+| Language Trap | Instruction in `AGENTS.md` |
+|:--------------|:---------------------------|
+| In-place mutation | *"Never use `inplace=True`. Always return a transformed copy of data."* |
+| Global scope capture | *"Functions must be pure: all data must enter via parameters; no global variable reads."* |
+| Float equality | *"Never compare floats with `==`. Always use `isclose` or `expect_equal` with tolerance."* |
+| Error swallowing | *"Never catch generic `Exception` to return `None`. Let errors raise or fail loudly."* |
+| Ad-hoc installs | *"Never invoke `pip install` or `install.packages()`. All packages are managed via Nix."* |
+
+---
+
+## An Annotated, Complete `AGENTS.md` Template
+
+Below is a production-ready `AGENTS.md` tailored for a reproducible polyglot project using T, Nix, Python, and R. You can adapt this template directly for your course project.
+
+```markdown
+# Agent Guide: Polyglot Data Pipeline Project
+
+This document provides mandatory operational context, constraints, and coding standards
+for AI agents and human contributors working in this repository.
+
+---
+
+## 1. Environment & Execution Contract (Nix-First)
+
+- **Hermetic Sandbox**: All execution must occur inside the Nix development shell (`nix develop`).
+- **No Ad-Hoc Package Managers**: NEVER invoke `pip install`, `install.packages()`, `conda`,
+  or `apt-get`. All dependencies are declared in `flake.nix` and `tproject.toml`.
+- **Reproducibility Guarantee**: If a required package is missing, instruct the user to add it
+  to `flake.nix` rather than installing it imperatively.
+
+---
+
+## 2. Architecture: Pure Functional DAG Pipelines
+
+- **Orchestration**: All data transformations must be expressed as nodes in `src/pipeline.t`.
+- **Pure Nodes**: Every node must take explicit inputs and produce exactly one serialized output.
+- **Data Interchange**: Pass tabular data between R, Python, and Julia using Apache Arrow IPC (`^ipc`).
+  Do NOT export ad-hoc CSV files or custom temporary files.
+- **Read-Only Data**: The `data/` directory is strictly immutable. Never attempt to write,
+  delete, or overwrite files in `data/`. All generated assets belong in pipeline node storage.
+
+---
+
+## 3. Language Semantic Guardrails (Mandatory)
+
+### Python Standards
+- **Immutability**: Do NOT use `inplace=True` on pandas objects. Return new DataFrames via
+  `.assign()`, `.copy()`, or functional transformations.
+- **No Mutable Defaults**: Never define functions with mutable default arguments (e.g., `def f(x=[])`).
+- **Strict Scoping**: Helper functions must be pure. Do not reference variables from outer/global
+  scope; pass all inputs explicitly as arguments.
+- **Fail Loudly**: Never use broad `try: ... except Exception:` blocks that return `None`. If an
+  unexpected error occurs, allow it to raise.
+- **Numerical Tolerance**: Never assert direct float equality (`==`). Use `pytest.approx()`
+  or `np.isclose()`.
+
+### R Standards
+- **Pure Functions**: Write modular functions inside `R/`. Avoid modifying global options (`options()`)
+  or working directories (`setwd()`).
+- **Explicit Length Checks**: Guard against vector recycling bugs by verifying vector lengths before
+  element-wise operations (`stopifnot(length(a) == length(b))`).
+- **Defensive Missingness**: Explicitly account for `NA` and `NULL` values. Never assume a vector
+  is non-empty without checking.
+
+---
+
+## 4. Verification Protocol & Oracles
+
+- **Test Suite**: Before declaring any task complete, you MUST execute the project test suite:
+  ```bash
+  t test --json
+  ```
+- **Exit Criteria**: A task is only complete when `status` is `"passed"` with 0 failures.
+- **Integrity of Oracles**: You are STRICTLY FORBIDDEN from modifying test assertions or golden
+  datasets in `tests/` to make failing code pass. If a test fails against an oracle, the bug is
+  in your implementation.
+- **Golden Snapshots**: When refactoring data wrangling nodes, verify output equivalence against
+  the verified reference datasets in `tests/fixtures/`.
+```
+
+---
+
+## Part 3: The Closed-Loop Autonomous Agent
+
+When you provide both an `AGENTS.md` and an automated testing oracle, you unlock the ability to run **closed-loop autonomous agent cycles**.
+
+In a standard chat workflow, you are trapped in a tedious human-in-the-loop ping-pong:
+1. You prompt the model.
+2. The model outputs code.
+3. You copy it into your editor.
+4. You run it and get an error.
+5. You paste the error back to the model.
+6. The model apologizes and tries again.
+
+In a closed-loop harness, the AI agent interacts directly with your project's CLI:
+
+```
+                  ┌──────────────────────────────┐
+                  │   Developer Prompt & Task    │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │      Read AGENTS.md          │
+                  │   (Constraints & Context)    │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │    Draft / Refactor Code     │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │      Execute t test --json   │◄────────┐
+                  └──────────────┬───────────────┘         │
+                                 │                         │
+                     ┌───────────┴───────────┐             │
+                     ▼                       ▼             │
+             [status: passed]        [status: failed]      │
+                     │                       │             │
+                     │                       ▼             │
+                     │             Read JSON error field   │
+                     │             & Oracle discrepancy    │
+                     │                       │             │
+                     │                       ▼             │
+                     │             Self-Correct Code ──────┘
+                     ▼
+       ┌───────────────────────────┐
+       │ Done: Present Clean Diff  │
+       │ for Human Review (git -p) │
+       └───────────────────────────┘
+```
+
+Notice why **`t test --json`** and **test oracles** are critical to this loop:
+
+1. **Machine-Readable Diagnostics:** The agent does not need to parse noisy terminal ANSI colors. The structured JSON gives it the exact test file, line number, and expectation failure.
+2. **Objective Ground Truth:** Because the rule in `AGENTS.md` prohibits modifying the oracle in `tests/`, the agent cannot cheat by watering down the test. It must fix its analytical logic until the math agrees with the golden benchmark.
+3. **Effortless Human Oversight:** You only inspect the work once the agent has proven that all oracles pass. You then run `git add -p` to review the final diff for stylistic elegance and architectural cleanliness.
+
+---
+
+## Summary
+
+The rise of AI code generation does not diminish the need for foundational computer science knowledge; it sharpens it.
+
+1. **Code Review is the New Core Skill:** Because drafting code is cheap, your primary value as a data scientist is the ability to inspect, verify, and validate AI output.
+2. **Watch for the Six Traps:** In-place mutation, global scope leakage, truthiness confusion, float equality, silent error swallowing, and API hallucinations are the classic signatures of AI code.
+3. **`AGENTS.md` is System Engineering:** Encode your review standards as persistent, version-controlled constraints so the model avoids these traps automatically.
+4. **Harness + Oracles = Autonomy:** When you surround an AI model with Nix (environment), T (pure DAG execution), `AGENTS.md` (constraints), and testcraft (oracles), you transform an erratic chatbot into a reliable, autonomous engineering partner.
+
+---
+
+## Exercises
+
+### Exercise 1: Spotting Semantic Traps
+
+Inspect the following AI-generated Python function intended to compute normalized min-max scaling for feature columns in a dataset:
+
+```python
+import pandas as pd
+
+def min_max_scale_data(df, columns, feature_range=(0, 1)):
+    low, high = feature_range
+    for col in columns:
+        try:
+            col_min = df[col].min()
+            col_max = df[col].max()
+            if col_min == col_max:
+                df[col] = low
+            else:
+                df[col] = low + ((df[col] - col_min) / (col_max - col_min)) * (high - low)
+        except Exception:
+            df[col] = None
+    return df
+```
+
+**Questions:**
+
+1. Identify at least **three** of the six language semantic traps discussed in Part 1 present in this function.
+2. Explain specifically how the `try...except` block could mask a catastrophic pipeline failure.
+3. Rewrite the function so that it is pure, preserves immutability, fails loudly on invalid inputs, and does not mutate the caller's DataFrame.
+
+### Exercise 2: Authoring an `AGENTS.md`
+
+In your course repository, create an `AGENTS.md` file in the root directory. 
+
+Include:
+1. Clear instructions designating `data/` as read-only.
+2. Negative constraints forbidding `inplace=True` and unhandled exceptions.
+3. The exact CLI command the agent must run to verify changes (`t test --json`).
+4. An instruction forbidding the agent from altering files in `tests/`.
+
+Test your setup by prompting an AI assistant to write a new pipeline node in `src/` and instructing it to obey `AGENTS.md`. Verify whether it respects the constraints!

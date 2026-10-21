@@ -20,10 +20,11 @@ book:
     - 03-t-pipelines.qmd
     - 04-functional-programming.qmd
     - 05-testing-and-git.qmd
-    - 06-packages.qmd
-    - 07-docker.qmd
-    - 08-github_actions.qmd
-    - 09-conclusion.qmd
+    - 06-ai-harness.qmd
+    - 07-packages.qmd
+    - 08-docker.qmd
+    - 09-github_actions.qmd
+    - 10-conclusion.qmd
   page-navigation: true
 
 bibliography: references.bib

@@ -810,3 +810,8 @@ with T:
 3. **Testcraft** (`t test`, `expect_*`) tests T pipelines at two levels: node
    outputs (does the data look right after a build?) and pipeline structure
    (does the DAG have the right shape, runtimes, and serializers?).
+
+With these testing layers, Git hygiene, and test oracles in place, we now have
+the foundation to build an **AI Harness**. In the next chapter, we will see how
+to combine these verification tools with `AGENTS.md` and code-inspection
+literacy to safely delegate coding tasks to autonomous AI agents.
