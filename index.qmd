@@ -181,6 +181,16 @@ When setting up your environment, consider the following options:
 3. **Freebuff**: If you do not have an institutional license or personal subscription, you can use [Freebuff](https://freebuff.com/). Freebuff provides free, ad-supported access to DeepSeek 4.1 for 7 hours a day, which is a very good deal for completing your coursework.
 4. **OpenCode**: Another option is [OpenCode](https://opencode.ai/), which also provides free models. Keep in mind that free models on OpenCode typically come with smaller context windows, and sessions might be shorter.
 
+::: {.callout-tip}
+## Model Strategy: Strong Models for Planning & Review, Flash Models for Coding
+When using an AI coding agent, you will get much better results by adopting a **two-tier model strategy**:
+
+- **Strong reasoning models for planning and review**: Use a frontier model (such as Claude Sonnet, OpenAI o-series/GPT-4o, DeepSeek Reasoner, or Gemini Pro) when initially planning your pipeline architecture, structuring your `AGENTS.md`, drafting complex DAG nodes, or reviewing tricky test failures and edge cases.
+- **Fast, "flash-like" models for coding and execution**: Once the plan and interface contracts are clear, switch to a quicker, lightweight model (such as Gemini Flash, Claude Haiku, or DeepSeek Flash) to generate the boilerplate code, run iterative test loops, and apply small fixes.
+
+This split significantly reduces latency, saves daily quota, and yields cleaner results by preventing "context bloat" during fast iterative loops while reserving deep reasoning for architectural decisions.
+:::
+
 ## Prerequisites
 
 - Basic programming familiarity with R or Python (loops, functions, data structures).
