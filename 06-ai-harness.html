@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-b7fadb354d114f7fe81ff858d905d3e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-5ec1f76a6551ae0337598031d833a7ab.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-b7fadb354d114f7fe81ff858d905d3e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-1bd9875f45430e94795e5aaf1dcccbe5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -469,9 +469,16 @@ window.Quarto = {
   <li><a href="#what-is-agents.md" id="toc-what-is-agents.md" class="nav-link" data-scroll-target="#what-is-agents.md"><span class="header-section-number">5.4.1</span> What is <code>AGENTS.md</code>?</a></li>
   <li><a href="#the-strategy-translating-inspection-traps-into-negative-constraints" id="toc-the-strategy-translating-inspection-traps-into-negative-constraints" class="nav-link" data-scroll-target="#the-strategy-translating-inspection-traps-into-negative-constraints"><span class="header-section-number">5.4.2</span> The Strategy: Translating Inspection Traps into Negative Constraints</a></li>
   </ul></li>
-  <li><a href="#an-annotated-complete-agents.md-template" id="toc-an-annotated-complete-agents.md-template" class="nav-link" data-scroll-target="#an-annotated-complete-agents.md-template"><span class="header-section-number">5.5</span> An Annotated, Complete <code>AGENTS.md</code> Template</a>
+  <li><a href="#an-annotated-complete-agents.md-template" id="toc-an-annotated-complete-agents.md-template" class="nav-link" data-scroll-target="#an-annotated-complete-agents.md-template"><span class="header-section-number">5.5</span> An Annotated, Complete <code>AGENTS.md</code> Template</a></li>
+  <li><a href="#part-3-the-closed-loop-autonomous-agent" id="toc-part-3-the-closed-loop-autonomous-agent" class="nav-link" data-scroll-target="#part-3-the-closed-loop-autonomous-agent"><span class="header-section-number">5.6</span> Part 3: The Closed-Loop Autonomous Agent</a>
   <ul class="collapse">
-  <li><a href="#exercise-2-authoring-an-agents.md" id="toc-exercise-2-authoring-an-agents.md" class="nav-link" data-scroll-target="#exercise-2-authoring-an-agents.md"><span class="header-section-number">5.5.1</span> Exercise 2: Authoring an <code>AGENTS.md</code></a></li>
+  <li><a href="#model-tiering-frontier-reasoners-for-architecture-flash-models-for-implementation" id="toc-model-tiering-frontier-reasoners-for-architecture-flash-models-for-implementation" class="nav-link" data-scroll-target="#model-tiering-frontier-reasoners-for-architecture-flash-models-for-implementation"><span class="header-section-number">5.6.1</span> Model Tiering: Frontier Reasoners for Architecture, Flash Models for Implementation</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">5.7</span> Summary</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">5.8</span> Exercises</a>
+  <ul class="collapse">
+  <li><a href="#exercise-1-spotting-semantic-traps" id="toc-exercise-1-spotting-semantic-traps" class="nav-link" data-scroll-target="#exercise-1-spotting-semantic-traps"><span class="header-section-number">5.8.1</span> Exercise 1: Spotting Semantic Traps</a></li>
+  <li><a href="#exercise-2-authoring-an-agents.md" id="toc-exercise-2-authoring-an-agents.md" class="nav-link" data-scroll-target="#exercise-2-authoring-an-agents.md"><span class="header-section-number">5.8.2</span> Exercise 2: Authoring an <code>AGENTS.md</code></a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/b-rodrigues/rap4mads_2026/edit/main/06-ai-harness.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
@@ -882,130 +889,123 @@ window.Quarto = {
 <span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-54"><a href="#cb16-54" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Test Suite**: Before declaring any task complete, you MUST execute the project test suite:</span>
 <span id="cb16-55"><a href="#cb16-55" aria-hidden="true" tabindex="-1"></a>  <span class="in">```bash</span></span>
-<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a>  <span class="ex">t</span> test <span class="at">--json</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a>  <span class="ex">t</span> test <span class="at">--json</span></span>
+<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a>  <span class="in">```</span></span>
+<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Exit Criteria**: A task is only complete when <span class="in">`status`</span> is <span class="in">`"passed"`</span> with 0 failures.</span>
+<span id="cb16-59"><a href="#cb16-59" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Integrity of Oracles**: You are STRICTLY FORBIDDEN from modifying test assertions or golden</span>
+<span id="cb16-60"><a href="#cb16-60" aria-hidden="true" tabindex="-1"></a>  datasets in <span class="in">`tests/`</span> to make failing code pass. If a test fails against an oracle, the bug is</span>
+<span id="cb16-61"><a href="#cb16-61" aria-hidden="true" tabindex="-1"></a>  in your implementation.</span>
+<span id="cb16-62"><a href="#cb16-62" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Golden Snapshots**: When refactoring data wrangling nodes, verify output equivalence against</span>
+<span id="cb16-63"><a href="#cb16-63" aria-hidden="true" tabindex="-1"></a>  the verified reference datasets in <span class="in">`tests/fixtures/`</span>.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="part-3-the-closed-loop-autonomous-agent" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="part-3-the-closed-loop-autonomous-agent"><span class="header-section-number">5.6</span> Part 3: The Closed-Loop Autonomous Agent</h2>
+<p>When you provide both an <code>AGENTS.md</code> and an automated testing oracle, you unlock the ability to run <strong>closed-loop autonomous agent cycles</strong>.</p>
+<p>In a standard chat workflow, you are trapped in a tedious human-in-the-loop ping-pong: 1. You prompt the model. 2. The model outputs code. 3. You copy it into your editor. 4. You run it and get an error. 5. You paste the error back to the model. 6. The model apologizes and tries again.</p>
+<p>In a closed-loop harness, the AI agent interacts directly with your project’s CLI:</p>
+<pre><code>                  ┌──────────────────────────────┐
+                  │   Developer Prompt &amp; Task    │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │      Read AGENTS.md          │
+                  │   (Constraints &amp; Context)    │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │    Draft / Refactor Code     │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │      Execute t test --json   │◄────────┐
+                  └──────────────┬───────────────┘         │
+                                 │                         │
+                     ┌───────────┴───────────┐             │
+                     ▼                       ▼             │
+             [status: passed]        [status: failed]      │
+                     │                       │             │
+                     │                       ▼             │
+                     │             Read JSON error field   │
+                     │             &amp; Oracle discrepancy    │
+                     │                       │             │
+                     │                       ▼             │
+                     │             Self-Correct Code ──────┘
+                     ▼
+       ┌───────────────────────────┐
+       │ Done: Present Clean Diff  │
+       │ for Human Review (git -p) │
+       └───────────────────────────┘</code></pre>
+<p>Notice why <strong><code>t test --json</code></strong> and <strong>test oracles</strong> are critical to this loop:</p>
+<ol type="1">
+<li><strong>Machine-Readable Diagnostics:</strong> The agent does not need to parse noisy terminal ANSI colors. The structured JSON gives it the exact test file, line number, and expectation failure.</li>
+<li><strong>Objective Ground Truth:</strong> Because the rule in <code>AGENTS.md</code> prohibits modifying the oracle in <code>tests/</code>, the agent cannot cheat by watering down the test. It must fix its analytical logic until the math agrees with the golden benchmark.</li>
+<li><strong>Effortless Human Oversight:</strong> You only inspect the work once the agent has proven that all oracles pass. You then run <code>git add -p</code> to review the final diff for stylistic elegance and architectural cleanliness.</li>
+</ol>
+<section id="model-tiering-frontier-reasoners-for-architecture-flash-models-for-implementation" class="level3" data-number="5.6.1">
+<h3 data-number="5.6.1" class="anchored" data-anchor-id="model-tiering-frontier-reasoners-for-architecture-flash-models-for-implementation"><span class="header-section-number">5.6.1</span> Model Tiering: Frontier Reasoners for Architecture, Flash Models for Implementation</h3>
+<p>A practical trap when building agentic harnesses is treating all language models identically. Using a heavy, slow reasoning model to patch a one-line syntax error is inefficient and burns through API quotas rapidly. Conversely, relying on a lightweight model to draft complex DAG topology or derive mathematical invariants often results in subtle structural flaws.</p>
+<p>In production engineering, adopting a <strong>two-tier model strategy</strong> dramatically improves both velocity and output quality:</p>
+<ol type="1">
+<li><strong>Frontier &amp; Reasoning Models (The Architect &amp; Auditor):</strong>
 <ul>
-<li><strong>Exit Criteria</strong>: A task is only complete when <code>status</code> is <code>"passed"</code> with 0 failures.</li>
-<li><strong>Integrity of Oracles</strong>: You are STRICTLY FORBIDDEN from modifying test assertions or golden datasets in <code>tests/</code> to make failing code pass. If a test fails against an oracle, the bug is in your implementation.</li>
-<li><strong>Golden Snapshots</strong>: When refactoring data wrangling nodes, verify output equivalence against the verified reference datasets in <code>tests/fixtures/</code>.</li>
-</ul>
-<pre><code>
----
-
-## Part 3: The Closed-Loop Autonomous Agent
-
-When you provide both an `AGENTS.md` and an automated testing oracle, you unlock the ability to run **closed-loop autonomous agent cycles**.
-
-In a standard chat workflow, you are trapped in a tedious human-in-the-loop ping-pong:
-1. You prompt the model.
-2. The model outputs code.
-3. You copy it into your editor.
-4. You run it and get an error.
-5. You paste the error back to the model.
-6. The model apologizes and tries again.
-
-In a closed-loop harness, the AI agent interacts directly with your project's CLI:
-</code></pre>
-<pre><code>              ┌──────────────────────────────┐
-              │   Developer Prompt &amp; Task    │
-              └──────────────┬───────────────┘
-                             │
-                             ▼
-              ┌──────────────────────────────┐
-              │      Read AGENTS.md          │
-              │   (Constraints &amp; Context)    │
-              └──────────────┬───────────────┘
-                             │
-                             ▼
-              ┌──────────────────────────────┐
-              │    Draft / Refactor Code     │
-              └──────────────┬───────────────┘
-                             │
-                             ▼
-              ┌──────────────────────────────┐
-              │      Execute t test --json   │◄────────┐
-              └──────────────┬───────────────┘         │
-                             │                         │
-                 ┌───────────┴───────────┐             │
-                 ▼                       ▼             │
-         [status: passed]        [status: failed]      │
-                 │                       │             │
-                 │                       ▼             │
-                 │             Read JSON error field   │
-                 │             &amp; Oracle discrepancy    │
-                 │                       │             │
-                 │                       ▼             │
-                 │             Self-Correct Code ──────┘
-                 ▼
-   ┌───────────────────────────┐
-   │ Done: Present Clean Diff  │
-   │ for Human Review (git -p) │
-   └───────────────────────────┘</code></pre>
-<pre><code>
-Notice why **`t test --json`** and **test oracles** are critical to this loop:
-
-1. **Machine-Readable Diagnostics:** The agent does not need to parse noisy terminal ANSI colors. The structured JSON gives it the exact test file, line number, and expectation failure.
-2. **Objective Ground Truth:** Because the rule in `AGENTS.md` prohibits modifying the oracle in `tests/`, the agent cannot cheat by watering down the test. It must fix its analytical logic until the math agrees with the golden benchmark.
-3. **Effortless Human Oversight:** You only inspect the work once the agent has proven that all oracles pass. You then run `git add -p` to review the final diff for stylistic elegance and architectural cleanliness.
-
-### Model Tiering: Frontier Reasoners for Architecture, Flash Models for Implementation
-
-A practical trap when building agentic harnesses is treating all language models identically. Using a heavy, slow reasoning model to patch a one-line syntax error is inefficient and burns through API quotas rapidly. Conversely, relying on a lightweight model to draft complex DAG topology or derive mathematical invariants often results in subtle structural flaws.
-
-In production engineering, adopting a **two-tier model strategy** dramatically improves both velocity and output quality:
-
-1. **Frontier &amp; Reasoning Models (The Architect &amp; Auditor):**
-   - **Role:** Planning, DAG architecture, authoring `AGENTS.md` constraints, and deep code review.
-   - **When to use:** Use models known for high reasoning capability (such as Claude Sonnet, OpenAI o-series/GPT-4o, DeepSeek Reasoner, or Gemini Pro) when framing the problem, establishing data contracts between pipeline nodes, diagnosing stubborn test failures, and conducting the final diff inspection.
-2. **Fast &amp; "Flash-Like" Models (The Builder):**
-   - **Role:** Code synthesis, fast test iteration loops, and local refactoring.
-   - **When to use:** Once the interfaces and test oracles are firmly defined in your repository, switch to a nimbler, low-latency model (such as Gemini Flash, Claude Haiku, or DeepSeek Flash). Because the search space is constrained by your tests and `AGENTS.md`, a fast model can iterate through the edit-test cycle in seconds without losing coherence.
-
-By decoupling **architectural reasoning** from **iterative code generation**, you eliminate latency bottlenecks while preserving rigorous software standards.
-
----
-
-## Summary
-
-The rise of AI code generation does not diminish the need for foundational computer science knowledge; it sharpens it.
-
-1. **Code Review is the New Core Skill:** Because drafting code is cheap, your primary value as a data scientist is the ability to inspect, verify, and validate AI output.
-2. **Watch for the Six Traps:** In-place mutation, global scope leakage, truthiness confusion, float equality, silent error swallowing, and API hallucinations are the classic signatures of AI code.
-3. **`AGENTS.md` is System Engineering:** Encode your review standards as persistent, version-controlled constraints so the model avoids these traps automatically.
-4. **Harness + Oracles = Autonomy:** When you surround an AI model with Nix (environment), T (pure DAG execution), `AGENTS.md` (constraints), and testcraft (oracles), you transform an erratic chatbot into a reliable, autonomous engineering partner.
-5. **Tier Your Models:** Use top-tier reasoning models for planning architecture and auditing code; delegate fast inner loops and boilerplate generation to quick flash models.
-
----
-
-## Exercises
-
-### Exercise 1: Spotting Semantic Traps
-
-Inspect the following AI-generated Python function intended to compute normalized min-max scaling for feature columns in a dataset:
-
-```python
-import pandas as pd
-
-def min_max_scale_data(df, columns, feature_range=(0, 1)):
-    low, high = feature_range
-    for col in columns:
-        try:
-            col_min = df[col].min()
-            col_max = df[col].max()
-            if col_min == col_max:
-                df[col] = low
-            else:
-                df[col] = low + ((df[col] - col_min) / (col_max - col_min)) * (high - low)
-        except Exception:
-            df[col] = None
-    return df</code></pre>
+<li><strong>Role:</strong> Planning, DAG architecture, authoring <code>AGENTS.md</code> constraints, and deep code review.</li>
+<li><strong>When to use:</strong> Use models known for high reasoning capability (such as Claude Sonnet, OpenAI o-series/GPT-4o, DeepSeek Reasoner, or Gemini Pro) when framing the problem, establishing data contracts between pipeline nodes, diagnosing stubborn test failures, and conducting the final diff inspection.</li>
+</ul></li>
+<li><strong>Fast &amp; “Flash-Like” Models (The Builder):</strong>
+<ul>
+<li><strong>Role:</strong> Code synthesis, fast test iteration loops, and local refactoring.</li>
+<li><strong>When to use:</strong> Once the interfaces and test oracles are firmly defined in your repository, switch to a nimbler, low-latency model (such as Gemini Flash, Claude Haiku, or DeepSeek Flash). Because the search space is constrained by your tests and <code>AGENTS.md</code>, a fast model can iterate through the edit-test cycle in seconds without losing coherence.</li>
+</ul></li>
+</ol>
+<p>By decoupling <strong>architectural reasoning</strong> from <strong>iterative code generation</strong>, you eliminate latency bottlenecks while preserving rigorous software standards.</p>
+<hr>
+</section>
+</section>
+<section id="summary" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="summary"><span class="header-section-number">5.7</span> Summary</h2>
+<p>The rise of AI code generation does not diminish the need for foundational computer science knowledge; it sharpens it.</p>
+<ol type="1">
+<li><strong>Code Review is the New Core Skill:</strong> Because drafting code is cheap, your primary value as a data scientist is the ability to inspect, verify, and validate AI output.</li>
+<li><strong>Watch for the Six Traps:</strong> In-place mutation, global scope leakage, truthiness confusion, float equality, silent error swallowing, and API hallucinations are the classic signatures of AI code.</li>
+<li><strong><code>AGENTS.md</code> is System Engineering:</strong> Encode your review standards as persistent, version-controlled constraints so the model avoids these traps automatically.</li>
+<li><strong>Harness + Oracles = Autonomy:</strong> When you surround an AI model with Nix (environment), T (pure DAG execution), <code>AGENTS.md</code> (constraints), and testcraft (oracles), you transform an erratic chatbot into a reliable, autonomous engineering partner.</li>
+<li><strong>Tier Your Models:</strong> Use top-tier reasoning models for planning architecture and auditing code; delegate fast inner loops and boilerplate generation to quick flash models.</li>
+</ol>
+<hr>
+</section>
+<section id="exercises" class="level2" data-number="5.8">
+<h2 data-number="5.8" class="anchored" data-anchor-id="exercises"><span class="header-section-number">5.8</span> Exercises</h2>
+<section id="exercise-1-spotting-semantic-traps" class="level3" data-number="5.8.1">
+<h3 data-number="5.8.1" class="anchored" data-anchor-id="exercise-1-spotting-semantic-traps"><span class="header-section-number">5.8.1</span> Exercise 1: Spotting Semantic Traps</h3>
+<p>Inspect the following AI-generated Python function intended to compute normalized min-max scaling for feature columns in a dataset:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> min_max_scale_data(df, columns, feature_range<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>)):</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    low, high <span class="op">=</span> feature_range</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> col <span class="kw">in</span> columns:</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>            col_min <span class="op">=</span> df[col].<span class="bu">min</span>()</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>            col_max <span class="op">=</span> df[col].<span class="bu">max</span>()</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> col_min <span class="op">==</span> col_max:</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>                df[col] <span class="op">=</span> low</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>                df[col] <span class="op">=</span> low <span class="op">+</span> ((df[col] <span class="op">-</span> col_min) <span class="op">/</span> (col_max <span class="op">-</span> col_min)) <span class="op">*</span> (high <span class="op">-</span> low)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>            df[col] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Questions:</strong></p>
 <ol type="1">
 <li>Identify at least <strong>three</strong> of the six language semantic traps discussed in Part 1 present in this function.</li>
 <li>Explain specifically how the <code>try...except</code> block could mask a catastrophic pipeline failure.</li>
 <li>Rewrite the function so that it is pure, preserves immutability, fails loudly on invalid inputs, and does not mutate the caller’s DataFrame.</li>
 </ol>
-<section id="exercise-2-authoring-an-agents.md" class="level3" data-number="5.5.1">
-<h3 data-number="5.5.1" class="anchored" data-anchor-id="exercise-2-authoring-an-agents.md"><span class="header-section-number">5.5.1</span> Exercise 2: Authoring an <code>AGENTS.md</code></h3>
+</section>
+<section id="exercise-2-authoring-an-agents.md" class="level3" data-number="5.8.2">
+<h3 data-number="5.8.2" class="anchored" data-anchor-id="exercise-2-authoring-an-agents.md"><span class="header-section-number">5.8.2</span> Exercise 2: Authoring an <code>AGENTS.md</code></h3>
 <p>In your course repository, create an <code>AGENTS.md</code> file in the root directory.</p>
 <p>Include: 1. Clear instructions designating <code>data/</code> as read-only. 2. Negative constraints forbidding <code>inplace=True</code> and unhandled exceptions. 3. The exact CLI command the agent must run to verify changes (<code>t test --json</code>). 4. An instruction forbidding the agent from altering files in <code>tests/</code>.</p>
 <p>Test your setup by prompting an AI assistant to write a new pipeline node in <code>src/</code> and instructing it to obey <code>AGENTS.md</code>. Verify whether it respects the constraints!</p>
