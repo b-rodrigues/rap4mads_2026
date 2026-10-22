@@ -188,17 +188,46 @@ When setting up your environment, consider the following options:
 - Linux or macOS operating system (Windows users **must** use WSL2).
 - An AI coding agent installed on your computer system (see above).
 
-## Grading
+## Course Project & Grading
 
 Grading is based on your final course project. During lecture hours you will learn each concept through
-live demonstrations and hands-on exercises. At home, you will develop your own pipeline around a dataset of your choice.
+live demonstrations and hands-on exercises. In parallel, you will develop your own reproducible analytical
+pipeline around a substantial analytical problem and dataset of your choice.
 
-At the end of the semester, your repository will be evaluated on how easily and reproducibly it builds:
+Because you are actively encouraged to use AI coding agents to accelerate your development, the goal of this
+project is not merely to write boilerplate code. Instead, the ambition is to tackle a **challenging, multi-language analytical problem**
+and demonstrate your skills as a **harness architect, code reviewer, and reproducibility engineer**.
 
-- **Repository and Documentation (5 points)**: Hosted on GitHub with a clear, comprehensive `README.md`.
-- **Logic, Packaging, and Tests (5 points)**: Code is modularized into clean functions or packages, and accompanied by automated unit tests.
-- **Deterministic Environment (5 points)**: All dependencies (R, Python, packages, system libraries) are declared and pinned via Nix.
-- **Pipeline Execution (5 points)**: The entire pipeline runs end-to-end via a single command (`build_pipeline` in T) producing the final output without manual intervention.
+### Project Scope & Ambition
+
+To achieve a high grade, your project must meet the following specifications:
+
+- **Polyglot Mandate**: The pipeline must integrate **at least two languages** (e.g., Python + R, or Python + Julia) orchestrated with T and exchanging data via Apache Arrow IPC (`^ipc`). Each language must be chosen deliberately for its strengths (e.g., Python for data scraping or machine learning embeddings, R for specialized statistical modeling and `{ggplot2}` visualization, or Julia for high-performance simulation).
+- **Non-Trivial DAG Architecture**: The pipeline cannot be a single linear sequence of scripts. It must feature a branched Directed Acyclic Graph (DAG) with at least 5 distinct computation nodes (e.g., ingesting multiple data sources, parallel feature transformations, model fitting, and validation).
+- **Pure Functions & Immutability**: All node computations must be pure functions with explicit inputs and outputs, free of global scope leakage, in-place data mutations, or unmanaged side effects.
+- **The AI Harness & Test Oracles**: The repository must include a customized `AGENTS.md` specifying your project's negative constraints, paired with an automated test suite (`pytest`, `{testthat}`, or `testcraft`) anchored by golden reference datasets. Tests must verify analytical invariants and prevent LLM-generated bugs.
+- **Hermetic Environment**: All dependencies (R, Python, Julia, system libraries, and Quarto) must be declared and pinned via a Nix flake (`flake.nix` and `flake.lock`).
+- **Continuous Integration**: The repository must contain a GitHub Actions workflow that executes your test suite and builds the pipeline in a clean Nix environment on every push.
+- **Final Data Product**: The pipeline must produce an automated, polished end product—such as a rendered Quarto report, an interactive dashboard, or an exported analytical artifact.
+
+### Grading Rubric (20 Points)
+
+At the end of the semester, your repository will be evaluated across four dimensions (5 points each):
+
+| Dimension | Points | Criteria & Evaluation |
+| :--- | :---: | :--- |
+| **1. Polyglot Architecture & T Pipeline** | **5** | Pipeline orchestrates $\ge 2$ languages via T with Apache Arrow IPC (`^ipc`). Computation nodes are pure functions without side effects or in-place mutations. DAG caching works correctly (unchanged nodes are skipped on rebuilds). |
+| **2. The AI Harness & Test Oracles** | **5** | Includes a project-specific `AGENTS.md` with explicit negative constraints. Test suite (`t test --json`, `pytest`, or `testthat`) includes rigorous test oracles / golden datasets. Code is clean and free of AI semantic traps (no silent error suppression, no float `==`, no leaky globals). |
+| **3. Deterministic Environment & CI** | **5** | Dependencies are declared in `flake.nix` and pinned in `flake.lock`. A GitHub Actions workflow passes cleanly on every push, building and testing the project non-interactively without manual intervention. |
+| **4. Problem Complexity & Data Product** | **5** | Tackles a non-trivial, interesting analytical question. Produces a polished final data product (e.g., Quarto document). Repository has an exemplary `README.md` explaining the DAG architecture, data flow, and instructions to reproduce. |
+
+### Evaluation Protocol
+
+Your repository will be evaluated objectively and non-interactively:
+
+1. **The "One-Command" Test**: The instructor clones your repository and runs the Nix build command (or verifies the green status of your GitHub Actions CI). If the pipeline fails to build from scratch or requires imperative manual steps, marks are deducted immediately.
+2. **Harness & Oracle Inspection**: The instructor reviews your `AGENTS.md` and test suite to verify that your test assertions are genuine analytical oracles rather than trivial tautologies.
+3. **Diff & Code Quality Review**: The instructor reviews the code inside your pipeline nodes to verify that functions are pure, properly scoped, and that AI-generated artifacts have been rigorously audited.
 
 ## Jargon
 
