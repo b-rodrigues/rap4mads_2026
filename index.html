@@ -102,6 +102,35 @@ div.csl-indent {
 }</script>
 <link rel="shortcut icon" href="img/favicon.ico">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="epub.css">
 </head>
@@ -425,9 +454,17 @@ div.csl-indent {
   <li><a href="#the-requirements-of-a-rap" id="toc-the-requirements-of-a-rap" class="nav-link" data-scroll-target="#the-requirements-of-a-rap">The requirements of a RAP</a></li>
   <li><a href="#the-reproducibility-spectrum" id="toc-the-reproducibility-spectrum" class="nav-link" data-scroll-target="#the-reproducibility-spectrum">The Reproducibility Spectrum</a></li>
   </ul></li>
-  <li><a href="#large-language-models" id="toc-large-language-models" class="nav-link" data-scroll-target="#large-language-models">Large Language Models</a></li>
+  <li><a href="#large-language-models-ai-coding-agents" id="toc-large-language-models-ai-coding-agents" class="nav-link" data-scroll-target="#large-language-models-ai-coding-agents">Large Language Models &amp; AI Coding Agents</a>
+  <ul class="collapse">
+  <li><a href="#setting-up-an-ai-agent" id="toc-setting-up-an-ai-agent" class="nav-link" data-scroll-target="#setting-up-an-ai-agent">Setting Up an AI Agent</a></li>
+  </ul></li>
   <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
-  <li><a href="#grading" id="toc-grading" class="nav-link" data-scroll-target="#grading">Grading</a></li>
+  <li><a href="#course-project-grading" id="toc-course-project-grading" class="nav-link" data-scroll-target="#course-project-grading">Course Project &amp; Grading</a>
+  <ul class="collapse">
+  <li><a href="#project-scope-ambition" id="toc-project-scope-ambition" class="nav-link" data-scroll-target="#project-scope-ambition">Project Scope &amp; Ambition</a></li>
+  <li><a href="#grading-rubric-20-points" id="toc-grading-rubric-20-points" class="nav-link" data-scroll-target="#grading-rubric-20-points">Grading Rubric (20 Points)</a></li>
+  <li><a href="#evaluation-protocol" id="toc-evaluation-protocol" class="nav-link" data-scroll-target="#evaluation-protocol">Evaluation Protocol</a></li>
+  </ul></li>
   <li><a href="#jargon" id="toc-jargon" class="nav-link" data-scroll-target="#jargon">Jargon</a>
   <ul class="collapse">
   <li><a href="#t" id="toc-t" class="nav-link" data-scroll-target="#t">T</a></li>
@@ -601,9 +638,20 @@ The reproducibility spectrum from Peng’s 2011 paper.
 <p>In this course, we aim for the highest practical tier of this spectrum.</p>
 </section>
 </section>
-<section id="large-language-models" class="level2">
-<h2 class="anchored" data-anchor-id="large-language-models">Large Language Models</h2>
-<p>LLMs have transformed how software is developed. In this course, we treat LLMs as power tools: they are highly encouraged for drafting functions, generating tests, and structuring pipelines. However, using an LLM requires you to become a rigorous code reviewer. You will learn how to use Git’s interactive staging (<code>git add -p</code>) and automated test suites to verify that AI-generated code meets your exact expectations before committing it.</p>
+<section id="large-language-models-ai-coding-agents" class="level2">
+<h2 class="anchored" data-anchor-id="large-language-models-ai-coding-agents">Large Language Models &amp; AI Coding Agents</h2>
+<p>LLMs and agentic coding workflows have transformed how software is developed. In this course, we treat LLMs as power tools: they are highly encouraged for drafting functions, generating tests, and structuring pipelines. However, using an LLM requires you to become a rigorous code reviewer. You will learn how to use Git’s interactive staging (<code>git add -p</code>) and automated test suites to verify that AI-generated code meets your exact expectations before committing it.</p>
+<section id="setting-up-an-ai-agent" class="level3">
+<h3 class="anchored" data-anchor-id="setting-up-an-ai-agent">Setting Up an AI Agent</h3>
+<p>It is important that you have an AI coding agent installed on your computer system for this course.</p>
+<p>When setting up your environment, consider the following options:</p>
+<ol type="1">
+<li><strong>University-provided tools</strong>: First, check if your university provides access to an AI coding assistant or institutional accounts (for example, through GitHub Education / Student Developer Pack for GitHub Copilot, or campus AI services).</li>
+<li><strong>Personal accounts</strong>: If you already have a personal account or subscription to a coding agent or AI model provider (such as Claude Code, Cursor, GitHub Copilot, or API keys for models like Claude, GPT, or Gemini), you are welcome to use it.</li>
+<li><strong>Freebuff</strong>: If you do not have an institutional license or personal subscription, you can use <a href="https://freebuff.com/">Freebuff</a>. Freebuff provides free, ad-supported access to DeepSeek 4.1 for 7 hours a day, which is a very good deal for completing your coursework.</li>
+<li><strong>OpenCode</strong>: Another option is <a href="https://opencode.ai/">OpenCode</a>, which also provides free models. Keep in mind that free models on OpenCode typically come with smaller context windows, and sessions might be shorter.</li>
+</ol>
+</section>
 </section>
 <section id="prerequisites" class="level2">
 <h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
@@ -611,18 +659,75 @@ The reproducibility spectrum from Peng’s 2011 paper.
 <li>Basic programming familiarity with R or Python (loops, functions, data structures).</li>
 <li>Familiarity with the command line interface (CLI).</li>
 <li>Linux or macOS operating system (Windows users <strong>must</strong> use WSL2).</li>
+<li>An AI coding agent installed on your computer system (see above).</li>
 </ul>
 </section>
-<section id="grading" class="level2">
-<h2 class="anchored" data-anchor-id="grading">Grading</h2>
-<p>Grading is based on your final course project. During lecture hours you will learn each concept through live demonstrations and hands-on exercises. At home, you will develop your own pipeline around a dataset of your choice.</p>
-<p>At the end of the semester, your repository will be evaluated on how easily and reproducibly it builds:</p>
+<section id="course-project-grading" class="level2">
+<h2 class="anchored" data-anchor-id="course-project-grading">Course Project &amp; Grading</h2>
+<p>Grading is based on your final course project. During lecture hours you will learn each concept through live demonstrations and hands-on exercises. In parallel, you will develop your own reproducible analytical pipeline around a substantial analytical problem and dataset of your choice.</p>
+<p>Because you are actively encouraged to use AI coding agents to accelerate your development, the goal of this project is not merely to write boilerplate code. Instead, the ambition is to tackle a <strong>challenging, multi-language analytical problem</strong> and demonstrate your skills as a <strong>harness architect, code reviewer, and reproducibility engineer</strong>.</p>
+<section id="project-scope-ambition" class="level3">
+<h3 class="anchored" data-anchor-id="project-scope-ambition">Project Scope &amp; Ambition</h3>
+<p>To achieve a high grade, your project must meet the following specifications:</p>
 <ul>
-<li><strong>Repository and Documentation (5 points)</strong>: Hosted on GitHub with a clear, comprehensive <code>README.md</code>.</li>
-<li><strong>Logic, Packaging, and Tests (5 points)</strong>: Code is modularized into clean functions or packages, and accompanied by automated unit tests.</li>
-<li><strong>Deterministic Environment (5 points)</strong>: All dependencies (R, Python, packages, system libraries) are declared and pinned via Nix.</li>
-<li><strong>Pipeline Execution (5 points)</strong>: The entire pipeline runs end-to-end via a single command (<code>build_pipeline</code> in T) producing the final output without manual intervention.</li>
+<li><strong>Polyglot Mandate</strong>: The pipeline must integrate <strong>at least two languages</strong> (e.g., Python + R, or Python + Julia) orchestrated with T and exchanging data via Apache Arrow IPC (<code>^ipc</code>). Each language must be chosen deliberately for its strengths (e.g., Python for data scraping or machine learning embeddings, R for specialized statistical modeling and <code>{ggplot2}</code> visualization, or Julia for high-performance simulation).</li>
+<li><strong>Non-Trivial DAG Architecture</strong>: The pipeline cannot be a single linear sequence of scripts. It must feature a branched Directed Acyclic Graph (DAG) with at least 5 distinct computation nodes (e.g., ingesting multiple data sources, parallel feature transformations, model fitting, and validation).</li>
+<li><strong>Pure Functions &amp; Immutability</strong>: All node computations must be pure functions with explicit inputs and outputs, free of global scope leakage, in-place data mutations, or unmanaged side effects.</li>
+<li><strong>The AI Harness &amp; Test Oracles</strong>: The repository must include a customized <code>AGENTS.md</code> specifying your project’s negative constraints, paired with an automated test suite (<code>pytest</code>, <code>{testthat}</code>, or <code>testcraft</code>) anchored by golden reference datasets. Tests must verify analytical invariants and prevent LLM-generated bugs.</li>
+<li><strong>Hermetic Environment</strong>: All dependencies (R, Python, Julia, system libraries, and Quarto) must be declared and pinned via a Nix flake (<code>flake.nix</code> and <code>flake.lock</code>).</li>
+<li><strong>Continuous Integration</strong>: The repository must contain a GitHub Actions workflow that executes your test suite and builds the pipeline in a clean Nix environment on every push.</li>
+<li><strong>Final Data Product</strong>: The pipeline must produce an automated, polished end product—such as a rendered Quarto report, an interactive dashboard, or an exported analytical artifact.</li>
 </ul>
+</section>
+<section id="grading-rubric-20-points" class="level3">
+<h3 class="anchored" data-anchor-id="grading-rubric-20-points">Grading Rubric (20 Points)</h3>
+<p>At the end of the semester, your repository will be evaluated across four dimensions (5 points each):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 38%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Dimension</th>
+<th style="text-align: center;">Points</th>
+<th style="text-align: left;">Criteria &amp; Evaluation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>1. Polyglot Architecture &amp; T Pipeline</strong></td>
+<td style="text-align: center;"><strong>5</strong></td>
+<td style="text-align: left;">Pipeline orchestrates <span class="math inline">\(\ge 2\)</span> languages via T with Apache Arrow IPC (<code>^ipc</code>). Computation nodes are pure functions without side effects or in-place mutations. DAG caching works correctly (unchanged nodes are skipped on rebuilds).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>2. The AI Harness &amp; Test Oracles</strong></td>
+<td style="text-align: center;"><strong>5</strong></td>
+<td style="text-align: left;">Includes a project-specific <code>AGENTS.md</code> with explicit negative constraints. Test suite (<code>t test --json</code>, <code>pytest</code>, or <code>testthat</code>) includes rigorous test oracles / golden datasets. Code is clean and free of AI semantic traps (no silent error suppression, no float <code>==</code>, no leaky globals).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>3. Deterministic Environment &amp; CI</strong></td>
+<td style="text-align: center;"><strong>5</strong></td>
+<td style="text-align: left;">Dependencies are declared in <code>flake.nix</code> and pinned in <code>flake.lock</code>. A GitHub Actions workflow passes cleanly on every push, building and testing the project non-interactively without manual intervention.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>4. Problem Complexity &amp; Data Product</strong></td>
+<td style="text-align: center;"><strong>5</strong></td>
+<td style="text-align: left;">Tackles a non-trivial, interesting analytical question. Produces a polished final data product (e.g., Quarto document). Repository has an exemplary <code>README.md</code> explaining the DAG architecture, data flow, and instructions to reproduce.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="evaluation-protocol" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-protocol">Evaluation Protocol</h3>
+<p>Your repository will be evaluated objectively and non-interactively:</p>
+<ol type="1">
+<li><strong>The “One-Command” Test</strong>: The instructor clones your repository and runs the Nix build command (or verifies the green status of your GitHub Actions CI). If the pipeline fails to build from scratch or requires imperative manual steps, marks are deducted immediately.</li>
+<li><strong>Harness &amp; Oracle Inspection</strong>: The instructor reviews your <code>AGENTS.md</code> and test suite to verify that your test assertions are genuine analytical oracles rather than trivial tautologies.</li>
+<li><strong>Diff &amp; Code Quality Review</strong>: The instructor reviews the code inside your pipeline nodes to verify that functions are pure, properly scoped, and that AI-generated artifacts have been rigorously audited.</li>
+</ol>
+</section>
 </section>
 <section id="jargon" class="level2">
 <h2 class="anchored" data-anchor-id="jargon">Jargon</h2>
