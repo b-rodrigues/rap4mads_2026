@@ -162,19 +162,31 @@ A project can control for:
 
 In this course, we aim for the highest practical tier of this spectrum.
 
-## Large Language Models
+## Large Language Models & AI Coding Agents
 
-LLMs have transformed how software is developed. In this course, we treat LLMs as power tools:
+LLMs and agentic coding workflows have transformed how software is developed. In this course, we treat LLMs as power tools:
 they are highly encouraged for drafting functions, generating tests, and structuring pipelines.
 However, using an LLM requires you to become a rigorous code reviewer. You will learn how to use Git's
 interactive staging (`git add -p`) and automated test suites to verify that AI-generated code meets
 your exact expectations before committing it.
+
+### Setting Up an AI Agent
+
+It is important that you have an AI coding agent installed on your computer system for this course.
+
+When setting up your environment, consider the following options:
+
+1. **University-provided tools**: First, check if your university provides access to an AI coding assistant or institutional accounts (for example, through GitHub Education / Student Developer Pack for GitHub Copilot, or campus AI services).
+2. **Personal accounts**: If you already have a personal account or subscription to a coding agent or AI model provider (such as Claude Code, Cursor, GitHub Copilot, or API keys for models like Claude, GPT, or Gemini), you are welcome to use it.
+3. **Freebuff**: If you do not have an institutional license or personal subscription, you can use [Freebuff](https://freebuff.com/). Freebuff provides free, ad-supported access to DeepSeek 4.1 for 7 hours a day, which is a very good deal for completing your coursework.
+4. **OpenCode**: Another option is [OpenCode](https://opencode.ai/), which also provides free models. Keep in mind that free models on OpenCode typically come with smaller context windows, and sessions might be shorter.
 
 ## Prerequisites
 
 - Basic programming familiarity with R or Python (loops, functions, data structures).
 - Familiarity with the command line interface (CLI).
 - Linux or macOS operating system (Windows users **must** use WSL2).
+- An AI coding agent installed on your computer system (see above).
 
 ## Grading
 
