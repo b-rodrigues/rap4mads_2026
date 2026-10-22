@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-1bd9875f45430e94795e5aaf1dcccbe5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-b7fadb354d114f7fe81ff858d905d3e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-5ec1f76a6551ae0337598031d833a7ab.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-b7fadb354d114f7fe81ff858d905d3e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -947,6 +947,21 @@ Notice why **`t test --json`** and **test oracles** are critical to this loop:
 2. **Objective Ground Truth:** Because the rule in `AGENTS.md` prohibits modifying the oracle in `tests/`, the agent cannot cheat by watering down the test. It must fix its analytical logic until the math agrees with the golden benchmark.
 3. **Effortless Human Oversight:** You only inspect the work once the agent has proven that all oracles pass. You then run `git add -p` to review the final diff for stylistic elegance and architectural cleanliness.
 
+### Model Tiering: Frontier Reasoners for Architecture, Flash Models for Implementation
+
+A practical trap when building agentic harnesses is treating all language models identically. Using a heavy, slow reasoning model to patch a one-line syntax error is inefficient and burns through API quotas rapidly. Conversely, relying on a lightweight model to draft complex DAG topology or derive mathematical invariants often results in subtle structural flaws.
+
+In production engineering, adopting a **two-tier model strategy** dramatically improves both velocity and output quality:
+
+1. **Frontier &amp; Reasoning Models (The Architect &amp; Auditor):**
+   - **Role:** Planning, DAG architecture, authoring `AGENTS.md` constraints, and deep code review.
+   - **When to use:** Use models known for high reasoning capability (such as Claude Sonnet, OpenAI o-series/GPT-4o, DeepSeek Reasoner, or Gemini Pro) when framing the problem, establishing data contracts between pipeline nodes, diagnosing stubborn test failures, and conducting the final diff inspection.
+2. **Fast &amp; "Flash-Like" Models (The Builder):**
+   - **Role:** Code synthesis, fast test iteration loops, and local refactoring.
+   - **When to use:** Once the interfaces and test oracles are firmly defined in your repository, switch to a nimbler, low-latency model (such as Gemini Flash, Claude Haiku, or DeepSeek Flash). Because the search space is constrained by your tests and `AGENTS.md`, a fast model can iterate through the edit-test cycle in seconds without losing coherence.
+
+By decoupling **architectural reasoning** from **iterative code generation**, you eliminate latency bottlenecks while preserving rigorous software standards.
+
 ---
 
 ## Summary
@@ -957,6 +972,7 @@ The rise of AI code generation does not diminish the need for foundational compu
 2. **Watch for the Six Traps:** In-place mutation, global scope leakage, truthiness confusion, float equality, silent error swallowing, and API hallucinations are the classic signatures of AI code.
 3. **`AGENTS.md` is System Engineering:** Encode your review standards as persistent, version-controlled constraints so the model avoids these traps automatically.
 4. **Harness + Oracles = Autonomy:** When you surround an AI model with Nix (environment), T (pure DAG execution), `AGENTS.md` (constraints), and testcraft (oracles), you transform an erratic chatbot into a reliable, autonomous engineering partner.
+5. **Tier Your Models:** Use top-tier reasoning models for planning architecture and auditing code; delegate fast inner loops and boilerplate generation to quick flash models.
 
 ---
 

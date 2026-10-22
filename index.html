@@ -70,9 +70,9 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-1bd9875f45430e94795e5aaf1dcccbe5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-caa8f30d4c518bd6f4883986b1825419.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-b7fadb354d114f7fe81ff858d905d3e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-5ec1f76a6551ae0337598031d833a7ab.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-b7fadb354d114f7fe81ff858d905d3e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -651,6 +651,24 @@ The reproducibility spectrum from Peng’s 2011 paper.
 <li><strong>Freebuff</strong>: If you do not have an institutional license or personal subscription, you can use <a href="https://freebuff.com/">Freebuff</a>. Freebuff provides free, ad-supported access to DeepSeek 4.1 for 7 hours a day, which is a very good deal for completing your coursework.</li>
 <li><strong>OpenCode</strong>: Another option is <a href="https://opencode.ai/">OpenCode</a>, which also provides free models. Keep in mind that free models on OpenCode typically come with smaller context windows, and sessions might be shorter.</li>
 </ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Model Strategy: Strong Models for Planning &amp; Review, Flash Models for Coding
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When using an AI coding agent, you will get much better results by adopting a <strong>two-tier model strategy</strong>:</p>
+<ul>
+<li><strong>Strong reasoning models for planning and review</strong>: Use a frontier model (such as Claude Sonnet, OpenAI o-series/GPT-4o, DeepSeek Reasoner, or Gemini Pro) when initially planning your pipeline architecture, structuring your <code>AGENTS.md</code>, drafting complex DAG nodes, or reviewing tricky test failures and edge cases.</li>
+<li><strong>Fast, “flash-like” models for coding and execution</strong>: Once the plan and interface contracts are clear, switch to a quicker, lightweight model (such as Gemini Flash, Claude Haiku, or DeepSeek Flash) to generate the boilerplate code, run iterative test loops, and apply small fixes.</li>
+</ul>
+<p>This split significantly reduces latency, saves daily quota, and yields cleaner results by preventing “context bloat” during fast iterative loops while reserving deep reasoning for architectural decisions.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="prerequisites" class="level2">
