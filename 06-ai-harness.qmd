@@ -339,7 +339,7 @@ Every language trap we covered in Part 1 can be translated into an unambiguous r
 
 Below is a production-ready `AGENTS.md` tailored for a reproducible polyglot project using T, Nix, Python, and R. You can adapt this template directly for your course project.
 
-```markdown
+````markdown
 # Agent Guide: Polyglot Data Pipeline Project
 
 This document provides mandatory operational context, constraints, and coding standards
@@ -403,7 +403,7 @@ for AI agents and human contributors working in this repository.
   in your implementation.
 - **Golden Snapshots**: When refactoring data wrangling nodes, verify output equivalence against
   the verified reference datasets in `tests/fixtures/`.
-```
+````
 
 ---
 
