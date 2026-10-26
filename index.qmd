@@ -20,7 +20,7 @@ What’s new in 2026:
 
 *This course is based on my book [Reproducible Polyglot Data Science](https://github.com/b-rodrigues/reproducible-data-science).*
 
-## Schedule
+## Course Schedule
 
 - **2026-10-30 (1.5 hours)**: Intro (Why T, the reproducibility spectrum) and Nix (environment reproducibility).
 - **2026-11-11 (14:00 - 17:15, MSA 2.400)**: Building Pipelines with T (syntax, nodes, Arrow IPC serialization, DAG caching).
@@ -31,7 +31,7 @@ What’s new in 2026:
 - **2026-12-10 (14:00 - 17:15, MSA 3.120)**: Containerisation with Docker (spatial vs. temporal reproducibility, packaging Nix & T).
 - **2026-12-16 (12:45 - 15:45, MSA 3.100)**: Continuous Integration with GitHub Actions & Course Project Wrap-up.
 
-## Reproducible analytical pipelines?
+## What Is a Reproducible Analytical Pipeline?
 
 This course is my take on setting up code that results in some *data product*.
 This code has to be reproducible, documented, and production-ready. The term was originally
@@ -45,7 +45,42 @@ data-driven decision-making.
 A well-documented RAP eliminates technical debt, prevents "it worked on my machine"
 disasters, and is readily reusable across future projects.
 
-## Why T? Focusing on what truly matters
+### What Is Reproducibility?
+
+A project is reproducible if it can be rerun by anyone, anywhere, at any point in time,
+yielding the exact same results with minimal friction.
+
+### The Requirements of a RAP
+
+For a project to qualify as a RAP, it must meet several strict criteria:
+- **Available, version-controlled source code** (tracked with Git and GitHub);
+- **Deterministic dependencies** (managed completely with Nix);
+- **Non-interactive execution** (run with a single command, without manual steps in GUIs or notebooks);
+- **Tested logic** (unit tests validating functions and pipeline data contracts);
+- **Open-source foundation** (reproducible operating system closures via Nix and Docker).
+
+### The Reproducibility Spectrum
+
+Reproducibility is not binary; it exists along a continuum [@peng2011]:
+
+::: {.content-hidden when-format="pdf"}
+<figure>
+    <img src="img/repro_spectrum.png"
+         alt="The reproducibility spectrum from Peng's 2011 paper."></img>
+    <figcaption>The reproducibility spectrum from Peng's 2011 paper.</figcaption>
+</figure>
+:::
+
+A project can control for:
+1. Code only;
+2. Code + language versions;
+3. Code + language + package libraries;
+4. Code + packages + system-level OS dependencies (Nix / Docker);
+5. Hardware architecture and bit-for-bit hermetic closures.
+
+In this course, we aim for the highest practical tier of this spectrum.
+
+## Why T? Focusing on What Truly Matters
 
 If you have ever tried building a data science pipeline that combines both Python and R,
 you know the pain:
@@ -57,6 +92,8 @@ you know the pain:
 **Students and practitioners end up wasting 80% of their time dealing with language-specific idiosyncrasies rather than learning reproducible architecture.**
 
 To break this cycle, this course puts **T** (`tlang`) at the center.
+
+### A Polyglot Pipeline in T
 
 ```t
 #| eval: false
@@ -107,7 +144,9 @@ placing it at the center of this course serves a vital pedagogical purpose:
 By abstracting execution into T and environment management into Nix, we remove the accidental complexity
 of modern data science so you can master the fundamental concepts.
 
-## Data products?
+## Data Products and Domain Expertise
+
+### Data Products
 
 In this course, each of you will develop a *data product* with help from an LLM. A data product is
 anything that requires data as an input and produces value: an analytical report,
@@ -116,7 +155,7 @@ a reproducible paper, an interactive dashboard, or an API.
 The focus of the course is not on the end product itself (which you can choose based on your interests),
 but on the **pipeline** that builds that product reliably, reproducibly, and non-interactively.
 
-### Machine learning in the age of AI
+### Machine Learning in the Age of AI
 
 AI has fundamentally changed the game. Building a machine learning model is no longer the main 
 bottleneck in data science. AI assistants can generate code, suggest architectures, debug errors, 
@@ -138,7 +177,7 @@ machine learning expertise. You still need to know how to:
 
 AI makes these skills more valuable, not less. The goal is no longer simply to build a model that works once. It is to build systems that are correct, reproducible, maintainable, and useful, with AI as a powerful accelerator, not a substitute for engineering judgment.
 
-### The importance of domain knowledge
+### The Importance of Domain Knowledge
 
 Technical skills alone are not enough. Some of the greatest value you can bring as a data scientist 
 comes from combining software engineering and data science with deep knowledge of a particular field, 
@@ -152,42 +191,9 @@ tell you which questions are worth asking or which answers matter in practice.
 Your competitive advantage lies at the intersection of engineering, data science, and domain expertise. 
 It is this combination that allows you to move beyond producing analyses and models to solving problems that genuinely matter.
 
-## What actually is reproducibility?
+## AI-Assisted Development
 
-A project is reproducible if it can be rerun by anyone, anywhere, at any point in time,
-yielding the exact same results with minimal friction.
-
-### The requirements of a RAP
-
-For a project to qualify as a RAP, it must meet several strict criteria:
-- **Available, version-controlled source code** (tracked with Git and GitHub);
-- **Deterministic dependencies** (managed completely with Nix);
-- **Non-interactive execution** (run with a single command, without manual steps in GUIs or notebooks);
-- **Tested logic** (unit tests validating functions and pipeline data contracts);
-- **Open-source foundation** (reproducible operating system closures via Nix and Docker).
-
-### The Reproducibility Spectrum
-
-Reproducibility is not binary; it exists along a continuum [@peng2011]:
-
-::: {.content-hidden when-format="pdf"}
-<figure>
-    <img src="img/repro_spectrum.png"
-         alt="The reproducibility spectrum from Peng's 2011 paper."></img>
-    <figcaption>The reproducibility spectrum from Peng's 2011 paper.</figcaption>
-</figure>
-:::
-
-A project can control for:
-1. Code only;
-2. Code + language versions;
-3. Code + language + package libraries;
-4. Code + packages + system-level OS dependencies (Nix / Docker);
-5. Hardware architecture and bit-for-bit hermetic closures.
-
-In this course, we aim for the highest practical tier of this spectrum.
-
-## Large Language Models & AI Coding Agents
+### Large Language Models and AI Coding Agents
 
 LLMs and agentic coding workflows have transformed how software is developed. In this course, we treat LLMs as power tools:
 they are highly encouraged for drafting functions, generating tests, and structuring pipelines.
@@ -201,13 +207,26 @@ It is important that you have an AI coding agent installed on your computer syst
 
 When setting up your environment, consider the following options:
 
-1. **University-provided tools**: First, check if your university provides access to an AI coding assistant or institutional accounts (for example, through GitHub Education / Student Developer Pack for GitHub Copilot, or campus AI services).
-2. **Personal accounts**: If you already have a personal account or subscription to a coding agent or AI model provider (such as Claude Code, Cursor, GitHub Copilot, or API keys for models like Claude, GPT, or Gemini), you are welcome to use it.
-3. **Freebuff**: If you do not have an institutional license or personal subscription, you can use [Freebuff](https://freebuff.com/). Freebuff provides free, ad-supported access to DeepSeek 4.1 for 7 hours a day, which is a very good deal for completing your coursework.
-4. **OpenCode**: Another option is [OpenCode](https://opencode.ai/), which also provides free models. Keep in mind that free models on OpenCode typically come with smaller context windows, and sessions might be shorter.
+1. **University-provided tools**: First, check if your university provides
+access to an AI coding assistant or institutional accounts (for example, through
+GitHub Education / Student Developer Pack for GitHub Copilot, or campus AI
+services).
+2. **Personal accounts**: If you already have a personal account or subscription
+to a coding agent or AI model provider (such as Claude Code, Cursor, GitHub
+Copilot, or API keys for models like Claude, GPT, or Gemini), you are welcome to
+use it.
+3. **Freebuff**: If you do not have an institutional license or personal
+subscription, you can use [Freebuff](https://freebuff.com/). Freebuff provides
+free, ad-supported access to DeepSeek 4.1 for 7 hours a day, which is a very
+good deal for completing your coursework.
+4. **OpenCode**: Another option is [OpenCode](https://opencode.ai/), which also
+provides free models. Keep in mind that free models on OpenCode typically come
+with smaller context windows, and sessions might be shorter.
+
+### Model Strategy: Strong Models for Planning and Review, Flash Models for Coding
 
 ::: {.callout-tip}
-## Model Strategy: Strong Models for Planning & Review, Flash Models for Coding
+## Model Strategy: Strong Models for Planning and Review, Flash Models for Coding
 When using an AI coding agent, you will get much better results by adopting a **two-tier model strategy**:
 
 - **Strong reasoning models for planning and review**: Use a frontier model (such as Claude Sonnet, OpenAI o-series/GPT-4o, DeepSeek Reasoner, or Gemini Pro) when initially planning your pipeline architecture, structuring your `AGENTS.md`, drafting complex DAG nodes, or reviewing tricky test failures and edge cases.
@@ -223,27 +242,50 @@ This split significantly reduces latency, saves daily quota, and yields cleaner 
 - Linux or macOS operating system (Windows users **must** use WSL2).
 - An AI coding agent installed on your computer system (see above).
 
-## Course Project & Grading
+## Course Project and Grading
 
-Grading is based on your final course project. During lecture hours you will learn each concept through
-live demonstrations and hands-on exercises. In parallel, you will develop your own reproducible analytical
-pipeline around a substantial analytical problem and dataset of your choice.
+Grading is based on your final course project. During lecture hours you will
+learn each concept through live demonstrations and hands-on exercises. In
+parallel, you will develop your own reproducible analytical pipeline around a
+substantial analytical problem and dataset of your choice.
 
-Because you are actively encouraged to use AI coding agents to accelerate your development, the goal of this
-project is not merely to write boilerplate code. Instead, the ambition is to tackle a **challenging, multi-language analytical problem**
-and demonstrate your skills as a **harness architect, code reviewer, and reproducibility engineer**.
+Because you are actively encouraged to use AI coding agents to accelerate your
+development, the goal of this project is not merely to write boilerplate code.
+Instead, the ambition is to tackle a **challenging, multi-language analytical
+problem** and demonstrate your skills as a **harness architect, code reviewer,
+and reproducibility engineer**.
 
-### Project Scope & Ambition
+### Project Scope and Ambition
 
 To achieve a high grade, your project must meet the following specifications:
 
-- **Polyglot Mandate**: The pipeline must integrate **at least two languages** (e.g., Python + R, or Python + Julia) orchestrated with T and exchanging data via Apache Arrow IPC (`^ipc`). Each language must be chosen deliberately for its strengths (e.g., Python for data scraping or machine learning embeddings, R for specialized statistical modeling and `{ggplot2}` visualization, or Julia for high-performance simulation).
-- **Non-Trivial DAG Architecture**: The pipeline cannot be a single linear sequence of scripts. It must feature a branched Directed Acyclic Graph (DAG) with at least 5 distinct computation nodes (e.g., ingesting multiple data sources, parallel feature transformations, model fitting, and validation).
-- **Pure Functions & Immutability**: All node computations must be pure functions with explicit inputs and outputs, free of global scope leakage, in-place data mutations, or unmanaged side effects.
-- **The AI Harness & Test Oracles**: The repository must include a customized `AGENTS.md` specifying your project's negative constraints, paired with an automated test suite (`pytest`, `{testthat}`, or `testcraft`) anchored by golden reference datasets. Tests must verify analytical invariants and prevent LLM-generated bugs.
-- **Hermetic Environment**: All dependencies (R, Python, Julia, system libraries, and Quarto) must be declared and pinned via a Nix flake (`flake.nix` and `flake.lock`).
-- **Continuous Integration**: The repository must contain a GitHub Actions workflow that executes your test suite and builds the pipeline in a clean Nix environment on every push.
-- **Final Data Product**: The pipeline must produce an automated, polished end product—such as a rendered Quarto report, an interactive dashboard, or an exported analytical artifact.
+- **Polyglot Mandate**: The pipeline must integrate **at least two languages**
+    (e.g., Python + R, or Python + Julia) orchestrated with T and exchanging
+    data via Apache Arrow IPC (`^ipc`). Each language must be chosen
+    deliberately for its strengths (e.g., Python for data scraping or machine
+    learning embeddings, R for specialized statistical modeling and `{ggplot2}`
+    visualization, or Julia for high-performance simulation).
+- **Non-Trivial DAG Architecture**: The pipeline cannot be a single linear
+    sequence of scripts. It must feature a branched Directed Acyclic Graph (DAG)
+    with at least 5 distinct computation nodes (e.g., ingesting multiple data
+    sources, parallel feature transformations, model fitting, and validation).
+- **Pure Functions & Immutability**: All node computations must be pure
+    functions with explicit inputs and outputs, free of global scope leakage,
+    in-place data mutations, or unmanaged side effects.
+- **The AI Harness & Test Oracles**: The repository must include a customized
+    `AGENTS.md` specifying your project's negative constraints, paired with an
+    automated test suite (`pytest`, `{testthat}`, or `testcraft`) anchored by
+    golden reference datasets. Tests must verify analytical invariants and
+    prevent LLM-generated bugs.
+- **Hermetic Environment**: All dependencies (R, Python, Julia, system
+    libraries, and Quarto) must be declared and pinned via a Nix flake
+    (`flake.nix` and `flake.lock`).
+- **Continuous Integration**: The repository must contain a GitHub Actions
+    workflow that executes your test suite and builds the pipeline in a clean
+    Nix environment on every push.
+- **Final Data Product**: The pipeline must produce an automated, polished end
+    product—such as a rendered Quarto report, an interactive dashboard, or an
+    exported analytical artifact.
 
 ### Grading Rubric (20 Points)
 
@@ -260,9 +302,16 @@ At the end of the semester, your repository will be evaluated across four dimens
 
 Your repository will be evaluated objectively and non-interactively:
 
-1. **The "One-Command" Test**: The instructor clones your repository and runs the Nix build command (or verifies the green status of your GitHub Actions CI). If the pipeline fails to build from scratch or requires imperative manual steps, marks are deducted immediately.
-2. **Harness & Oracle Inspection**: The instructor reviews your `AGENTS.md` and test suite to verify that your test assertions are genuine analytical oracles rather than trivial tautologies.
-3. **Diff & Code Quality Review**: The instructor reviews the code inside your pipeline nodes to verify that functions are pure, properly scoped, and that AI-generated artifacts have been rigorously audited.
+1. **The "One-Command" Test**: I’ll clone your repository and runs the Nix build
+command (or verifies the green status of your GitHub Actions CI). If the
+pipeline fails to build from scratch or requires imperative manual steps, marks
+are deducted immediately.
+2. **Harness & Oracle Inspection**: The instructor reviews your `AGENTS.md` and
+test suite to verify that your test assertions are genuine analytical oracles
+rather than trivial tautologies.
+3. **Diff & Code Quality Review**: The instructor reviews the code inside your
+pipeline nodes to verify that functions are pure, properly scoped, and that
+AI-generated artifacts have been rigorously audited.
 
 ## Jargon
 
@@ -281,11 +330,6 @@ Your repository will be evaluated objectively and non-interactively:
 - **Nix Store (`/nix/store`)**: The read-only directory where all isolated packages and build artifacts reside.
 - **Hermetic Sandbox**: An isolated build environment with no network access or hidden system dependencies.
 - **Binary Cache**: Pre-built packages identified by cryptographic hash (e.g. Cachix or `cache.nixos.org`), avoiding redundant local compilation.
-
-### R & Python
-- **CRAN / PyPI**: The respective package registries for R and Python.
-- **Arrow IPC (`^ipc`)**: An in-memory columnar data format that allows zero-overhead data transfer between R and Python.
-- **`testthat` / `pytest`**: Standard testing frameworks for R and Python code.
 
 ## Further Reading
 
