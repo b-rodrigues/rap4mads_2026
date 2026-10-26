@@ -109,23 +109,48 @@ of modern data science so you can master the fundamental concepts.
 
 ## Data products?
 
-In this course, each of you will develop a *data product*. A data product is
+In this course, each of you will develop a *data product* with help from an LLM. A data product is
 anything that requires data as an input and produces value: an analytical report,
 a reproducible paper, an interactive dashboard, or an API. 
 
 The focus of the course is not on the end product itself (which you can choose based on your interests),
 but on the **pipeline** that builds that product reliably, reproducibly, and non-interactively.
 
-## Machine learning?
+### Machine learning in the age of AI
 
-Being skilled in machine learning is not enough to become an effective data scientist.
-In fact, the model is often the easiest piece to replace. What is non-negotiable is knowing:
+AI has fundamentally changed the game. Building a machine learning model is no longer the main 
+bottleneck in data science. AI assistants can generate code, suggest architectures, debug errors, 
+and accelerate experimentation. But generating code is not the same as building reliable systems.
 
-- How to write, test, and modularize code;
-- How to manage environments deterministically;
-- How to work within the command line and version control with Git;
-- How to construct automated DAG pipelines;
-- How to package code and deploy with Docker and Continuous Integration.
+The role of a data scientist is shifting from writing every line of code to **knowing what to build, 
+how to evaluate it, and how to make it work reliably in the real world**. This requires more than 
+machine learning expertise. You still need to know how to:
+
+- **Write, test, and modularize code** — including reviewing, understanding, and validating 
+  AI-generated code rather than blindly trusting it.
+- **Manage environments reproducibly** — ensuring that code and dependencies behave consistently across machines and deployments.
+- **Work with the command line and version control** — using tools such as Git to collaborate, 
+  track changes, and maintain control over your codebase.
+- **Build automated data and ML pipelines** — orchestrating workflows as reproducible, testable, and maintainable DAGs.
+- **Package and deploy software** — using tools such as Docker and Continuous Integration to move from experimentation to production.
+- **Validate results and challenge assumptions** — checking data quality, evaluating model performance, detecting failure modes, 
+  and understanding when an apparently good result is actually wrong.
+
+AI makes these skills more valuable, not less. The goal is no longer simply to build a model that works once. It is to build systems that are correct, reproducible, maintainable, and useful, with AI as a powerful accelerator, not a substitute for engineering judgment.
+
+### The importance of domain knowledge
+
+Technical skills alone are not enough. Some of the greatest value you can bring as a data scientist 
+comes from combining software engineering and data science with deep knowledge of a particular field, 
+whether it is economics, biology, medicine, finance, or another domain.
+
+Domain expertise helps you identify meaningful problems, understand how the underlying systems work, 
+recognize when results are implausible, and distinguish useful insights from misleading correlations. 
+AI can make it easier than ever to write code, build models, and explore data, but it does not automatically 
+tell you which questions are worth asking or which answers matter in practice.
+
+Your competitive advantage lies at the intersection of engineering, data science, and domain expertise. 
+It is this combination that allows you to move beyond producing analyses and models to solving problems that genuinely matter.
 
 ## What actually is reproducibility?
 
