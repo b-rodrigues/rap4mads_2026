@@ -123,7 +123,11 @@ Let us set up Nix and configure your workstation for the course.
 We strongly recommend the [Determinate Systems Nix Installer](https://zero-to-nix.com/start/install), which works seamlessly across Linux, macOS, and Windows (via WSL2):
 
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | \
+  sh -s -- install --no-confirm --extra-conf "
+  trusted-users = root $USER
+  substituters = https://cache.nixos.org https://rstats-on-nix.cachix.org
+  trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= rstats-on-nix.cachix.org-1:vdiiVgocg6WeJrODIqdprZRUrhi1JzhBnXv7aWI6+F0="
 ```
 
 Follow the prompts on screen, then restart your terminal. Verify the installation:
@@ -133,6 +137,8 @@ nix --version
 ```
 
 ### 2. Configuring Binary Caches
+
+You can skip this if you installed using the command above, as it configures the cache. Otherwise, follow the instructions below.
 
 To avoid compiling R packages and Python dependencies from source, configure the `rstats-on-nix` Cachix cache:
 
