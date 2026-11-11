@@ -462,7 +462,17 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#decoupling-logic-external-scripts" id="toc-decoupling-logic-external-scripts" class="nav-link" data-scroll-target="#decoupling-logic-external-scripts"><span class="header-section-number">3.6.1</span> Decoupling Logic: External Scripts</a></li>
   </ul></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">3.7</span> Summary</a></li>
+  <li><a href="#hands-on-exercise-decoupling-a-pipeline-with-external-scripts" id="toc-hands-on-exercise-decoupling-a-pipeline-with-external-scripts" class="nav-link" data-scroll-target="#hands-on-exercise-decoupling-a-pipeline-with-external-scripts"><span class="header-section-number">3.7</span> Hands-On Exercise: Decoupling a Pipeline with External Scripts</a>
+  <ul class="collapse">
+  <li><a href="#the-objective" id="toc-the-objective" class="nav-link" data-scroll-target="#the-objective"><span class="header-section-number">3.7.1</span> The Objective</a></li>
+  <li><a href="#project-layout" id="toc-project-layout" class="nav-link" data-scroll-target="#project-layout"><span class="header-section-number">3.7.2</span> Project Layout</a></li>
+  <li><a href="#step-1-create-a-toy-dataset" id="toc-step-1-create-a-toy-dataset" class="nav-link" data-scroll-target="#step-1-create-a-toy-dataset"><span class="header-section-number">3.7.3</span> Step 1: Create a Toy Dataset</a></li>
+  <li><a href="#step-2-write-pure-helper-functions-in-srchelpers.r" id="toc-step-2-write-pure-helper-functions-in-srchelpers.r" class="nav-link" data-scroll-target="#step-2-write-pure-helper-functions-in-srchelpers.r"><span class="header-section-number">3.7.4</span> Step 2: Write Pure Helper Functions in <code>src/helpers.R</code></a></li>
+  <li><a href="#step-3-write-the-standalone-scripts" id="toc-step-3-write-the-standalone-scripts" class="nav-link" data-scroll-target="#step-3-write-the-standalone-scripts"><span class="header-section-number">3.7.5</span> Step 3: Write the Standalone Scripts</a></li>
+  <li><a href="#step-4-orchestrate-in-srcpipeline.t" id="toc-step-4-orchestrate-in-srcpipeline.t" class="nav-link" data-scroll-target="#step-4-orchestrate-in-srcpipeline.t"><span class="header-section-number">3.7.6</span> Step 4: Orchestrate in <code>src/pipeline.t</code></a></li>
+  <li><a href="#step-5-run-and-test-script-invalidation" id="toc-step-5-run-and-test-script-invalidation" class="nav-link" data-scroll-target="#step-5-run-and-test-script-invalidation"><span class="header-section-number">3.7.7</span> Step 5: Run and Test Script Invalidation</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">3.8</span> Summary</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/b-rodrigues/rap4mads_2026/edit/main/04-functional-programming.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
@@ -641,8 +651,151 @@ transformed <span class="sc">=</span> <span class="fu">pyn</span>(
 <p>T acts purely as the orchestration layer: handling scheduling, caching, sandboxing, and data exchange.</p>
 </section>
 </section>
-<section id="summary" class="level2" data-number="3.7">
-<h2 data-number="3.7" class="anchored" data-anchor-id="summary"><span class="header-section-number">3.7</span> Summary</h2>
+<section id="hands-on-exercise-decoupling-a-pipeline-with-external-scripts" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="hands-on-exercise-decoupling-a-pipeline-with-external-scripts"><span class="header-section-number">3.7</span> Hands-On Exercise: Decoupling a Pipeline with External Scripts</h2>
+<p>In this exercise, you will put pure functional design into practice by building a pipeline that decouples its computational logic into standalone external scripts and helper functions.</p>
+<section id="the-objective" class="level3" data-number="3.7.1">
+<h3 data-number="3.7.1" class="anchored" data-anchor-id="the-objective"><span class="header-section-number">3.7.1</span> The Objective</h3>
+<p>Instead of writing inline blocks inside <code>&lt;{ ... }&gt;</code>, you will: 1. Create a pure R helper function in <code>src/helpers.R</code> that calculates summary metrics without side effects. 2. Write a pure R transformation script in <code>src/clean.R</code> that uses <code>src/helpers.R</code> to process an input dataset. 3. Write an external Python script in <code>src/summarize.py</code> that ingests the cleaned Arrow table and outputs a JSON summary. 4. Orchestrate the workflow in <code>src/pipeline.t</code> using <code>script</code> and <code>functions</code>. 5. Verify caching and inspect how modifying an external script invalidates only that node.</p>
+</section>
+<section id="project-layout" class="level3" data-number="3.7.2">
+<h3 data-number="3.7.2" class="anchored" data-anchor-id="project-layout"><span class="header-section-number">3.7.2</span> Project Layout</h3>
+<p>By the end of this exercise, your project structure will look like this:</p>
+<pre class="text"><code>my_project/
+├── data/
+│   └── weather.csv
+├── src/
+│   ├── helpers.R        # Reusable pure helper functions
+│   ├── clean.R          # Standalone R cleaning script
+│   ├── summarize.py     # Standalone Python aggregation script
+│   └── pipeline.t       # Declarative T orchestrator
+├── tproject.toml
+└── flake.nix</code></pre>
+<hr>
+</section>
+<section id="step-1-create-a-toy-dataset" class="level3" data-number="3.7.3">
+<h3 data-number="3.7.3" class="anchored" data-anchor-id="step-1-create-a-toy-dataset"><span class="header-section-number">3.7.3</span> Step 1: Create a Toy Dataset</h3>
+<p>In your project directory (inside <code>nix develop</code>), create a small dataset <code>data/weather.csv</code>:</p>
+<pre class="csv"><code>city,temperature,humidity,rainfall
+Luxembourg,18.5,72,2.4
+Esch,21.0,65,0.0
+Differdange,-99.0,80,12.1
+Dudelange,19.2,68,1.0
+Wiltz,16.8,85,5.6</code></pre>
+<p><em>(Notice the faulty sensor reading <code>-99.0</code> for Differdange!)</em></p>
+<hr>
+</section>
+<section id="step-2-write-pure-helper-functions-in-srchelpers.r" class="level3" data-number="3.7.4">
+<h3 data-number="3.7.4" class="anchored" data-anchor-id="step-2-write-pure-helper-functions-in-srchelpers.r"><span class="header-section-number">3.7.4</span> Step 2: Write Pure Helper Functions in <code>src/helpers.R</code></h3>
+<p>Create <code>src/helpers.R</code>. This file will contain pure utility functions with explicit arguments and no global state:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># src/helpers.R</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pure function: removes invalid sentinel values and computes temperature in Fahrenheit</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>clean_temperatures <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">min_valid =</span> <span class="sc">-</span><span class="dv">40</span>, <span class="at">max_valid =</span> <span class="dv">55</span>) {</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  valid <span class="ot">&lt;-</span> df[df<span class="sc">$</span>temperature <span class="sc">&gt;=</span> min_valid <span class="sc">&amp;</span> df<span class="sc">$</span>temperature <span class="sc">&lt;=</span> max_valid, ]</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  valid<span class="sc">$</span>temp_fahrenheit <span class="ot">&lt;-</span> (valid<span class="sc">$</span>temperature <span class="sc">*</span> <span class="dv">9</span> <span class="sc">/</span> <span class="dv">5</span>) <span class="sc">+</span> <span class="dv">32</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  valid</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Because <code>clean_temperatures</code> is a pure function, you can source it into an interactive R session or write a unit test with <code>{testthat}</code> without needing T or Nix running!</p>
+<hr>
+</section>
+<section id="step-3-write-the-standalone-scripts" class="level3" data-number="3.7.5">
+<h3 data-number="3.7.5" class="anchored" data-anchor-id="step-3-write-the-standalone-scripts"><span class="header-section-number">3.7.5</span> Step 3: Write the Standalone Scripts</h3>
+<p>Now create the external node scripts.</p>
+<section id="r-node-script-srcclean.r" class="level4" data-number="3.7.5.1">
+<h4 data-number="3.7.5.1" class="anchored" data-anchor-id="r-node-script-srcclean.r"><span class="header-section-number">3.7.5.1</span> R Node Script: <code>src/clean.R</code></h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># src/clean.R</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Receives `raw_weather` from upstream via Apache Arrow IPC (^ipc)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># clean_temperatures is provided via `functions = ["src/helpers.R"]`</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>cleaned <span class="ot">&lt;-</span> <span class="fu">clean_temperatures</span>(raw_weather)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort by temperature descending</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>cleaned <span class="ot">&lt;-</span> cleaned[<span class="fu">order</span>(<span class="sc">-</span>cleaned<span class="sc">$</span>temperature), ]</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>cleaned</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="python-node-script-srcsummarize.py" class="level4" data-number="3.7.5.2">
+<h4 data-number="3.7.5.2" class="anchored" data-anchor-id="python-node-script-srcsummarize.py"><span class="header-section-number">3.7.5.2</span> Python Node Script: <code>src/summarize.py</code></h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># src/summarize.py</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Receives `cleaned_weather` from upstream via Apache Arrow IPC (^ipc)</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> {</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"total_cities"</span>: <span class="bu">int</span>(<span class="bu">len</span>(cleaned_weather)),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avg_temp_c"</span>: <span class="bu">float</span>(cleaned_weather[<span class="st">"temperature"</span>].mean()),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avg_temp_f"</span>: <span class="bu">float</span>(cleaned_weather[<span class="st">"temp_fahrenheit"</span>].mean()),</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"total_rainfall"</span>: <span class="bu">float</span>(cleaned_weather[<span class="st">"rainfall"</span>].<span class="bu">sum</span>())</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Notice that neither script contains any T-specific code or decorators. They are 100% standard, portable R and Python!</p>
+<hr>
+</section>
+</section>
+<section id="step-4-orchestrate-in-srcpipeline.t" class="level3" data-number="3.7.6">
+<h3 data-number="3.7.6" class="anchored" data-anchor-id="step-4-orchestrate-in-srcpipeline.t"><span class="header-section-number">3.7.6</span> Step 4: Orchestrate in <code>src/pipeline.t</code></h3>
+<p>Now, link everything together declaratively in <code>src/pipeline.t</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>p <span class="sc">=</span> <span class="cf">pipeline</span> {
+  <span class="co">-- Ingest raw data</span>
+  raw_weather <span class="sc">=</span> <span class="fu">read_csv</span>(<span class="st">"data/weather.csv"</span>)
+
+  <span class="co">-- R node executing external script with helper function</span>
+  cleaned_weather <span class="sc">=</span> <span class="fu">rn</span>(
+    script <span class="sc">=</span> <span class="st">"src/clean.R"</span>,
+    functions <span class="sc">=</span> [<span class="st">"src/helpers.R"</span>],
+    deserializer <span class="sc">=</span> ^ipc,
+    serializer <span class="sc">=</span> ^ipc
+  )
+
+  <span class="co">-- Python node executing external script</span>
+  weather_summary <span class="sc">=</span> <span class="fu">pyn</span>(
+    script <span class="sc">=</span> <span class="st">"src/summarize.py"</span>,
+    deserializer <span class="sc">=</span> ^ipc,
+    serializer <span class="sc">=</span> ^json
+  )
+}
+
+<span class="fu">build_pipeline</span>(p)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Prompting Your AI Assistant for Clean Architecture
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When working with an AI coding assistant, enforce this architectural separation by prompting:</p>
+<blockquote class="blockquote">
+<p><em>“Write an external R script <code>src/clean.R</code> and a pure helper file <code>src/helpers.R</code>. Ensure <code>src/helpers.R</code> only contains pure functions with explicit arguments. Then write a Python script <code>src/summarize.py</code>. Finally, connect them in <code>src/pipeline.t</code> using <code>script = ...</code> and <code>functions = [...]</code>. Do not embed inline code in <code>&lt;{ ... }&gt;</code>. Keep all domain logic in the standalone script files.”</em></p>
+</blockquote>
+</div>
+</div>
+<hr>
+</section>
+<section id="step-5-run-and-test-script-invalidation" class="level3" data-number="3.7.7">
+<h3 data-number="3.7.7" class="anchored" data-anchor-id="step-5-run-and-test-script-invalidation"><span class="header-section-number">3.7.7</span> Step 5: Run and Test Script Invalidation</h3>
+<p>Run the pipeline:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li><p><strong>Inspect Artifacts</strong>: In the T REPL (<code>t repl</code>), read back the outputs:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code><span class="fu">read_node</span>(p, <span class="st">"cleaned_weather"</span>)
+<span class="fu">read_node</span>(p, <span class="st">"weather_summary"</span>)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>Verify Script Content Tracking</strong>: Modify a calculation inside <code>src/summarize.py</code> (e.g., add <code>"max_temp_c"</code>). Re-run <code>t run src/pipeline.t</code>. T hashes the contents of <code>src/summarize.py</code> and detects that only this script changed:</p>
+<ul>
+<li><code>raw_weather</code>: <strong>Cache Hit</strong> (skipped)</li>
+<li><code>cleaned_weather</code>: <strong>Cache Hit</strong> (skipped)</li>
+<li><code>weather_summary</code>: <strong>Rebuilt</strong> in microseconds!</li>
+</ul></li>
+</ol>
+</section>
+</section>
+<section id="summary" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="summary"><span class="header-section-number">3.8</span> Summary</h2>
 <ul>
 <li>Mutable state in scripts and notebooks creates fragile, order-dependent code.</li>
 <li>Pure functions are deterministic and side-effect free.</li>
