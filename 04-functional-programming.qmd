@@ -352,8 +352,8 @@ t run src/pipeline.t
 1. **Inspect Artifacts**: In the T REPL (`t repl`), read back the outputs:
    ```t
    #| eval: false
-   read_node(p, "cleaned_weather")
-   read_node(p, "weather_summary")
+   read_node(p.cleaned_weather)
+   read_node(p.weather_summary"
    ```
 2. **Verify Script Content Tracking**: Modify a calculation inside `src/summarize.py` (e.g., add `"max_temp_c"`). Re-run `t run src/pipeline.t`.
    T hashes the contents of `src/summarize.py` and detects that only this script changed:
