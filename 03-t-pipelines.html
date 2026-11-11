@@ -767,7 +767,7 @@ Fiona,63,0.75</code></pre>
 <li><p><strong>Introspect the Data</strong>: Open the T REPL by typing <code>t</code> or <code>t repl</code>, and inspect the materialized Python table:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>result <span class="sc">=</span> <span class="fu">read_node</span>(p, <span class="st">"clean_py"</span>)
 <span class="fu">print</span>(result)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<pre class="text t-output"><code>Error(TypeError: "[/home/runner/work/_temp/tlang-105fb7e788ca260c/chunk.t:L1:C10] read_node: expected a ComputedNode for argument 'node', but got Error.
+<pre class="text t-output"><code>Error(TypeError: "[/home/runner/work/_temp/tlang-23d8c8dbeb3f982b/chunk.t:L1:C10] read_node: expected a ComputedNode for argument 'node', but got Error.
 - If the pipeline hasn't been built yet, run build_pipeline(p) first.
 - If the pipeline is built, use dot access: read_node(p.node_name).
 - To read from a past build, use read_past_node(p.node_name, which_log = "...").

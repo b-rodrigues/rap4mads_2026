@@ -783,8 +783,8 @@ Wiltz,16.8,85,5.6</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li><p><strong>Inspect Artifacts</strong>: In the T REPL (<code>t repl</code>), read back the outputs:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code><span class="fu">read_node</span>(p, <span class="st">"cleaned_weather"</span>)
-<span class="fu">read_node</span>(p, <span class="st">"weather_summary"</span>)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code><span class="fu">read_node</span>(p.cleaned_weather)
+<span class="fu">read_node</span>(p.weather_summary<span class="st">"</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
 <li><p><strong>Verify Script Content Tracking</strong>: Modify a calculation inside <code>src/summarize.py</code> (e.g., add <code>"max_temp_c"</code>). Re-run <code>t run src/pipeline.t</code>. T hashes the contents of <code>src/summarize.py</code> and detects that only this script changed:</p>
 <ul>
 <li><code>raw_weather</code>: <strong>Cache Hit</strong> (skipped)</li>
