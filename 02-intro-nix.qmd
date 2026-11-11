@@ -155,9 +155,11 @@ This tells Nix to check `https://rstats-on-nix.cachix.org` for pre-built binarie
 To make Positron automatically detect the R and Python interpreters managed by Nix:
 
 1. Install `direnv`:
-   ```bash
-   nix-env -iA nixpkgs.direnv
-   ```
+
+```bash
+nix profile add nixpkgs#direnv   
+```
+
 2. Hook `direnv` into your shell (add `eval "$(direnv hook bash)"` to your `~/.bashrc` or `eval "$(direnv hook zsh)"` to `~/.zshrc`).
 3. In any project root containing a `default.nix` or `flake.nix`, create a `.envrc` file containing:
    ```bash
