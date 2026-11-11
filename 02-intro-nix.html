@@ -651,8 +651,10 @@ window.Quarto = {
 <p><a href="https://positron.posit.co/">Positron</a> is a next-generation data science IDE built on Code OSS by Posit. It has first-class support for both R and Python, with rich variable inspectors and plotting panes.</p>
 <p>To make Positron automatically detect the R and Python interpreters managed by Nix:</p>
 <ol type="1">
-<li><p>Install <code>direnv</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">nix-env</span> <span class="at">-iA</span> nixpkgs.direnv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li>Install <code>direnv</code>:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">nix</span> profile add nixpkgs#direnv   </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="1">
 <li><p>Hook <code>direnv</code> into your shell (add <code>eval "$(direnv hook bash)"</code> to your <code>~/.bashrc</code> or <code>eval "$(direnv hook zsh)"</code> to <code>~/.zshrc</code>).</p></li>
 <li><p>In any project root containing a <code>default.nix</code> or <code>flake.nix</code>, create a <code>.envrc</code> file containing:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">use</span> flake</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
