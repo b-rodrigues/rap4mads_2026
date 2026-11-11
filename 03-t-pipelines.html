@@ -26,6 +26,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -49,9 +84,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bc5fdf982fd236d68e1e6a10a79e75f3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-a1decbe84cba2c43ca5ee9645dec2938.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-bc5fdf982fd236d68e1e6a10a79e75f3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-ef9c3bb3fbdfe938dd67f1c9eb50a934.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -420,7 +455,11 @@ window.Quarto = {
   <ul>
   <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="header-section-number">2.1</span> Learning Outcomes</a></li>
   <li><a href="#introduction-beyond-environment-reproducibility" id="toc-introduction-beyond-environment-reproducibility" class="nav-link" data-scroll-target="#introduction-beyond-environment-reproducibility"><span class="header-section-number">2.2</span> Introduction: Beyond Environment Reproducibility</a></li>
-  <li><a href="#a-first-look-at-a-t-pipeline" id="toc-a-first-look-at-a-t-pipeline" class="nav-link" data-scroll-target="#a-first-look-at-a-t-pipeline"><span class="header-section-number">2.3</span> A First Look at a T Pipeline</a></li>
+  <li><a href="#a-first-look-at-a-t-pipeline" id="toc-a-first-look-at-a-t-pipeline" class="nav-link" data-scroll-target="#a-first-look-at-a-t-pipeline"><span class="header-section-number">2.3</span> A First Look at a T Pipeline</a>
+  <ul class="collapse">
+  <li><a href="#getting-started-an-ephemeral-nix-shell" id="toc-getting-started-an-ephemeral-nix-shell" class="nav-link" data-scroll-target="#getting-started-an-ephemeral-nix-shell"><span class="header-section-number">2.3.1</span> Getting Started: An Ephemeral Nix Shell</a></li>
+  <li><a href="#an-end-to-end-pipeline-example" id="toc-an-end-to-end-pipeline-example" class="nav-link" data-scroll-target="#an-end-to-end-pipeline-example"><span class="header-section-number">2.3.2</span> An End-to-End Pipeline Example</a></li>
+  </ul></li>
   <li><a href="#anatomy-of-a-t-pipeline" id="toc-anatomy-of-a-t-pipeline" class="nav-link" data-scroll-target="#anatomy-of-a-t-pipeline"><span class="header-section-number">2.4</span> Anatomy of a T Pipeline</a>
   <ul class="collapse">
   <li><a href="#the-pipeline-...-block" id="toc-the-pipeline-...-block" class="nav-link" data-scroll-target="#the-pipeline-...-block"><span class="header-section-number">2.4.1</span> 1. The <code>pipeline { ... }</code> Block</a></li>
@@ -498,7 +537,53 @@ clean_data_final.csv</code></pre>
 </section>
 <section id="a-first-look-at-a-t-pipeline" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="a-first-look-at-a-t-pipeline"><span class="header-section-number">2.3</span> A First Look at a T Pipeline</h2>
-<p>Before diving into formal grammar, let us examine an end-to-end polyglot pipeline in T:</p>
+<section id="getting-started-an-ephemeral-nix-shell" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="getting-started-an-ephemeral-nix-shell"><span class="header-section-number">2.3.1</span> Getting Started: An Ephemeral Nix Shell</h3>
+<p>Before writing or running a pipeline, how do you actually get T on your computer?</p>
+<p>Because you already installed and configured Nix in Chapter 2, you <strong>do not</strong> need to install T globally, download binaries manually, or compile anything from source. Instead, you can run T immediately in a temporary (ephemeral) shell directly from its GitHub repository:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">nix</span> shell <span class="at">--accept-flake-config</span> github:b-rodrigues/tlang</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This single command:</p>
+<ol type="1">
+<li>Fetches the pinned T flake from the <code>b-rodrigues/tlang</code> GitHub repository.</li>
+<li>Pulls the pre-compiled T binary directly from the <code>rstats-on-nix</code> Cachix substituter configured in the previous chapter.</li>
+<li>Drops you into an isolated subshell where the <code>t</code> CLI binary is immediately available on your <code>$PATH</code>.</li>
+<li>Leaves no permanent clutter on your system: as soon as you type <code>exit</code>, your shell reverts to normal.</li>
+</ol>
+<section id="testing-the-setup-and-the-repl" class="level4" data-number="2.3.1.1">
+<h4 data-number="2.3.1.1" class="anchored" data-anchor-id="testing-the-setup-and-the-repl"><span class="header-section-number">2.3.1.1</span> Testing the Setup and the REPL</h4>
+<p>While inside this temporary shell, you can immediately test that T is functioning properly by launching its built-in interactive demo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> demo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This terminal demo showcases pipeline DAG construction, hermetic Nix builds, Arrow in-memory inspection, and content-addressed caching in real time.</p>
+<p>You can also start an interactive Read-Eval-Print Loop (REPL) to explore T expressions:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> repl</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>(or simply run <code>t</code>)</em>.</p>
+</section>
+<section id="scaffolding-a-new-project" class="level4" data-number="2.3.1.2">
+<h4 data-number="2.3.1.2" class="anchored" data-anchor-id="scaffolding-a-new-project"><span class="header-section-number">2.3.1.2</span> Scaffolding a New Project</h4>
+<p>The <code>t</code> CLI includes built-in project scaffolding. While inside your temporary shell, you can scaffold a new reproducible analysis workspace:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> init <span class="at">--project</span> my_project</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The tool will prompt you with a few configuration questions (project name, author, license, pipeline template preference, etc.) and generate a standard directory layout:</p>
+<ul>
+<li><code>src/pipeline.t</code>: Your main analysis pipeline file, containing a working template with sample nodes.</li>
+<li><code>tproject.toml</code>: The declarative manifest where you configure required R, Python, and Julia packages.</li>
+<li><code>flake.nix</code>: A pinned Nix environment definition locking all dependencies deterministically across Linux and macOS.</li>
+<li><code>AGENTS.md</code> and <code>T-LANGUAGE-REFERENCE.md</code>: Context files so AI coding assistants (such as Claude Code, GitHub Copilot, or Antigravity) understand T grammar immediately.</li>
+<li><code>.envrc</code>: Integration with <code>direnv</code> so your development environment activates automatically upon entering the folder.</li>
+</ul>
+</section>
+<section id="entering-your-projects-environment" class="level4" data-number="2.3.1.3">
+<h4 data-number="2.3.1.3" class="anchored" data-anchor-id="entering-your-projects-environment"><span class="header-section-number">2.3.1.3</span> Entering Your Project’s Environment</h4>
+<p>Once the project is scaffolded, exit the temporary <code>nix shell</code> by typing <code>exit</code>. Move into your new project directory and enter its dedicated, reproducible development environment:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> my_project</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">nix</span> develop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Inside this development shell, the <code>t</code> executable is available alongside all your declared language runtimes (R, Python, and Julia). You can execute your entire pipeline from end to end using:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+</section>
+<section id="an-end-to-end-pipeline-example" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="an-end-to-end-pipeline-example"><span class="header-section-number">2.3.2</span> An End-to-End Pipeline Example</h3>
+<p>Now that you know how to access T and bootstrap a workspace, let us examine an end-to-end polyglot pipeline in T:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>p <span class="sc">=</span> <span class="cf">pipeline</span> {
   <span class="co">-- 1. Ingest raw CSV data</span>
   data <span class="sc">=</span> <span class="fu">read_csv</span>(<span class="st">"datasets/housing_data.csv"</span>)
@@ -538,6 +623,7 @@ plot_r <span class="sc">&lt;</span><span class="sc">-</span> <span class="fu">gg
 
 <span class="fu">build_pipeline</span>(p)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Notice what just happened: 1. <code>data</code> loads raw data. 2. <code>cleaned_py</code> runs in Python using pandas. It receives <code>data</code> as an Apache Arrow table via <code>deserializer = ^ipc</code>, computes new columns, and serializes its output with <code>serializer = ^ipc</code>. 3. <code>plot_r</code> runs in R using <code>{ggplot2}</code>. It receives <code>cleaned_py</code> directly from Python without you writing a single line of CSV export/import glue code! 4. <code>build_pipeline(p)</code> builds every node in dependency order and caches the results.</p>
+</section>
 </section>
 <section id="anatomy-of-a-t-pipeline" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="anatomy-of-a-t-pipeline"><span class="header-section-number">2.4</span> Anatomy of a T Pipeline</h2>
