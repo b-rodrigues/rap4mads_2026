@@ -41,7 +41,77 @@ This is where **T** (`tlang`) comes in.
 
 ## A First Look at a T Pipeline
 
-Before diving into formal grammar, let us examine an end-to-end polyglot pipeline in T:
+### Getting Started: An Ephemeral Nix Shell
+
+Before writing or running a pipeline, how do you actually get T on your computer?
+
+Because you already installed and configured Nix in Chapter 2, you **do not** need to install T globally, download binaries manually, or compile anything from source. Instead, you can run T immediately in a temporary (ephemeral) shell directly from its GitHub repository:
+
+```bash
+nix shell --accept-flake-config github:b-rodrigues/tlang
+```
+
+This single command:
+
+1. Fetches the pinned T flake from the `b-rodrigues/tlang` GitHub repository.
+2. Pulls the pre-compiled T binary directly from the `rstats-on-nix` Cachix substituter configured in the previous chapter.
+3. Drops you into an isolated subshell where the `t` CLI binary is immediately available on your `$PATH`.
+4. Leaves no permanent clutter on your system: as soon as you type `exit`, your shell reverts to normal.
+
+#### Testing the Setup and the REPL
+
+While inside this temporary shell, you can immediately test that T is functioning properly by launching its built-in interactive demo:
+
+```bash
+t demo
+```
+
+This terminal demo showcases pipeline DAG construction, hermetic Nix builds, Arrow in-memory inspection, and content-addressed caching in real time.
+
+You can also start an interactive Read-Eval-Print Loop (REPL) to explore T expressions:
+
+```bash
+t repl
+```
+
+*(or simply run `t`)*.
+
+#### Scaffolding a New Project
+
+The `t` CLI includes built-in project scaffolding. While inside your temporary shell, you can scaffold a new reproducible analysis workspace:
+
+```bash
+t init --project my_project
+```
+
+The tool will prompt you with a few configuration questions (project name, author, license, pipeline template preference, etc.) and generate a standard directory layout:
+
+- `src/pipeline.t`: Your main analysis pipeline file, containing a working template with sample nodes.
+- `tproject.toml`: The declarative manifest where you configure required R, Python, and Julia packages.
+- `flake.nix`: A pinned Nix environment definition locking all dependencies deterministically across Linux and macOS.
+- `AGENTS.md` and `T-LANGUAGE-REFERENCE.md`: Context files so AI coding assistants (such as Claude Code, GitHub Copilot, or Antigravity) understand T grammar immediately.
+- `.envrc`: Integration with `direnv` so your development environment activates automatically upon entering the folder.
+
+#### Entering Your Project's Environment
+
+Once the project is scaffolded, exit the temporary `nix shell` by typing `exit`. Move into your new project directory and enter its dedicated, reproducible development environment:
+
+```bash
+cd my_project
+nix develop
+```
+
+Inside this development shell, the `t` executable is available alongside all your declared language runtimes (R, Python, and Julia). You can execute your entire pipeline from end to end using:
+
+```bash
+t run src/pipeline.t
+```
+
+---
+
+### An End-to-End Pipeline Example
+
+Now that you know how to access T and bootstrap a workspace, let us examine an end-to-end polyglot pipeline in T:
 
 ```t
 #| eval: false
