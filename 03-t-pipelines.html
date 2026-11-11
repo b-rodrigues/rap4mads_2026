@@ -469,7 +469,14 @@ window.Quarto = {
   <li><a href="#executing-and-inspecting-pipelines" id="toc-executing-and-inspecting-pipelines" class="nav-link" data-scroll-target="#executing-and-inspecting-pipelines"><span class="header-section-number">2.4.5</span> 5. Executing and Inspecting Pipelines</a></li>
   </ul></li>
   <li><a href="#using-external-scripts-and-functions" id="toc-using-external-scripts-and-functions" class="nav-link" data-scroll-target="#using-external-scripts-and-functions"><span class="header-section-number">2.5</span> Using External Scripts and Functions</a></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">2.6</span> Summary</a></li>
+  <li><a href="#hands-on-exercise-build-your-first-pipeline-with-an-ai-agent" id="toc-hands-on-exercise-build-your-first-pipeline-with-an-ai-agent" class="nav-link" data-scroll-target="#hands-on-exercise-build-your-first-pipeline-with-an-ai-agent"><span class="header-section-number">2.6</span> Hands-On Exercise: Build Your First Pipeline with an AI Agent</a>
+  <ul class="collapse">
+  <li><a href="#step-1-bootstrap-the-workspace" id="toc-step-1-bootstrap-the-workspace" class="nav-link" data-scroll-target="#step-1-bootstrap-the-workspace"><span class="header-section-number">2.6.1</span> Step 1: Bootstrap the Workspace</a></li>
+  <li><a href="#step-2-create-a-toy-dataset" id="toc-step-2-create-a-toy-dataset" class="nav-link" data-scroll-target="#step-2-create-a-toy-dataset"><span class="header-section-number">2.6.2</span> Step 2: Create a Toy Dataset</a></li>
+  <li><a href="#step-3-prompt-your-agent-to-write-the-pipeline" id="toc-step-3-prompt-your-agent-to-write-the-pipeline" class="nav-link" data-scroll-target="#step-3-prompt-your-agent-to-write-the-pipeline"><span class="header-section-number">2.6.3</span> Step 3: Prompt Your Agent to Write the Pipeline</a></li>
+  <li><a href="#step-4-run-inspect-and-verify-caching" id="toc-step-4-run-inspect-and-verify-caching" class="nav-link" data-scroll-target="#step-4-run-inspect-and-verify-caching"><span class="header-section-number">2.6.4</span> Step 4: Run, Inspect, and Verify Caching</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">2.7</span> Summary</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/b-rodrigues/rap4mads_2026/edit/main/03-t-pipelines.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
@@ -700,8 +707,82 @@ plot_r <span class="sc">&lt;</span><span class="sc">-</span> <span class="fu">gg
   include <span class="sc">=</span> [<span class="st">"config/model_params.yaml"</span>]
 )</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="summary" class="level2" data-number="2.6">
-<h2 data-number="2.6" class="anchored" data-anchor-id="summary"><span class="header-section-number">2.6</span> Summary</h2>
+<section id="hands-on-exercise-build-your-first-pipeline-with-an-ai-agent" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="hands-on-exercise-build-your-first-pipeline-with-an-ai-agent"><span class="header-section-number">2.6</span> Hands-On Exercise: Build Your First Pipeline with an AI Agent</h2>
+<p>Now that you understand the core mechanics of T pipelines, nodes, and Arrow IPC serialization, it is time to build one yourself!</p>
+<p>Modern reproducible workflows are built in collaboration with AI coding assistants (such as Antigravity, Claude Code, GitHub Copilot, or Cursor). T was specifically designed for this paradigm: when you scaffold a project, it automatically provisions context files so your AI assistant writes syntactically valid, idiomatic T from day one.</p>
+<p>In this exercise, you will pair with your AI agent to bootstrap a project, create a toy dataset, construct a polyglot pipeline that performs basic data manipulation, and verify DAG caching.</p>
+<section id="step-1-bootstrap-the-workspace" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="step-1-bootstrap-the-workspace"><span class="header-section-number">2.6.1</span> Step 1: Bootstrap the Workspace</h3>
+<p>Prompt your AI assistant (or execute the commands yourself in your terminal):</p>
+<blockquote class="blockquote">
+<p><em>“Launch a temporary Nix shell using <code>nix shell --accept-flake-config github:b-rodrigues/tlang</code> and initialize a new T project called <code>toy_pipeline</code> using <code>t init --project toy_pipeline</code>. Select the <code>full</code> pipeline template and the default Nixpkgs date.”</em></p>
+</blockquote>
+<p>Once the project is scaffolded, exit the temporary shell (<code>exit</code>), enter the directory, and drop into its pinned development environment:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> toy_pipeline</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">nix</span> develop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>The Built-in AI Harness
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Notice that <code>t init</code> created two key files in your project root: <code>AGENTS.md</code> and <code>T-LANGUAGE-REFERENCE.md</code>. These files inform your AI coding assistant about T’s syntax, node constructors (<code>pyn</code>, <code>rn</code>, <code>jln</code>), and serialization conventions (<code>^ipc</code>). When your agent has access to these files in its workspace, it produces accurate code without hallucinating syntax.</p>
+</div>
+</div>
+</section>
+<section id="step-2-create-a-toy-dataset" class="level3" data-number="2.6.2">
+<h3 data-number="2.6.2" class="anchored" data-anchor-id="step-2-create-a-toy-dataset"><span class="header-section-number">2.6.2</span> Step 2: Create a Toy Dataset</h3>
+<p>Ask your agent to generate a small toy dataset inside <code>data/</code>:</p>
+<blockquote class="blockquote">
+<p><em>“Create a CSV file at <code>data/students.csv</code> with 6 rows containing columns <code>name</code>, <code>score</code> (integer out of 100), and <code>attendance</code> (float between 0.0 and 1.0).”</em></p>
+</blockquote>
+<p>For example:</p>
+<pre class="csv"><code>name,score,attendance
+Alice,85,0.95
+Bob,52,0.70
+Charlie,91,0.98
+Diana,48,0.65
+Ethan,74,0.88
+Fiona,63,0.75</code></pre>
+</section>
+<section id="step-3-prompt-your-agent-to-write-the-pipeline" class="level3" data-number="2.6.3">
+<h3 data-number="2.6.3" class="anchored" data-anchor-id="step-3-prompt-your-agent-to-write-the-pipeline"><span class="header-section-number">2.6.3</span> Step 3: Prompt Your Agent to Write the Pipeline</h3>
+<p>Now, give your AI assistant a clear prompt to author the pipeline in <code>src/pipeline.t</code>:</p>
+<blockquote class="blockquote">
+<p><em>“In <code>src/pipeline.t</code>, write a pipeline named <code>p</code> that: 1. Reads <code>data/students.csv</code> into a node named <code>raw_data</code> using <code>read_csv(\"data/students.csv\")</code>. 2. Defines a Python node <code>clean_py</code> using <code>pyn()</code> that: - Ingests <code>raw_data</code> with <code>deserializer = ^ipc</code>. - Filters for students with <code>attendance &gt;= 0.70</code>. - Adds a new column <code>adjusted_score = score * 1.05</code>. - Adds a boolean column <code>passed = adjusted_score &gt;= 60</code>. - Serializes the result with <code>serializer = ^ipc</code>. 3. Defines an R node <code>summary_r</code> using <code>rn()</code> that: - Ingests <code>clean_py</code> with <code>deserializer = ^ipc</code>. - Uses <code>{dplyr}</code> to calculate average <code>adjusted_score</code> grouped by <code>passed</code>, or uses <code>{ggplot2}</code> to plot scores. - Serializes the summary. 4. Executes the pipeline with <code>build_pipeline(p)</code>.”</em></p>
+</blockquote>
+</section>
+<section id="step-4-run-inspect-and-verify-caching" class="level3" data-number="2.6.4">
+<h3 data-number="2.6.4" class="anchored" data-anchor-id="step-4-run-inspect-and-verify-caching"><span class="header-section-number">2.6.4</span> Step 4: Run, Inspect, and Verify Caching</h3>
+<p>Run the pipeline from your project shell:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You will see T resolve the DAG, materialize the Apache Arrow IPC buffers, and compute the artifacts.</p>
+<p>Now test the two core superpowers of T:</p>
+<ol type="1">
+<li><p><strong>Introspect the Data</strong>: Open the T REPL by typing <code>t</code> or <code>t repl</code>, and inspect the materialized Python table:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>result <span class="sc">=</span> <span class="fu">read_node</span>(p, <span class="st">"clean_py"</span>)
+<span class="fu">print</span>(result)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<pre class="text t-output"><code>Error(TypeError: "[/home/runner/work/_temp/tlang-67c0ad750954da58/chunk.t:L1:C10] read_node: expected a ComputedNode for argument 'node', but got Error.
+- If the pipeline hasn't been built yet, run build_pipeline(p) first.
+- If the pipeline is built, use dot access: read_node(p.node_name).
+- To read from a past build, use read_past_node(p.node_name, which_log = "...").
+  - Underlying error: Name `p` is not defined.
+Did you mean `n`?") 
+</code></pre></li>
+<li><p><strong>Observe Instant Caching</strong>: Re-run the pipeline immediately:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Notice that the execution finishes instantaneously—T detects that neither the data nor the code changed, so all nodes are served from cache!</p></li>
+<li><p><strong>Test Selective Invalidation</strong>: Edit a single score in <code>data/students.csv</code> and re-run. Observe how T detects the change in the source data and rebuilds the downstream nodes, leaving independent steps cached.</p></li>
+</ol>
+</section>
+</section>
+<section id="summary" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="summary"><span class="header-section-number">2.7</span> Summary</h2>
 <p>T shifts your workflow from writing imperative, error-prone scripts to declaring a deterministic DAG of computations. In the next chapter, we will examine the theoretical foundation that makes this work: why treating pipeline nodes as <strong>pure functions</strong> unlocks effortless caching and rock-solid reproducibility.</p>
 
 
