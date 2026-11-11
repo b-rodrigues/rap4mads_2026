@@ -272,6 +272,93 @@ model = pyn(
 )
 ```
 
+## Hands-On Exercise: Build Your First Pipeline with an AI Agent
+
+Now that you understand the core mechanics of T pipelines, nodes, and Arrow IPC serialization, it is time to build one yourself!
+
+Modern reproducible workflows are built in collaboration with AI coding assistants (such as Antigravity, Claude Code, GitHub Copilot, or Cursor). T was specifically designed for this paradigm: when you scaffold a project, it automatically provisions context files so your AI assistant writes syntactically valid, idiomatic T from day one.
+
+In this exercise, you will pair with your AI agent to bootstrap a project, create a toy dataset, construct a polyglot pipeline that performs basic data manipulation, and verify DAG caching.
+
+### Step 1: Bootstrap the Workspace
+
+Prompt your AI assistant (or execute the commands yourself in your terminal):
+
+> *"Launch a temporary Nix shell using `nix shell --accept-flake-config github:b-rodrigues/tlang` and initialize a new T project called `toy_pipeline` using `t init --project toy_pipeline`. Select the `full` pipeline template and the default Nixpkgs date."*
+
+Once the project is scaffolded, exit the temporary shell (`exit`), enter the directory, and drop into its pinned development environment:
+
+```bash
+cd toy_pipeline
+nix develop
+```
+
+::: {.callout-tip}
+## The Built-in AI Harness
+
+Notice that `t init` created two key files in your project root: `AGENTS.md` and `T-LANGUAGE-REFERENCE.md`. These files inform your AI coding assistant about T's syntax, node constructors (`pyn`, `rn`, `jln`), and serialization conventions (`^ipc`). When your agent has access to these files in its workspace, it produces accurate code without hallucinating syntax.
+:::
+
+### Step 2: Create a Toy Dataset
+
+Ask your agent to generate a small toy dataset inside `data/`:
+
+> *"Create a CSV file at `data/students.csv` with 6 rows containing columns `name`, `score` (integer out of 100), and `attendance` (float between 0.0 and 1.0)."*
+
+For example:
+
+```csv
+name,score,attendance
+Alice,85,0.95
+Bob,52,0.70
+Charlie,91,0.98
+Diana,48,0.65
+Ethan,74,0.88
+Fiona,63,0.75
+```
+
+### Step 3: Prompt Your Agent to Write the Pipeline
+
+Now, give your AI assistant a clear prompt to author the pipeline in `src/pipeline.t`:
+
+> *"In `src/pipeline.t`, write a pipeline named `p` that:
+> 1. Reads `data/students.csv` into a node named `raw_data` using `read_csv(\"data/students.csv\")`.
+> 2. Defines a Python node `clean_py` using `pyn()` that:
+>    - Ingests `raw_data` with `deserializer = ^ipc`.
+>    - Filters for students with `attendance >= 0.70`.
+>    - Adds a new column `adjusted_score = score * 1.05`.
+>    - Adds a boolean column `passed = adjusted_score >= 60`.
+>    - Serializes the result with `serializer = ^ipc`.
+> 3. Defines an R node `summary_r` using `rn()` that:
+>    - Ingests `clean_py` with `deserializer = ^ipc`.
+>    - Uses `{dplyr}` to calculate average `adjusted_score` grouped by `passed`, or uses `{ggplot2}` to plot scores.
+>    - Serializes the summary.
+> 4. Executes the pipeline with `build_pipeline(p)`."*
+
+### Step 4: Run, Inspect, and Verify Caching
+
+Run the pipeline from your project shell:
+
+```bash
+t run src/pipeline.t
+```
+
+You will see T resolve the DAG, materialize the Apache Arrow IPC buffers, and compute the artifacts.
+
+Now test the two core superpowers of T:
+
+1. **Introspect the Data**: Open the T REPL by typing `t` or `t repl`, and inspect the materialized Python table:
+   ```t
+   result = read_node(p, "clean_py")
+   print(result)
+   ```
+2. **Observe Instant Caching**: Re-run the pipeline immediately:
+   ```bash
+   t run src/pipeline.t
+   ```
+   Notice that the execution finishes instantaneously—T detects that neither the data nor the code changed, so all nodes are served from cache!
+3. **Test Selective Invalidation**: Edit a single score in `data/students.csv` and re-run. Observe how T detects the change in the source data and rebuilds the downstream nodes, leaving independent steps cached.
+
 ## Summary
 
 T shifts your workflow from writing imperative, error-prone scripts to declaring a deterministic DAG of computations. In the next chapter, we will examine the theoretical foundation that makes this work: why treating pipeline nodes as **pure functions** unlocks effortless caching and rock-solid reproducibility.
