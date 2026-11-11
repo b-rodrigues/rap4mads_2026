@@ -192,6 +192,175 @@ Notice the tremendous advantage of this approach: **`src/clean.R` and `src/train
 
 T acts purely as the orchestration layer: handling scheduling, caching, sandboxing, and data exchange.
 
+## Hands-On Exercise: Decoupling a Pipeline with External Scripts
+
+In this exercise, you will put pure functional design into practice by building a pipeline that decouples its computational logic into standalone external scripts and helper functions.
+
+### The Objective
+
+Instead of writing inline blocks inside `<{ ... }>`, you will:
+1. Create a pure R helper function in `src/helpers.R` that calculates summary metrics without side effects.
+2. Write a pure R transformation script in `src/clean.R` that uses `src/helpers.R` to process an input dataset.
+3. Write an external Python script in `src/summarize.py` that ingests the cleaned Arrow table and outputs a JSON summary.
+4. Orchestrate the workflow in `src/pipeline.t` using `script` and `functions`.
+5. Verify caching and inspect how modifying an external script invalidates only that node.
+
+### Project Layout
+
+By the end of this exercise, your project structure will look like this:
+
+```text
+my_project/
+├── data/
+│   └── weather.csv
+├── src/
+│   ├── helpers.R        # Reusable pure helper functions
+│   ├── clean.R          # Standalone R cleaning script
+│   ├── summarize.py     # Standalone Python aggregation script
+│   └── pipeline.t       # Declarative T orchestrator
+├── tproject.toml
+└── flake.nix
+```
+
+---
+
+### Step 1: Create a Toy Dataset
+
+In your project directory (inside `nix develop`), create a small dataset `data/weather.csv`:
+
+```csv
+city,temperature,humidity,rainfall
+Luxembourg,18.5,72,2.4
+Esch,21.0,65,0.0
+Differdange,-99.0,80,12.1
+Dudelange,19.2,68,1.0
+Wiltz,16.8,85,5.6
+```
+
+*(Notice the faulty sensor reading `-99.0` for Differdange!)*
+
+---
+
+### Step 2: Write Pure Helper Functions in `src/helpers.R`
+
+Create `src/helpers.R`. This file will contain pure utility functions with explicit arguments and no global state:
+
+```r
+#| eval: false
+# src/helpers.R
+
+# Pure function: removes invalid sentinel values and computes temperature in Fahrenheit
+clean_temperatures <- function(df, min_valid = -40, max_valid = 55) {
+  valid <- df[df$temperature >= min_valid & df$temperature <= max_valid, ]
+  valid$temp_fahrenheit <- (valid$temperature * 9 / 5) + 32
+  valid
+}
+```
+
+Because `clean_temperatures` is a pure function, you can source it into an interactive R session or write a unit test with `{testthat}` without needing T or Nix running!
+
+---
+
+### Step 3: Write the Standalone Scripts
+
+Now create the external node scripts.
+
+#### R Node Script: `src/clean.R`
+
+```r
+#| eval: false
+# src/clean.R
+# Receives `raw_weather` from upstream via Apache Arrow IPC (^ipc)
+
+# clean_temperatures is provided via `functions = ["src/helpers.R"]`
+cleaned <- clean_temperatures(raw_weather)
+
+# Sort by temperature descending
+cleaned <- cleaned[order(-cleaned$temperature), ]
+cleaned
+```
+
+#### Python Node Script: `src/summarize.py`
+
+```python
+#| eval: false
+# src/summarize.py
+# Receives `cleaned_weather` from upstream via Apache Arrow IPC (^ipc)
+
+import pandas as pd
+
+summary = {
+    "total_cities": int(len(cleaned_weather)),
+    "avg_temp_c": float(cleaned_weather["temperature"].mean()),
+    "avg_temp_f": float(cleaned_weather["temp_fahrenheit"].mean()),
+    "total_rainfall": float(cleaned_weather["rainfall"].sum())
+}
+summary
+```
+
+Notice that neither script contains any T-specific code or decorators. They are 100% standard, portable R and Python!
+
+---
+
+### Step 4: Orchestrate in `src/pipeline.t`
+
+Now, link everything together declaratively in `src/pipeline.t`:
+
+```t
+#| eval: false
+p = pipeline {
+  -- Ingest raw data
+  raw_weather = read_csv("data/weather.csv")
+
+  -- R node executing external script with helper function
+  cleaned_weather = rn(
+    script = "src/clean.R",
+    functions = ["src/helpers.R"],
+    deserializer = ^ipc,
+    serializer = ^ipc
+  )
+
+  -- Python node executing external script
+  weather_summary = pyn(
+    script = "src/summarize.py",
+    deserializer = ^ipc,
+    serializer = ^json
+  )
+}
+
+build_pipeline(p)
+```
+
+::: {.callout-tip}
+## Prompting Your AI Assistant for Clean Architecture
+
+When working with an AI coding assistant, enforce this architectural separation by prompting:
+
+> *"Write an external R script `src/clean.R` and a pure helper file `src/helpers.R`. Ensure `src/helpers.R` only contains pure functions with explicit arguments. Then write a Python script `src/summarize.py`. Finally, connect them in `src/pipeline.t` using `script = ...` and `functions = [...]`. Do not embed inline code in `<{ ... }>`. Keep all domain logic in the standalone script files."*
+:::
+
+---
+
+### Step 5: Run and Test Script Invalidation
+
+Run the pipeline:
+
+```bash
+t run src/pipeline.t
+```
+
+1. **Inspect Artifacts**: In the T REPL (`t repl`), read back the outputs:
+   ```t
+   #| eval: false
+   read_node(p, "cleaned_weather")
+   read_node(p, "weather_summary")
+   ```
+2. **Verify Script Content Tracking**: Modify a calculation inside `src/summarize.py` (e.g., add `"max_temp_c"`). Re-run `t run src/pipeline.t`.
+   T hashes the contents of `src/summarize.py` and detects that only this script changed:
+   - `raw_weather`: **Cache Hit** (skipped)
+   - `cleaned_weather`: **Cache Hit** (skipped)
+   - `weather_summary`: **Rebuilt** in microseconds!
+
 ## Summary
 
 - Mutable state in scripts and notebooks creates fragile, order-dependent code.
