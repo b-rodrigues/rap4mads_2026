@@ -53,6 +53,7 @@ yielding the exact same results with minimal friction.
 ### The Requirements of a RAP
 
 For a project to qualify as a RAP, it must meet several strict criteria:
+
 - **Available, version-controlled source code** (tracked with Git and GitHub);
 - **Deterministic dependencies** (managed completely with Nix);
 - **Non-interactive execution** (run with a single command, without manual steps in GUIs or notebooks);
@@ -316,6 +317,7 @@ AI-generated artifacts have been rigorously audited.
 ## Jargon
 
 ### T
+
 - **T (`tlang`)**: A domain-specific language for defining reproducible analytical pipelines across R, Python, and Julia.
 - **Node**: A single computation step in a pipeline. Nodes act as pure functions: they take explicit inputs and produce a single serialized artifact.
 - **`rn()` / `pyn()` / `jln()`**: T node constructors for R, Python, and Julia runtimes.
@@ -325,6 +327,7 @@ AI-generated artifacts have been rigorously audited.
 - **`read_node()`**: A function used to inspect the cached output of a specific node interactively.
 
 ### Nix
+
 - **Nixpkgs**: The central repository of over 120,000 packages used by Nix.
 - **Derivation**: A low-level, cryptographic build instruction in Nix.
 - **Nix Store (`/nix/store`)**: The read-only directory where all isolated packages and build artifacts reside.
