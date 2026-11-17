@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-fd88250f2723dc191b252079a354019c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-cc1cf4080f772f31877113ce0dfbb70d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-fd88250f2723dc191b252079a354019c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-ef9c3bb3fbdfe938dd67f1c9eb50a934.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -767,7 +767,7 @@ Fiona,63,0.75</code></pre>
 <li><p><strong>Introspect the Data</strong>: Open the T REPL by typing <code>t</code> or <code>t repl</code>, and inspect the materialized Python table:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>result <span class="sc">=</span> <span class="fu">read_node</span>(p, <span class="st">"clean_py"</span>)
 <span class="fu">print</span>(result)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<pre class="text t-output"><code>Error(TypeError: "[/home/runner/work/_temp/tlang-90f66e2215f07b38/chunk.t:L1:C10] read_node: expected a ComputedNode for argument 'node', but got Error.
+<pre class="text t-output"><code>Error(TypeError: "[/home/runner/work/_temp/tlang-5a79af4f03cdcd89/chunk.t:L1:C10] read_node: expected a ComputedNode for argument 'node', but got Error.
 - If the pipeline hasn't been built yet, run build_pipeline(p) first.
 - If the pipeline is built, use dot access: read_node(p.node_name).
 - To read from a past build, use read_past_node(p.node_name, which_log = "...").
