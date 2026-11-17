@@ -160,6 +160,7 @@ Because both nodes are pure, the serializer/deserializer contract (`^ipc`) funct
 The pure function model applies not just to T nodes as a whole, but to the R and Python code you write *inside* those nodes.
 
 To keep your code reproducible:
+
 - **Never mutate inputs in place**: Return a new object instead of modifying an existing one.
 - **Never rely on global variables**: Pass all configuration parameters explicitly.
 - **Isolate file I/O**: Separate functions that calculate values from functions that read/write disks.
@@ -186,6 +187,7 @@ p = pipeline {
 ```
 
 Notice the tremendous advantage of this approach: **`src/clean.R` and `src/train.py` carry zero T-specific syntax**. They are standard, idiomatic R and Python scripts. They can be:
+
 - Sourced and debugged interactively in your IDE.
 - Tested using standard tools (`pytest`, `testthat`).
 - Reused by colleagues who do not use T.
@@ -199,6 +201,7 @@ In this exercise, you will put pure functional design into practice by building 
 ### The Objective
 
 Instead of writing inline blocks inside `<{ ... }>`, you will:
+
 1. Create a pure R helper function in `src/helpers.R` that calculates summary metrics without side effects.
 2. Write a pure R transformation script in `src/clean.R` that uses `src/helpers.R` to process an input dataset.
 3. Write an external Python script in `src/summarize.py` that ingests the cleaned Arrow table and outputs a JSON summary.
