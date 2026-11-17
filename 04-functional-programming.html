@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-ef9c3bb3fbdfe938dd67f1c9eb50a934.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-fd88250f2723dc191b252079a354019c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-cc1cf4080f772f31877113ce0dfbb70d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-fd88250f2723dc191b252079a354019c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -630,7 +630,12 @@ transformed <span class="sc">=</span> <span class="fu">pyn</span>(
 <section id="writing-clean-pure-helper-functions" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="writing-clean-pure-helper-functions"><span class="header-section-number">3.6</span> Writing Clean, Pure Helper Functions</h2>
 <p>The pure function model applies not just to T nodes as a whole, but to the R and Python code you write <em>inside</em> those nodes.</p>
-<p>To keep your code reproducible: - <strong>Never mutate inputs in place</strong>: Return a new object instead of modifying an existing one. - <strong>Never rely on global variables</strong>: Pass all configuration parameters explicitly. - <strong>Isolate file I/O</strong>: Separate functions that calculate values from functions that read/write disks.</p>
+<p>To keep your code reproducible:</p>
+<ul>
+<li><strong>Never mutate inputs in place</strong>: Return a new object instead of modifying an existing one.</li>
+<li><strong>Never rely on global variables</strong>: Pass all configuration parameters explicitly.</li>
+<li><strong>Isolate file I/O</strong>: Separate functions that calculate values from functions that read/write disks.</li>
+</ul>
 <section id="decoupling-logic-external-scripts" class="level3" data-number="3.6.1">
 <h3 data-number="3.6.1" class="anchored" data-anchor-id="decoupling-logic-external-scripts"><span class="header-section-number">3.6.1</span> Decoupling Logic: External Scripts</h3>
 <p>You do not have to write all your code inline inside <code>&lt;{ ... }&gt;</code>. In fact, professional projects keep domain logic in plain <code>.R</code> or <code>.py</code> files using the <code>script</code> parameter:</p>
@@ -647,7 +652,12 @@ transformed <span class="sc">=</span> <span class="fu">pyn</span>(
     serializer <span class="sc">=</span> ^pmml
   )
 }</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Notice the tremendous advantage of this approach: <strong><code>src/clean.R</code> and <code>src/train.py</code> carry zero T-specific syntax</strong>. They are standard, idiomatic R and Python scripts. They can be: - Sourced and debugged interactively in your IDE. - Tested using standard tools (<code>pytest</code>, <code>testthat</code>). - Reused by colleagues who do not use T.</p>
+<p>Notice the tremendous advantage of this approach: <strong><code>src/clean.R</code> and <code>src/train.py</code> carry zero T-specific syntax</strong>. They are standard, idiomatic R and Python scripts. They can be:</p>
+<ul>
+<li>Sourced and debugged interactively in your IDE.</li>
+<li>Tested using standard tools (<code>pytest</code>, <code>testthat</code>).</li>
+<li>Reused by colleagues who do not use T.</li>
+</ul>
 <p>T acts purely as the orchestration layer: handling scheduling, caching, sandboxing, and data exchange.</p>
 </section>
 </section>
@@ -656,7 +666,14 @@ transformed <span class="sc">=</span> <span class="fu">pyn</span>(
 <p>In this exercise, you will put pure functional design into practice by building a pipeline that decouples its computational logic into standalone external scripts and helper functions.</p>
 <section id="the-objective" class="level3" data-number="3.7.1">
 <h3 data-number="3.7.1" class="anchored" data-anchor-id="the-objective"><span class="header-section-number">3.7.1</span> The Objective</h3>
-<p>Instead of writing inline blocks inside <code>&lt;{ ... }&gt;</code>, you will: 1. Create a pure R helper function in <code>src/helpers.R</code> that calculates summary metrics without side effects. 2. Write a pure R transformation script in <code>src/clean.R</code> that uses <code>src/helpers.R</code> to process an input dataset. 3. Write an external Python script in <code>src/summarize.py</code> that ingests the cleaned Arrow table and outputs a JSON summary. 4. Orchestrate the workflow in <code>src/pipeline.t</code> using <code>script</code> and <code>functions</code>. 5. Verify caching and inspect how modifying an external script invalidates only that node.</p>
+<p>Instead of writing inline blocks inside <code>&lt;{ ... }&gt;</code>, you will:</p>
+<ol type="1">
+<li>Create a pure R helper function in <code>src/helpers.R</code> that calculates summary metrics without side effects.</li>
+<li>Write a pure R transformation script in <code>src/clean.R</code> that uses <code>src/helpers.R</code> to process an input dataset.</li>
+<li>Write an external Python script in <code>src/summarize.py</code> that ingests the cleaned Arrow table and outputs a JSON summary.</li>
+<li>Orchestrate the workflow in <code>src/pipeline.t</code> using <code>script</code> and <code>functions</code>.</li>
+<li>Verify caching and inspect how modifying an external script invalidates only that node.</li>
+</ol>
 </section>
 <section id="project-layout" class="level3" data-number="3.7.2">
 <h3 data-number="3.7.2" class="anchored" data-anchor-id="project-layout"><span class="header-section-number">3.7.2</span> Project Layout</h3>
