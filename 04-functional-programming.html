@@ -592,8 +592,8 @@ window.Quarto = {
   <span class="co">-- Node 2: Fit model. Pure: inputs = data_node (^ipc), output = model (^pmml)</span>
   model_node <span class="sc">=</span> <span class="fu">rn</span>(
     command <span class="sc">=</span> <span class="sc">&lt;</span>{
-      data_node<span class="sc">$</span>y <span class="sc">&lt;</span><span class="sc">-</span> as.factor(data_node<span class="sc">$</span>y)
-      <span class="fu">glm</span>(y <span class="sc">~</span> x, data <span class="sc">=</span> data_node, family <span class="sc">=</span> <span class="fu">binomial</span>(link <span class="sc">=</span> <span class="st">"logit"</span>))
+      d <span class="sc">&lt;</span><span class="sc">-</span> <span class="fu">transform</span>(data_node, y <span class="sc">=</span> as.factor(y))
+      <span class="fu">glm</span>(y <span class="sc">~</span> x, data <span class="sc">=</span> d, family <span class="sc">=</span> <span class="fu">binomial</span>(link <span class="sc">=</span> <span class="st">"logit"</span>))
     }<span class="sc">&gt;</span>,
     deserializer <span class="sc">=</span> ^ipc,
     serializer <span class="sc">=</span> ^pmml
@@ -801,7 +801,7 @@ Wiltz,16.8,85,5.6</code></pre>
 <ol type="1">
 <li><p><strong>Inspect Artifacts</strong>: In the T REPL (<code>t repl</code>), read back the outputs:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code><span class="fu">read_node</span>(p.cleaned_weather)
-<span class="fu">read_node</span>(p.weather_summary<span class="st">"</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<span class="fu">read_node</span>(p.weather_summary)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
 <li><p><strong>Verify Script Content Tracking</strong>: Modify a calculation inside <code>src/summarize.py</code> (e.g., add <code>"max_temp_c"</code>). Re-run <code>t run src/pipeline.t</code>. T hashes the contents of <code>src/summarize.py</code> and detects that only this script changed:</p>
 <ul>
 <li><code>raw_weather</code>: <strong>Cache Hit</strong> (skipped)</li>
