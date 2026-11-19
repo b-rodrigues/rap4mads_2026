@@ -116,8 +116,11 @@ Now that you know how to access T and bootstrap a workspace, let us examine an e
 ```t
 #| eval: false
 p = pipeline {
-  -- 1. Ingest raw CSV data
-  data = read_csv("datasets/housing_data.csv")
+  -- 1. Ingest raw CSV data (serialize as Arrow IPC for downstream nodes)
+  data = node(
+    command = read_csv("datasets/housing_data.csv"),
+    serializer = ^ipc
+  )
 
   -- 2. Python node: Feature engineering
   cleaned_py = pyn(
@@ -127,6 +130,7 @@ import pandas as pd
 # Filter positive prices and calculate price per square meter
 cleaned_py = data[data["price"] > 0].copy()
 cleaned_py["price_sqm"] = cleaned_py["price"] / cleaned_py["surface"]
+cleaned_py
     }>,
     deserializer = ^ipc,
     serializer = ^ipc
@@ -237,10 +241,10 @@ To inspect the result of any node interactively, use `read_node()`:
 
 ```t
 #| eval: false
-result = read_node(p, "cleaned_py")
+result = read_node(p.cleaned_py)
 ```
 
-## Using External Scripts and Functions
+## Using External Functions
 
 While embedding short snippets inside `<{ ... }>` is convenient for small steps, realistic projects organize logic into external source files. T makes this straightforward:
 
@@ -322,18 +326,18 @@ Fiona,63,0.75
 Now, give your AI assistant a clear prompt to author the pipeline in `src/pipeline.t`:
 
 > *"In `src/pipeline.t`, write a pipeline named `p` that:
-> 1. Reads `data/students.csv` into a node named `raw_data` using `read_csv(\"data/students.csv\")`.
+> 1. Reads `data/students.csv` into a node named `raw_data` using `node(command = read_csv(\"data/students.csv\"), serializer = ^ipc)`.
 > 2. Defines a Python node `clean_py` using `pyn()` that:
 >    - Ingests `raw_data` with `deserializer = ^ipc`.
 >    - Filters for students with `attendance >= 0.70`.
 >    - Adds a new column `adjusted_score = score * 1.05`.
 >    - Adds a boolean column `passed = adjusted_score >= 60`.
->    - Serializes the result with `serializer = ^ipc`.
+>    - Ends the block with the resulting DataFrame and serializes it with `serializer = ^ipc`.
 > 3. Defines an R node `summary_r` using `rn()` that:
 >    - Ingests `clean_py` with `deserializer = ^ipc`.
->    - Uses `{dplyr}` to calculate average `adjusted_score` grouped by `passed`, or uses `{ggplot2}` to plot scores.
->    - Serializes the summary.
-> 4. Executes the pipeline with `build_pipeline(p)`."*
+>    - Uses `{dplyr}` to calculate average `adjusted_score` grouped by `passed`.
+>    - Serializes the summary with `serializer = ^ipc`.
+> 4. Executes the pipeline with `build_pipeline(p)` and prints `read_node(p.clean_py)` and `read_node(p.summary_r)`."*
 
 ### Step 4: Run, Inspect, and Verify Caching
 
@@ -343,21 +347,17 @@ Run the pipeline from your project shell:
 t run src/pipeline.t
 ```
 
-You will see T resolve the DAG, materialize the Apache Arrow IPC buffers, and compute the artifacts.
+If `t` detects missing packages in `tproject.toml` (such as `pandas`, `pyarrow`, `arrow`, `dplyr`, or `jsonlite`), confirm the prompt (`y`) so `t` adds them and builds the node environments. You will then see T resolve the DAG, materialize the Apache Arrow IPC buffers, and print the outputs.
 
-Now test the two core superpowers of T:
+Now test the caching behavior of T:
 
-1. **Introspect the Data**: Open the T REPL by typing `t` or `t repl`, and inspect the materialized Python table:
-   ```t
-   result = read_node(p, "clean_py")
-   print(result)
-   ```
-2. **Observe Instant Caching**: Re-run the pipeline immediately:
+1. **Inspect inside T**: Notice how `read_node(p.clean_py)` and `read_node(p.summary_r)` use dot access on `p` (you can also run these expressions interactively in `t repl` once `p` is defined).
+2. **Observe Instant Caching**: Re-run the pipeline immediately without changing any files:
    ```bash
    t run src/pipeline.t
    ```
-   Notice that the execution finishes instantaneously—T detects that neither the data nor the code changed, so all nodes are served from cache!
-3. **Test Selective Invalidation**: Edit a single score in `data/students.csv` and re-run. Observe how T detects the change in the source data and rebuilds the downstream nodes, leaving independent steps cached.
+   Notice that T prints `All nodes were already cached — nothing to build.` and finishes immediately!
+3. **Test Invalidation**: Edit a score in `data/students.csv` and re-run `t run src/pipeline.t`. Observe how T detects the updated input and recomputes the pipeline with the new score.
 
 ## Summary
 

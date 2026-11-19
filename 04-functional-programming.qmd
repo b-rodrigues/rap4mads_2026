@@ -14,7 +14,7 @@ By the end of this chapter, you will:
 - Grasp the mathematical and practical definition of pure functions (determinism and zero side effects).
 - See why **every T node is a pure function**, and why **a pipeline is function composition**.
 - Write pure helper functions in R and Python that plug into pipeline nodes.
-- Understand how external scripts (`script = ...`) keep domain logic orchestrator-agnostic.
+- Understand how decoupling logic into external function files (`functions = [...]`) keeps domain logic orchestrator-agnostic.
 
 ## Introduction: The Hidden Problem with State
 
@@ -165,48 +165,56 @@ To keep your code reproducible:
 - **Never rely on global variables**: Pass all configuration parameters explicitly.
 - **Isolate file I/O**: Separate functions that calculate values from functions that read/write disks.
 
-### Decoupling Logic: External Scripts
+### Decoupling Logic: External Functions
 
-You do not have to write all your code inline inside `<{ ... }>`. In fact, professional projects keep domain logic in plain `.R` or `.py` files using the `script` parameter:
+You do not have to write all your computational code inline inside `<{ ... }>`. In fact, professional projects keep domain logic in plain `.R` or `.py` files loaded via the `functions` parameter, while `command = <{ ... }>` acts as a thin one-line call:
 
 ```t
 #| eval: false
 p = pipeline {
+  raw = node(
+    command = read_csv("data/sales.csv"),
+    serializer = ^ipc
+  )
+
   cleaned = rn(
-    script = "src/clean.R",
+    command = <{ clean_sales(raw) }>,
     functions = ["src/utils.R"],
+    deserializer = ^ipc,
     serializer = ^ipc
   )
 
   model = pyn(
-    script = "src/train.py",
+    command = <{ train_model(cleaned) }>,
+    functions = ["src/train.py"],
     deserializer = ^ipc,
     serializer = ^pmml
   )
 }
 ```
 
-Notice the tremendous advantage of this approach: **`src/clean.R` and `src/train.py` carry zero T-specific syntax**. They are standard, idiomatic R and Python scripts. They can be:
+Notice the tremendous advantage of this approach: **`src/utils.R` and `src/train.py` carry zero T-specific syntax**. They are standard, idiomatic R and Python files containing pure functions. They can be:
 
-- Sourced and debugged interactively in your IDE.
+- Sourced or imported and debugged interactively in your IDE.
 - Tested using standard tools (`pytest`, `testthat`).
 - Reused by colleagues who do not use T.
 
 T acts purely as the orchestration layer: handling scheduling, caching, sandboxing, and data exchange.
 
-## Hands-On Exercise: Decoupling a Pipeline with External Scripts
+## Hands-On Exercise: Decoupling a Pipeline with External Functions
 
-In this exercise, you will put pure functional design into practice by building a pipeline that decouples its computational logic into standalone external scripts and helper functions.
+In this exercise, you will put pure functional design into practice by building a pipeline that decouples its computational logic into standalone external `.R` and `.py` function files.
 
 ### The Objective
 
-Instead of writing inline blocks inside `<{ ... }>`, you will:
+Instead of writing multi-line logic inline inside `<{ ... }>`, you will:
 
-1. Create a pure R helper function in `src/helpers.R` that calculates summary metrics without side effects.
-2. Write a pure R transformation script in `src/clean.R` that uses `src/helpers.R` to process an input dataset.
-3. Write an external Python script in `src/summarize.py` that ingests the cleaned Arrow table and outputs a JSON summary.
-4. Orchestrate the workflow in `src/pipeline.t` using `script` and `functions`.
-5. Verify caching and inspect how modifying an external script invalidates only that node.
+1. Scaffold a T project and declare the required R and Python dependencies in `tproject.toml`.
+2. Create a pure R helper function in `src/helpers.R` that filters sentinel values and computes derived columns without side effects.
+3. Write a pure R function in `src/clean.R` that composes `src/helpers.R` to process an input dataset.
+4. Write a pure Python function in `src/summarize.py` that takes the cleaned DataFrame and returns a summary dictionary.
+5. Orchestrate the workflow in `src/pipeline.t` using `command = <{ ... }>` and `functions = [...]`.
+6. Verify caching and inspect the computed outputs.
 
 ### Project Layout
 
@@ -218,8 +226,8 @@ my_project/
 │   └── weather.csv
 ├── src/
 │   ├── helpers.R        # Reusable pure helper functions
-│   ├── clean.R          # Standalone R cleaning script
-│   ├── summarize.py     # Standalone Python aggregation script
+│   ├── clean.R          # Pure R cleaning function
+│   ├── summarize.py     # Pure Python aggregation function
 │   └── pipeline.t       # Declarative T orchestrator
 ├── tproject.toml
 └── flake.nix
@@ -227,9 +235,27 @@ my_project/
 
 ---
 
-### Step 1: Create a Toy Dataset
+### Step 1: Initialize the Project and Create a Toy Dataset
 
-In your project directory (inside `nix develop`), create a small dataset `data/weather.csv`:
+If you are starting fresh, initialize a new T project and enter its Nix shell:
+
+```bash
+nix shell --accept-flake-config github:b-rodrigues/tlang -c t init --project my_project
+cd my_project
+nix develop
+```
+
+Declare the R and Python packages needed for Arrow IPC (`^ipc`), JSON metadata (`^json`), and `pandas` in `tproject.toml` (if you skip this, `t run` will prompt you to add them automatically):
+
+```toml
+[r-dependencies]
+packages = ["arrow", "jsonlite"]
+
+[py-dependencies]
+packages = ["pandas", "pyarrow"]
+```
+
+Next, create a small dataset `data/weather.csv`:
 
 ```csv
 city,temperature,humidity,rainfall
@@ -264,74 +290,79 @@ Because `clean_temperatures` is a pure function, you can source it into an inter
 
 ---
 
-### Step 3: Write the Standalone Scripts
+### Step 3: Write the External Pure Functions
 
-Now create the external node scripts.
+Now create the domain functions in standalone `.R` and `.py` files.
 
-#### R Node Script: `src/clean.R`
+#### R Node Function: `src/clean.R`
 
 ```r
 #| eval: false
 # src/clean.R
-# Receives `raw_weather` from upstream via Apache Arrow IPC (^ipc)
 
-# clean_temperatures is provided via `functions = ["src/helpers.R"]`
-cleaned <- clean_temperatures(raw_weather)
-
-# Sort by temperature descending
-cleaned <- cleaned[order(-cleaned$temperature), ]
-cleaned
+# Pure function: cleans weather data and sorts by temperature descending
+clean_weather <- function(df) {
+  cleaned <- clean_temperatures(df)
+  cleaned[order(-cleaned$temperature), ]
+}
 ```
 
-#### Python Node Script: `src/summarize.py`
+#### Python Node Function: `src/summarize.py`
 
 ```python
 #| eval: false
 # src/summarize.py
-# Receives `cleaned_weather` from upstream via Apache Arrow IPC (^ipc)
 
 import pandas as pd
 
-summary = {
-    "total_cities": int(len(cleaned_weather)),
-    "avg_temp_c": float(cleaned_weather["temperature"].mean()),
-    "avg_temp_f": float(cleaned_weather["temp_fahrenheit"].mean()),
-    "total_rainfall": float(cleaned_weather["rainfall"].sum())
-}
-summary
+
+def summarize_weather(df: pd.DataFrame) -> dict:
+    return {
+        "total_cities": int(len(df)),
+        "avg_temp_c": float(df["temperature"].mean()),
+        "avg_temp_f": float(df["temp_fahrenheit"].mean()),
+        "total_rainfall": float(df["rainfall"].sum()),
+    }
 ```
 
-Notice that neither script contains any T-specific code or decorators. They are 100% standard, portable R and Python!
+Notice that neither file contains any T-specific code or decorators, and neither depends on global pipeline variable names. They are 100% standard, portable R and Python functions!
 
 ---
 
 ### Step 4: Orchestrate in `src/pipeline.t`
 
-Now, link everything together declaratively in `src/pipeline.t`:
+Now, link everything together declaratively in `src/pipeline.t` using `command = <{ ... }>` and `functions = [...]`:
 
 ```t
 #| eval: false
 p = pipeline {
-  -- Ingest raw data
-  raw_weather = read_csv("data/weather.csv")
+  -- Ingest raw data (serialize as Arrow IPC for downstream R/Python nodes)
+  raw_weather = node(
+    command = read_csv("data/weather.csv"),
+    serializer = ^ipc
+  )
 
-  -- R node executing external script with helper function
+  -- R node composing pure functions from external files
   cleaned_weather = rn(
-    script = "src/clean.R",
-    functions = ["src/helpers.R"],
+    command = <{ clean_weather(raw_weather) }>,
+    functions = ["src/helpers.R", "src/clean.R"],
     deserializer = ^ipc,
     serializer = ^ipc
   )
 
-  -- Python node executing external script
+  -- Python node calling a pure function from an external file
   weather_summary = pyn(
-    script = "src/summarize.py",
+    command = <{ summarize_weather(cleaned_weather) }>,
+    functions = ["src/summarize.py"],
     deserializer = ^ipc,
     serializer = ^json
   )
 }
 
 build_pipeline(p)
+
+print(read_node(p.cleaned_weather))
+print(read_node(p.weather_summary))
 ```
 
 ::: {.callout-tip}
@@ -339,12 +370,12 @@ build_pipeline(p)
 
 When working with an AI coding assistant, enforce this architectural separation by prompting:
 
-> *"Write an external R script `src/clean.R` and a pure helper file `src/helpers.R`. Ensure `src/helpers.R` only contains pure functions with explicit arguments. Then write a Python script `src/summarize.py`. Finally, connect them in `src/pipeline.t` using `script = ...` and `functions = [...]`. Do not embed inline code in `<{ ... }>`. Keep all domain logic in the standalone script files."*
+> *"Write a pure helper file `src/helpers.R` and a pure R function `clean_weather(df)` in `src/clean.R`. Ensure all functions only take explicit arguments with no global state. Then write a pure Python function `summarize_weather(df)` in `src/summarize.py`. Finally, connect them in `src/pipeline.t` using `functions = [...]` and one-line `command = <{ ... }>` calls. Keep all domain logic in the standalone R and Python files."*
 :::
 
 ---
 
-### Step 5: Run and Test Script Invalidation
+### Step 5: Run, Inspect, and Verify Caching
 
 Run the pipeline:
 
@@ -352,17 +383,10 @@ Run the pipeline:
 t run src/pipeline.t
 ```
 
-1. **Inspect Artifacts**: In the T REPL (`t repl`), read back the outputs:
-   ```t
-   #| eval: false
-   read_node(p.cleaned_weather)
-   read_node(p.weather_summary)
-   ```
-2. **Verify Script Content Tracking**: Modify a calculation inside `src/summarize.py` (e.g., add `"max_temp_c"`). Re-run `t run src/pipeline.t`.
-   T hashes the contents of `src/summarize.py` and detects that only this script changed:
-   - `raw_weather`: **Cache Hit** (skipped)
-   - `cleaned_weather`: **Cache Hit** (skipped)
-   - `weather_summary`: **Rebuilt** in microseconds!
+1. **Inspect Artifacts**: The `print(read_node(...))` calls at the bottom of `src/pipeline.t` display the 4-row cleaned DataFrame (excluding Differdange) and the summary dictionary (`total_cities: 4`, `avg_temp_c: 18.875`, `avg_temp_f: 65.975`, `total_rainfall: 9.`).
+2. **Verify Caching**: Re-run `t run src/pipeline.t` immediately without editing any files. T detects that no inputs or source files changed and prints:
+   `All nodes were already cached — nothing to build.`
+3. **Update External Logic**: Add `"max_temp_c": float(df["temperature"].max())` inside `summarize_weather` in `src/summarize.py` and re-run `t run src/pipeline.t`. T rebuilds with the updated file and prints the new `max_temp_c: 21.` field in `weather_summary`.
 
 ## Summary
 
