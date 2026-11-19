@@ -106,8 +106,8 @@ p = pipeline {
   -- Node 2: Fit model. Pure: inputs = data_node (^ipc), output = model (^pmml)
   model_node = rn(
     command = <{
-      data_node$y <- as.factor(data_node$y)
-      glm(y ~ x, data = data_node, family = binomial(link = "logit"))
+      d <- transform(data_node, y = as.factor(y))
+      glm(y ~ x, data = d, family = binomial(link = "logit"))
     }>,
     deserializer = ^ipc,
     serializer = ^pmml
