@@ -274,6 +274,9 @@ Wiltz,16.8,85,5.6
 
 Create `src/helpers.R`. This file will contain pure utility functions with explicit arguments and no global state:
 
+- Define `clean_temperatures(df, min_valid = -40, max_valid = 55)` that filters `df` to rows where `temperature` is between `min_valid` and `max_valid` (inclusive), adds a `temp_fahrenheit` column (`(temperature * 9 / 5) + 32`), and returns the resulting data frame.
+
+::: {.content-hidden}
 ```r
 #| eval: false
 # src/helpers.R
@@ -285,6 +288,7 @@ clean_temperatures <- function(df, min_valid = -40, max_valid = 55) {
   valid
 }
 ```
+:::
 
 Because `clean_temperatures` is a pure function, you can source it into an interactive R session or write a unit test with `{testthat}` without needing T or Nix running!
 
@@ -296,6 +300,9 @@ Now create the domain functions in standalone `.R` and `.py` files.
 
 #### R Node Function: `src/clean.R`
 
+Define a pure function `clean_weather(df)` that calls `clean_temperatures(df)` and returns the rows sorted by `temperature` descending.
+
+::: {.content-hidden}
 ```r
 #| eval: false
 # src/clean.R
@@ -306,9 +313,13 @@ clean_weather <- function(df) {
   cleaned[order(-cleaned$temperature), ]
 }
 ```
+:::
 
 #### Python Node Function: `src/summarize.py`
 
+Define a pure function `summarize_weather(df)` (using `pandas`) that returns a dictionary with keys `total_cities` (`int`), `avg_temp_c` (`float`), `avg_temp_f` (`float`), and `total_rainfall` (`float`).
+
+::: {.content-hidden}
 ```python
 #| eval: false
 # src/summarize.py
@@ -324,6 +335,7 @@ def summarize_weather(df: pd.DataFrame) -> dict:
         "total_rainfall": float(df["rainfall"].sum()),
     }
 ```
+:::
 
 Notice that neither file contains any T-specific code or decorators, and neither depends on global pipeline variable names. They are 100% standard, portable R and Python functions!
 
@@ -333,6 +345,12 @@ Notice that neither file contains any T-specific code or decorators, and neither
 
 Now, link everything together declaratively in `src/pipeline.t` using `command = <{ ... }>` and `functions = [...]`:
 
+1. `raw_weather`: ingest `data/weather.csv` via `node(command = read_csv("data/weather.csv"), serializer = ^ipc)`.
+2. `cleaned_weather`: an R node (`rn()`) calling `clean_weather(raw_weather)` inside `command = <{ ... }>`, sourcing `["src/helpers.R", "src/clean.R"]` via `functions`, with `deserializer = ^ipc` and `serializer = ^ipc`.
+3. `weather_summary`: a Python node (`pyn()`) calling `summarize_weather(cleaned_weather)` inside `command = <{ ... }>`, loading `["src/summarize.py"]` via `functions`, with `deserializer = ^ipc` and `serializer = ^json`.
+4. Execute `build_pipeline(p)` and print `read_node(p.cleaned_weather)` and `read_node(p.weather_summary)`.
+
+::: {.content-hidden}
 ```t
 #| eval: false
 p = pipeline {
@@ -364,6 +382,7 @@ build_pipeline(p)
 print(read_node(p.cleaned_weather))
 print(read_node(p.weather_summary))
 ```
+:::
 
 ::: {.callout-tip}
 ## Prompting Your AI Assistant for Clean Architecture
