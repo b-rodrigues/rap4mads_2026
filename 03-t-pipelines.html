@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-ef9c3bb3fbdfe938dd67f1c9eb50a934.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-fd88250f2723dc191b252079a354019c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-cc1cf4080f772f31877113ce0dfbb70d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-fd88250f2723dc191b252079a354019c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -468,7 +468,7 @@ window.Quarto = {
   <li><a href="#zero-glue-serialization-with-apache-arrow-ipc" id="toc-zero-glue-serialization-with-apache-arrow-ipc" class="nav-link" data-scroll-target="#zero-glue-serialization-with-apache-arrow-ipc"><span class="header-section-number">2.4.4</span> 4. Zero-Glue Serialization with Apache Arrow (<code>^ipc</code>)</a></li>
   <li><a href="#executing-and-inspecting-pipelines" id="toc-executing-and-inspecting-pipelines" class="nav-link" data-scroll-target="#executing-and-inspecting-pipelines"><span class="header-section-number">2.4.5</span> 5. Executing and Inspecting Pipelines</a></li>
   </ul></li>
-  <li><a href="#using-external-scripts-and-functions" id="toc-using-external-scripts-and-functions" class="nav-link" data-scroll-target="#using-external-scripts-and-functions"><span class="header-section-number">2.5</span> Using External Scripts and Functions</a></li>
+  <li><a href="#using-external-functions" id="toc-using-external-functions" class="nav-link" data-scroll-target="#using-external-functions"><span class="header-section-number">2.5</span> Using External Functions</a></li>
   <li><a href="#hands-on-exercise-build-your-first-pipeline-with-an-ai-agent" id="toc-hands-on-exercise-build-your-first-pipeline-with-an-ai-agent" class="nav-link" data-scroll-target="#hands-on-exercise-build-your-first-pipeline-with-an-ai-agent"><span class="header-section-number">2.6</span> Hands-On Exercise: Build Your First Pipeline with an AI Agent</a>
   <ul class="collapse">
   <li><a href="#step-1-bootstrap-the-workspace" id="toc-step-1-bootstrap-the-workspace" class="nav-link" data-scroll-target="#step-1-bootstrap-the-workspace"><span class="header-section-number">2.6.1</span> Step 1: Bootstrap the Workspace</a></li>
@@ -592,8 +592,11 @@ clean_data_final.csv</code></pre>
 <h3 data-number="2.3.2" class="anchored" data-anchor-id="an-end-to-end-pipeline-example"><span class="header-section-number">2.3.2</span> An End-to-End Pipeline Example</h3>
 <p>Now that you know how to access T and bootstrap a workspace, let us examine an end-to-end polyglot pipeline in T:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>p <span class="sc">=</span> <span class="cf">pipeline</span> {
-  <span class="co">-- 1. Ingest raw CSV data</span>
-  data <span class="sc">=</span> <span class="fu">read_csv</span>(<span class="st">"datasets/housing_data.csv"</span>)
+  <span class="co">-- 1. Ingest raw CSV data (serialize as Arrow IPC for downstream nodes)</span>
+  data <span class="sc">=</span> <span class="fu">node</span>(
+    command <span class="sc">=</span> <span class="fu">read_csv</span>(<span class="st">"datasets/housing_data.csv"</span>),
+    serializer <span class="sc">=</span> ^ipc
+  )
 
   <span class="co">-- 2. Python node: Feature engineering</span>
   cleaned_py <span class="sc">=</span> <span class="fu">pyn</span>(
@@ -603,6 +606,7 @@ clean_data_final.csv</code></pre>
 # Filter positive prices and calculate price per square meter
 cleaned_py <span class="sc">=</span> data[data[<span class="st">"price"</span>] <span class="sc">&gt;</span> <span class="dv">0</span>].copy()
 cleaned_py[<span class="st">"price_sqm"</span>] <span class="sc">=</span> cleaned_py[<span class="st">"price"</span>] <span class="sc">/</span> cleaned_py[<span class="st">"surface"</span>]
+cleaned_py
     }<span class="sc">&gt;</span>,
     deserializer <span class="sc">=</span> ^ipc,
     serializer <span class="sc">=</span> ^ipc
@@ -682,11 +686,11 @@ plot_r <span class="sc">&lt;</span><span class="sc">-</span> <span class="fu">gg
 <p>T inspects each node in the DAG: 1. Has this node ever been built? 2. Have any of its upstream inputs changed? 3. Has the code inside its <code>command</code> block changed?</p>
 <p>If the answer to all three is “no”, T retrieves the existing artifact from cache in microseconds. If any input has changed, only that node and its downstream dependents are rebuilt.</p>
 <p>To inspect the result of any node interactively, use <code>read_node()</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>result <span class="sc">=</span> <span class="fu">read_node</span>(p, <span class="st">"cleaned_py"</span>)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>result <span class="sc">=</span> <span class="fu">read_node</span>(p.cleaned_py)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
-<section id="using-external-scripts-and-functions" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="using-external-scripts-and-functions"><span class="header-section-number">2.5</span> Using External Scripts and Functions</h2>
+<section id="using-external-functions" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="using-external-functions"><span class="header-section-number">2.5</span> Using External Functions</h2>
 <p>While embedding short snippets inside <code>&lt;{ ... }&gt;</code> is convenient for small steps, realistic projects organize logic into external source files. T makes this straightforward:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>p <span class="sc">=</span> <span class="cf">pipeline</span> {
   coords <span class="sc">=</span> <span class="fu">rn</span>(
@@ -754,30 +758,21 @@ Fiona,63,0.75</code></pre>
 <h3 data-number="2.6.3" class="anchored" data-anchor-id="step-3-prompt-your-agent-to-write-the-pipeline"><span class="header-section-number">2.6.3</span> Step 3: Prompt Your Agent to Write the Pipeline</h3>
 <p>Now, give your AI assistant a clear prompt to author the pipeline in <code>src/pipeline.t</code>:</p>
 <blockquote class="blockquote">
-<p><em>“In <code>src/pipeline.t</code>, write a pipeline named <code>p</code> that: 1. Reads <code>data/students.csv</code> into a node named <code>raw_data</code> using <code>read_csv(\"data/students.csv\")</code>. 2. Defines a Python node <code>clean_py</code> using <code>pyn()</code> that: - Ingests <code>raw_data</code> with <code>deserializer = ^ipc</code>. - Filters for students with <code>attendance &gt;= 0.70</code>. - Adds a new column <code>adjusted_score = score * 1.05</code>. - Adds a boolean column <code>passed = adjusted_score &gt;= 60</code>. - Serializes the result with <code>serializer = ^ipc</code>. 3. Defines an R node <code>summary_r</code> using <code>rn()</code> that: - Ingests <code>clean_py</code> with <code>deserializer = ^ipc</code>. - Uses <code>{dplyr}</code> to calculate average <code>adjusted_score</code> grouped by <code>passed</code>, or uses <code>{ggplot2}</code> to plot scores. - Serializes the summary. 4. Executes the pipeline with <code>build_pipeline(p)</code>.”</em></p>
+<p><em>“In <code>src/pipeline.t</code>, write a pipeline named <code>p</code> that: 1. Reads <code>data/students.csv</code> into a node named <code>raw_data</code> using <code>node(command = read_csv(\"data/students.csv\"), serializer = ^ipc)</code>. 2. Defines a Python node <code>clean_py</code> using <code>pyn()</code> that: - Ingests <code>raw_data</code> with <code>deserializer = ^ipc</code>. - Filters for students with <code>attendance &gt;= 0.70</code>. - Adds a new column <code>adjusted_score = score * 1.05</code>. - Adds a boolean column <code>passed = adjusted_score &gt;= 60</code>. - Ends the block with the resulting DataFrame and serializes it with <code>serializer = ^ipc</code>. 3. Defines an R node <code>summary_r</code> using <code>rn()</code> that: - Ingests <code>clean_py</code> with <code>deserializer = ^ipc</code>. - Uses <code>{dplyr}</code> to calculate average <code>adjusted_score</code> grouped by <code>passed</code>. - Serializes the summary with <code>serializer = ^ipc</code>. 4. Executes the pipeline with <code>build_pipeline(p)</code> and prints <code>read_node(p.clean_py)</code> and <code>read_node(p.summary_r)</code>.”</em></p>
 </blockquote>
 </section>
 <section id="step-4-run-inspect-and-verify-caching" class="level3" data-number="2.6.4">
 <h3 data-number="2.6.4" class="anchored" data-anchor-id="step-4-run-inspect-and-verify-caching"><span class="header-section-number">2.6.4</span> Step 4: Run, Inspect, and Verify Caching</h3>
 <p>Run the pipeline from your project shell:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>You will see T resolve the DAG, materialize the Apache Arrow IPC buffers, and compute the artifacts.</p>
-<p>Now test the two core superpowers of T:</p>
+<p>If <code>t</code> detects missing packages in <code>tproject.toml</code> (such as <code>pandas</code>, <code>pyarrow</code>, <code>arrow</code>, <code>dplyr</code>, or <code>jsonlite</code>), confirm the prompt (<code>y</code>) so <code>t</code> adds them and builds the node environments. You will then see T resolve the DAG, materialize the Apache Arrow IPC buffers, and print the outputs.</p>
+<p>Now test the caching behavior of T:</p>
 <ol type="1">
-<li><p><strong>Introspect the Data</strong>: Open the T REPL by typing <code>t</code> or <code>t repl</code>, and inspect the materialized Python table:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>result <span class="sc">=</span> <span class="fu">read_node</span>(p, <span class="st">"clean_py"</span>)
-<span class="fu">print</span>(result)</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<pre class="text t-output"><code>Error(TypeError: "[/home/runner/work/_temp/tlang-ccaac1f9ca99027c/chunk.t:L1:C10] read_node: expected a ComputedNode for argument 'node', but got Error.
-- If the pipeline hasn't been built yet, run build_pipeline(p) first.
-- If the pipeline is built, use dot access: read_node(p.node_name).
-- To read from a past build, use read_past_node(p.node_name, which_log = "...").
-  - Underlying error: Name `p` is not defined.
-Did you mean `n`?") 
-</code></pre></li>
-<li><p><strong>Observe Instant Caching</strong>: Re-run the pipeline immediately:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Notice that the execution finishes instantaneously—T detects that neither the data nor the code changed, so all nodes are served from cache!</p></li>
-<li><p><strong>Test Selective Invalidation</strong>: Edit a single score in <code>data/students.csv</code> and re-run. Observe how T detects the change in the source data and rebuilds the downstream nodes, leaving independent steps cached.</p></li>
+<li><p><strong>Inspect inside T</strong>: Notice how <code>read_node(p.clean_py)</code> and <code>read_node(p.summary_r)</code> use dot access on <code>p</code> (you can also run these expressions interactively in <code>t repl</code> once <code>p</code> is defined).</p></li>
+<li><p><strong>Observe Instant Caching</strong>: Re-run the pipeline immediately without changing any files:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Notice that T prints <code>All nodes were already cached — nothing to build.</code> and finishes immediately!</p></li>
+<li><p><strong>Test Invalidation</strong>: Edit a score in <code>data/students.csv</code> and re-run <code>t run src/pipeline.t</code>. Observe how T detects the updated input and recomputes the pipeline with the new score.</p></li>
 </ol>
 </section>
 </section>
