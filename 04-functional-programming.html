@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-fd88250f2723dc191b252079a354019c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-cc1cf4080f772f31877113ce0dfbb70d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-fd88250f2723dc191b252079a354019c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-ef9c3bb3fbdfe938dd67f1c9eb50a934.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-608167b199151af4e382e1871814fa42.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -723,15 +723,9 @@ Wiltz,16.8,85,5.6</code></pre>
 <section id="step-2-write-pure-helper-functions-in-srchelpers.r" class="level3" data-number="3.7.4">
 <h3 data-number="3.7.4" class="anchored" data-anchor-id="step-2-write-pure-helper-functions-in-srchelpers.r"><span class="header-section-number">3.7.4</span> Step 2: Write Pure Helper Functions in <code>src/helpers.R</code></h3>
 <p>Create <code>src/helpers.R</code>. This file will contain pure utility functions with explicit arguments and no global state:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># src/helpers.R</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pure function: removes invalid sentinel values and computes temperature in Fahrenheit</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>clean_temperatures <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">min_valid =</span> <span class="sc">-</span><span class="dv">40</span>, <span class="at">max_valid =</span> <span class="dv">55</span>) {</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  valid <span class="ot">&lt;-</span> df[df<span class="sc">$</span>temperature <span class="sc">&gt;=</span> min_valid <span class="sc">&amp;</span> df<span class="sc">$</span>temperature <span class="sc">&lt;=</span> max_valid, ]</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  valid<span class="sc">$</span>temp_fahrenheit <span class="ot">&lt;-</span> (valid<span class="sc">$</span>temperature <span class="sc">*</span> <span class="dv">9</span> <span class="sc">/</span> <span class="dv">5</span>) <span class="sc">+</span> <span class="dv">32</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  valid</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li>Define <code>clean_temperatures(df, min_valid = -40, max_valid = 55)</code> that filters <code>df</code> to rows where <code>temperature</code> is between <code>min_valid</code> and <code>max_valid</code> (inclusive), adds a <code>temp_fahrenheit</code> column (<code>(temperature * 9 / 5) + 32</code>), and returns the resulting data frame.</li>
+</ul>
 <p>Because <code>clean_temperatures</code> is a pure function, you can source it into an interactive R session or write a unit test with <code>{testthat}</code> without needing T or Nix running!</p>
 <hr>
 </section>
@@ -740,30 +734,11 @@ Wiltz,16.8,85,5.6</code></pre>
 <p>Now create the domain functions in standalone <code>.R</code> and <code>.py</code> files.</p>
 <section id="r-node-function-srcclean.r" class="level4" data-number="3.7.5.1">
 <h4 data-number="3.7.5.1" class="anchored" data-anchor-id="r-node-function-srcclean.r"><span class="header-section-number">3.7.5.1</span> R Node Function: <code>src/clean.R</code></h4>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># src/clean.R</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pure function: cleans weather data and sorts by temperature descending</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>clean_weather <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  cleaned <span class="ot">&lt;-</span> <span class="fu">clean_temperatures</span>(df)</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  cleaned[<span class="fu">order</span>(<span class="sc">-</span>cleaned<span class="sc">$</span>temperature), ]</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Define a pure function <code>clean_weather(df)</code> that calls <code>clean_temperatures(df)</code> and returns the rows sorted by <code>temperature</code> descending.</p>
 </section>
 <section id="python-node-function-srcsummarize.py" class="level4" data-number="3.7.5.2">
 <h4 data-number="3.7.5.2" class="anchored" data-anchor-id="python-node-function-srcsummarize.py"><span class="header-section-number">3.7.5.2</span> Python Node Function: <code>src/summarize.py</code></h4>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># src/summarize.py</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_weather(df: pd.DataFrame) <span class="op">-&gt;</span> <span class="bu">dict</span>:</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"total_cities"</span>: <span class="bu">int</span>(<span class="bu">len</span>(df)),</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"avg_temp_c"</span>: <span class="bu">float</span>(df[<span class="st">"temperature"</span>].mean()),</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"avg_temp_f"</span>: <span class="bu">float</span>(df[<span class="st">"temp_fahrenheit"</span>].mean()),</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"total_rainfall"</span>: <span class="bu">float</span>(df[<span class="st">"rainfall"</span>].<span class="bu">sum</span>()),</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Define a pure function <code>summarize_weather(df)</code> (using <code>pandas</code>) that returns a dictionary with keys <code>total_cities</code> (<code>int</code>), <code>avg_temp_c</code> (<code>float</code>), <code>avg_temp_f</code> (<code>float</code>), and <code>total_rainfall</code> (<code>float</code>).</p>
 <p>Notice that neither file contains any T-specific code or decorators, and neither depends on global pipeline variable names. They are 100% standard, portable R and Python functions!</p>
 <hr>
 </section>
@@ -771,34 +746,12 @@ Wiltz,16.8,85,5.6</code></pre>
 <section id="step-4-orchestrate-in-srcpipeline.t" class="level3" data-number="3.7.6">
 <h3 data-number="3.7.6" class="anchored" data-anchor-id="step-4-orchestrate-in-srcpipeline.t"><span class="header-section-number">3.7.6</span> Step 4: Orchestrate in <code>src/pipeline.t</code></h3>
 <p>Now, link everything together declaratively in <code>src/pipeline.t</code> using <code>command = &lt;{ ... }&gt;</code> and <code>functions = [...]</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode"><pre class="sourceCode t code-with-copy"><code>p <span class="sc">=</span> <span class="cf">pipeline</span> {
-  <span class="co">-- Ingest raw data (serialize as Arrow IPC for downstream R/Python nodes)</span>
-  raw_weather <span class="sc">=</span> <span class="fu">node</span>(
-    command <span class="sc">=</span> <span class="fu">read_csv</span>(<span class="st">"data/weather.csv"</span>),
-    serializer <span class="sc">=</span> ^ipc
-  )
-
-  <span class="co">-- R node composing pure functions from external files</span>
-  cleaned_weather <span class="sc">=</span> <span class="fu">rn</span>(
-    command <span class="sc">=</span> <span class="sc">&lt;</span>{ <span class="fu">clean_weather</span>(raw_weather) }<span class="sc">&gt;</span>,
-    functions <span class="sc">=</span> [<span class="st">"src/helpers.R"</span>, <span class="st">"src/clean.R"</span>],
-    deserializer <span class="sc">=</span> ^ipc,
-    serializer <span class="sc">=</span> ^ipc
-  )
-
-  <span class="co">-- Python node calling a pure function from an external file</span>
-  weather_summary <span class="sc">=</span> <span class="fu">pyn</span>(
-    command <span class="sc">=</span> <span class="sc">&lt;</span>{ <span class="fu">summarize_weather</span>(cleaned_weather) }<span class="sc">&gt;</span>,
-    functions <span class="sc">=</span> [<span class="st">"src/summarize.py"</span>],
-    deserializer <span class="sc">=</span> ^ipc,
-    serializer <span class="sc">=</span> ^json
-  )
-}
-
-<span class="fu">build_pipeline</span>(p)
-
-<span class="fu">print</span>(<span class="fu">read_node</span>(p.cleaned_weather))
-<span class="fu">print</span>(<span class="fu">read_node</span>(p.weather_summary))</code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li><code>raw_weather</code>: ingest <code>data/weather.csv</code> via <code>node(command = read_csv("data/weather.csv"), serializer = ^ipc)</code>.</li>
+<li><code>cleaned_weather</code>: an R node (<code>rn()</code>) calling <code>clean_weather(raw_weather)</code> inside <code>command = &lt;{ ... }&gt;</code>, sourcing <code>["src/helpers.R", "src/clean.R"]</code> via <code>functions</code>, with <code>deserializer = ^ipc</code> and <code>serializer = ^ipc</code>.</li>
+<li><code>weather_summary</code>: a Python node (<code>pyn()</code>) calling <code>summarize_weather(cleaned_weather)</code> inside <code>command = &lt;{ ... }&gt;</code>, loading <code>["src/summarize.py"]</code> via <code>functions</code>, with <code>deserializer = ^ipc</code> and <code>serializer = ^json</code>.</li>
+<li>Execute <code>build_pipeline(p)</code> and print <code>read_node(p.cleaned_weather)</code> and <code>read_node(p.weather_summary)</code>.</li>
+</ol>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -820,7 +773,7 @@ Wiltz,16.8,85,5.6</code></pre>
 <section id="step-5-run-inspect-and-verify-caching" class="level3" data-number="3.7.7">
 <h3 data-number="3.7.7" class="anchored" data-anchor-id="step-5-run-inspect-and-verify-caching"><span class="header-section-number">3.7.7</span> Step 5: Run, Inspect, and Verify Caching</h3>
 <p>Run the pipeline:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">t</span> run src/pipeline.t</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li><strong>Inspect Artifacts</strong>: The <code>print(read_node(...))</code> calls at the bottom of <code>src/pipeline.t</code> display the 4-row cleaned DataFrame (excluding Differdange) and the summary dictionary (<code>total_cities: 4</code>, <code>avg_temp_c: 18.875</code>, <code>avg_temp_f: 65.975</code>, <code>total_rainfall: 9.</code>).</li>
 <li><strong>Verify Caching</strong>: Re-run <code>t run src/pipeline.t</code> immediately without editing any files. T detects that no inputs or source files changed and prints: <code>All nodes were already cached — nothing to build.</code></li>
